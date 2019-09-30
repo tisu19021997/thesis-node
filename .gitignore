@@ -95,3 +95,10 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Development modules
+nodemon.json
+
+#jetbrain .idea
+.idea
+.idea/
