@@ -95,3 +95,6 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Development modules
+nodemon.json
