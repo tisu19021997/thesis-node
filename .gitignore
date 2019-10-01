@@ -98,3 +98,7 @@ typings/
 
 # Development modules
 nodemon.json
+
+#jetbrain .idea
+.idea
+.idea/
