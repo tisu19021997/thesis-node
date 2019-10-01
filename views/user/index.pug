@@ -1,0 +1,10 @@
+extends ../layout
+
+block content
+  h1 Users
+  p= type
+  ol
+    each user in users
+      li
+        div 
+          span= user.name + ' ' + user.category_id

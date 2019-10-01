@@ -6,16 +6,21 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
+const mongoose = require('mongoose');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
 
+// database
+const db = mongoose.connection;
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 8081);
 
 app.use(logger('dev'));
 app.use(cookieParser());
@@ -44,5 +49,18 @@ app.use((err, req, res) => {
 app.listen(app.get('port'), () => {
   console.log(`Start on port ${app.get('port')}`);
 });
+
+// mongodb connection
+
+mongoose.connect('mongodb://localhost/thesis', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+db.on('err', console.error.bind(console, 'Connection error:'));
+db.once('open', () => {
+  console.log('Connected to database');
+});
+
 
 module.exports = app;
