@@ -7,6 +7,7 @@ const Schema = new mongoose.Schema({
     first: String,
     last: String,
   },
+  history: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Products' }],
 });
 
 const Users = mongoose.model('Users', Schema);

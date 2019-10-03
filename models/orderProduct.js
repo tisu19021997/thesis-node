@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
 const orderProduct = new mongoose.Schema({
-  order_id: Number,
+  order_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Orders' },
   description: String,
   price: { type: Number, require: true },
   quantity: { type: Number, require: true },
   subtotal: { type: Number, require: true },
   sku: { type: String, require: true },
-  name: { type: String, require: true },
+  name: { type: String, require: true }
 });
 
 const OrderProducts = mongoose.model('orderProducts', orderProduct);

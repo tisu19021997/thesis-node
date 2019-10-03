@@ -7,7 +7,7 @@ const Schema = new mongoose.Schema({
   session_id: { type: String, required: true },
   user_id: { type: Number, require: true },
   transaction_id: { type: Number, require: true },
-  order_products: { type: Number, require: true },
+  products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Products' }],
 });
 
 const Orders = mongoose.model('Orders', Schema);
