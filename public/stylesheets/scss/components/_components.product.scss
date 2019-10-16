@@ -1,0 +1,97 @@
+/* ==========================================================================
+   #PRODUCT
+   ========================================================================== */
+
+
+.c-product {
+
+  cursor: pointer;
+
+  .c-product__img {
+    position: relative;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px #dfe1e5;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px #dfe1e5;
+
+    > img {
+      width: auto;
+      height: auto;
+    }
+
+    /**
+    * 1. Set the discount percentage to top-left
+    */
+
+    .discount,
+    .date {
+      position: absolute;
+      left: 0;
+      top: 0;
+      /*[1]*/
+      background-color: $global-orange;
+      color: white;
+
+      @include mq($from: mobile) {
+        padding: 2px 4px;
+        @include font-size(10px);
+      }
+
+      @include mq($from: tablet) {
+        padding: 6px 12px;
+        @include font-size(14px);
+      }
+    }
+  }
+
+  .name {
+
+    margin-top: $inuit-global-spacing-unit/2;
+
+    @include mq($from: mobile) {
+      @include font-size(14px);
+    }
+
+    @include mq($from: tablet) {
+      @include font-size(18px);
+      font-weight: 500;
+    }
+
+    @include mq($from: desktop) {
+      @include font-size(22px);
+    }
+  }
+
+  .price {
+
+    @include mq($from: mobile) {
+      @include font-size(16px);
+    }
+
+    @include mq($from: tablet) {
+      @include font-size(20px);
+    }
+
+    color: $global-orange;
+
+    &--before {
+
+      @include mq($until: mobile) {
+        display: none;
+      }
+
+      @include font-size(12px);
+
+      @include mq($from: desktop) {
+        @include font-size(14px);
+      }
+    }
+  }
+
+  .currency {
+
+    @include font-size(12px);
+
+    @include mq($from: desktop) {
+      @include font-size(14px);
+    }
+  }
+}

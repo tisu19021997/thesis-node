@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 
-const indexRouter = require('./routes/index');
+const homeRouter = require('./routes/home.index');
 const usersRouter = require('./routes/users');
 
 const app = express();
@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+app.use('/', homeRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
@@ -61,6 +61,5 @@ db.on('err', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
   console.log('Connected to database');
 });
-
 
 module.exports = app;

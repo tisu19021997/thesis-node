@@ -1,0 +1,86 @@
+/* ==========================================================================
+   #SECTION
+   ========================================================================== */
+
+
+.c-section {
+  @include inuit-clearfix();
+
+  background-color: $global-white;
+  overflow: hidden;
+
+  @include mq($until: desktop) {
+    padding: $inuit-global-spacing-unit/2;
+  }
+
+  .title {
+
+    padding-top: $inuit-global-spacing-unit/2;
+    padding-bottom: $inuit-global-spacing-unit/2;
+
+    > h2 {
+      margin-bottom: 0;
+
+      @include mq($from: desktop) {
+        @include font-size(24px);
+      }
+    }
+  }
+
+  &.w-separator {
+    margin-bottom: 24px;
+
+    @include mq($until: desktop) {
+      margin-bottom: 6px;
+    }
+  }
+
+  &.w-gutter {
+    background-color: transparent;
+
+    > .c-section__wrapper {
+      justify-content: space-between;
+    }
+  }
+
+  &.w-same-height {
+
+    > .c-section__wrapper {
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+    }
+  }
+
+  &.w-padding {
+
+    &\@mobile {
+      @include mq(mobile) {
+        padding: $inuit-global-spacing-unit/2;
+      }
+    }
+
+    &\@desktop {
+      @include mq(desktop) {
+        padding: $inuit-global-spacing-unit;
+      }
+    }
+  }
+
+  &[class*="w-padding"] {
+
+    .title {
+      padding-top: 0;
+    }
+  }
+}
+
+.c-section__item {
+  background-color: $global-white;
+  //padding: $inuit-global-spacing-unit;
+
+  &.ads {
+    background-color: transparent;
+    padding: 0;
+  }
+}

@@ -1,0 +1,21 @@
+/*==========================================================================
+   #ADS
+   ========================================================================== */
+
+
+.c-ads {
+
+
+  &.w-separator {
+    margin-bottom: $inuit-global-spacing-unit/4;
+
+    @include mq($from: desktop) {
+      margin-bottom: $inuit-global-spacing-unit;
+    }
+
+  }
+
+  &.in-section {
+    margin-bottom: $inuit-global-spacing-unit/2;
+  }
+}

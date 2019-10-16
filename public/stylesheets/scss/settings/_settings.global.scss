@@ -1,0 +1,28 @@
+///* ========================================================================
+//   #GLOBAL
+//   ======================================================================== */
+
+// The global settings file contains any project-wide variables; things that
+// need to be made available to the entire codebase.
+
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
+// Standardise some UI treatments.
+
+$global-radius: 24px !default;
+$global-transition: all 300ms ease-in-out !default;
+
+$global-type: 'Lato', sans-serif;
+
+$global-red: #ff424f;
+$global-orange: #fd6600;
+$global-white: #fff;
+$global-gray: #999;
+$global-darkblue: #232f3e;
+$global-darkestblue: #131a22;
+
+$global-border-color: #dfe1e5;
+
+$global-bottom-z: -1;
+$global-between-z: 999;
+$global-top-z: 999;

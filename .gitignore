@@ -99,6 +99,10 @@ typings/
 # Development modules
 nodemon.json
 
-#jetbrain .idea
+# jetbrain .idea
 .idea
 .idea/
+
+# vscode
+.DS_Store
+.vscode/

@@ -1,0 +1,105 @@
+/* ==========================================================================
+   #COMPONENT
+   ========================================================================== */
+
+.slider {
+
+  .slick-dots {
+    bottom: 0;
+
+    li button {
+      &:before {
+          @include font-size(12px);
+      }
+    }
+  }
+
+  // remove the default bottom margin of slick
+  .slick-dotted {
+    &.slick-slider {
+      margin-bottom: 0;
+    }
+  }
+
+  .slick-arrow {
+    position: absolute;
+    z-index: $global-between-z;
+    border: none;
+
+    top: 0;
+    background: $global-darkblue;
+    color: $global-white;
+
+    @include mq(desktop) {
+      top: 50%;
+
+      i.medium {
+        @include font-size(24px);
+      }
+    }
+
+    &.right {
+      right: 0;
+    }
+
+    &.left {
+      left: 0;
+
+      @include mq(desktop) {
+        left: 24px;
+      }
+    }
+  }
+}
+
+.slick-slide {
+  margin-left: 0;
+  outline: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  .slick-list {
+    margin-left: 0;
+  }
+}
+
+// small gutter slider type
+
+.slider--small-gut {
+  .slick-slide {
+
+    margin-right: 12px;
+
+    @include mq($from: desktop) {
+      margin-right: 24px;
+    }
+  }
+
+  .slick-list {
+
+    margin-right: -12px;
+
+    @include mq($from: desktop) {
+      margin-right: -24px;
+    }
+  }
+}
+
+
+// large gutter slider type
+.slider--large-gut {
+  .slick-slide {
+
+    @include mq($from: mobile) {
+      margin-right: 24px;
+    }
+
+    .slick-list {
+      @include mq($from: mobile) {
+        margin-right: -24px;
+      }
+    }
+  }
+}

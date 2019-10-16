@@ -1,0 +1,58 @@
+extends ../wrapper/page
+
+block body
+  #main.o-wrapper(class='o-wrapper--flush@not-desktop')
+
+    // Category Slider
+    .c-section.w-separator(class='[ ] u-padding-vertical-small@mobile u-display-none@desktop')
+      .slider.js-slider-cat.cat
+
+        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
+          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
+            i.fas.fa-baby.large
+          p.u-txt--tiny(class='u-margin-bottom-small@mobile') Baby &amp; Mom
+        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
+          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
+            i.fas.fa-mobile-alt.large
+          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Mobile devices
+        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
+          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
+            i.fas.fa-air-freshener.large
+          p.u-txt--tiny.discount(class='u-margin-bottom-tiny@mobile') Electronic devices
+        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
+          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
+            i.fas.fa-ambulance.large
+          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Healthcare
+        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
+          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
+            i.fab.fa-android.large
+          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Android
+        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
+          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
+            i.fab.fa-apple.large
+          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Apple
+        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
+          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
+            i.fas.fa-mobile-alt.large
+          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Nokia
+
+    // Promotion
+    .c-section.w-separator(class='[ w-padding@desktop ]')
+      .o-list-inline.title
+        h2.u-h3.u-txt--w500.o-list-inline__item Promotion
+        a.o-list-inline__item.u-txt--small.u-fl--r.u-txt--blur(data-hover='darkblue', href='#') Shop now
+      .o-layout.slider.slider--small-gut(class='[ ]')
+        #promotion.o-layout__item
+          .c-product
+            .c-product__img
+              img(src='asset/img/sales4.jpg', alt='Product 1')
+              span.date 24/9 - 30/9
+          .c-product
+            .c-product__img
+              img(src='asset/img/sales3.jpg', alt='Product 1')
+              span.date 24/9 - 30/9
+          .c-product
+            .c-product__img
+              img(src='asset/img/sales4.jpg', alt='Product 1')
+              span.date 24/9 - 30/9
+

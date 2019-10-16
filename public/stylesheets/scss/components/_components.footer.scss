@@ -1,0 +1,26 @@
+/* ==========================================================================
+   #FOOTER
+   ========================================================================== */
+
+
+.c-footer {
+  background-color: $global-darkblue;
+  color: $global-white;
+}
+
+.c-footer__outer {
+  padding: $inuit-global-spacing-unit;
+}
+
+.c-footer__bottom {
+  background-color: $global-darkestblue;
+
+  @include mq($from: mobile) {
+    text-align: center;
+  }
+
+  .txt {
+    padding: 4px 0;
+  }
+
+}

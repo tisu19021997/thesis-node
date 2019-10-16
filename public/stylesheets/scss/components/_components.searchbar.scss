@@ -1,0 +1,74 @@
+/* ==========================================================================
+   #SEARCH-BAR
+   ========================================================================== */
+
+/**
+ * 1. Keep the search input width always equals to its container.
+ */
+
+.c-searchbar {
+  margin-top: $inuit-global-spacing-unit/2;
+
+  .c-searchbar__box {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background-color: $global-white;
+    border-radius: $global-radius;
+  }
+
+  [type="search"] {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 0 auto;
+    flex: 1 0 auto;
+    border: 1px solid $global-border-color;
+
+    @include mq($from: mobile) {
+      width: 100%;
+      /*[1]*/
+      padding: $inuit-global-spacing-unit/3 $inuit-global-spacing-unit/3 $inuit-global-spacing-unit/3 14px;
+      @include font-size(12px);
+    }
+
+    @include mq($from: tablet) {
+      @include font-size(14px);
+    }
+  }
+
+  .c-searchbar__button {
+    position: absolute;
+    right: 0;
+
+    .icon {
+      padding-right: 6px;
+    }
+
+    .fa-search {
+      color: $global-darkblue;
+    }
+
+  }
+
+  /**
+  * 1. Clear the additional space made by default padding and border.
+  */
+  [type="submit"] {
+    text-indent: -500px;
+    padding: 0;
+    /*[1]*/
+    border: none;
+    /*[1]*/
+  }
+
+  // .fa-search {
+  //   position: absolute;
+  //   right: 50%;
+  //   bottom: 50%;
+  //   -webkit-transform: translate(50%, 50%);
+  //   transform: translate(50%, 50%);
+  // }
+}

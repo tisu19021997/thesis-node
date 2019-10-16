@@ -1,0 +1,40 @@
+/* ==========================================================================
+   #COLUMN
+   ========================================================================== */
+
+/**
+ * Divide content into separated columns with equal gutter.
+ */
+
+.o-col {
+
+  display: table;
+
+  &--center {
+    margin: 0 auto;
+  }
+
+  &--small {
+
+    >.o-col__item {
+      padding: 0 12px;
+    }
+  }
+
+  &--medium {
+
+    >.o-col__item {
+      padding: 0 24px;
+    }
+  }
+}
+
+.o-col__item {
+
+  display: table-cell;
+
+
+  &.o-col__separator {
+    width: 10%;
+  }
+}

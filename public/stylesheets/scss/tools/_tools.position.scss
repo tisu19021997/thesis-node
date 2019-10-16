@@ -1,0 +1,22 @@
+///* ========================================================================
+//   #POSITION
+//   ======================================================================== */
+
+// Centering element with absolute position,
+// set `$h` to true for horizontal centering,
+// `$v` to true for vertical centering.
+@mixin abs-centering($h: true, $v: true) {
+  position: absolute;
+
+  @if ($h and $v) {
+    right: 50%;
+    bottom: 50%;
+    transform: translate(50%, 50%);
+  } @else if ($h) {
+    right: 50%;
+    transform: translate(50%, 0);
+  } @else if ($v) {
+    bottom: 50%;
+    transform: translate(0, -50%);
+  }
+}

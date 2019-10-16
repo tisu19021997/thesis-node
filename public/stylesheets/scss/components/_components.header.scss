@@ -1,0 +1,35 @@
+/* ==========================================================================
+   #HEADER
+   ========================================================================== */
+
+
+.c-header {
+  background-color: $global-darkblue;
+
+  padding: $inuit-global-spacing-unit/2;
+
+  @include mq($from: desktop) {
+    padding: $inuit-global-spacing-unit;
+  }
+
+  i {
+    color: $global-white;
+  }
+
+  .logo {
+
+    width: 24px;
+
+    @include mq($from: desktop) {
+      width: 36px;
+    }
+  }
+
+  .left {
+    float: left;
+  }
+
+  .right {
+    float: right;
+  }
+}

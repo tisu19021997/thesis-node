@@ -1,0 +1,40 @@
+/* ==========================================================================
+   #SIMPLE CAROUSEL
+   ========================================================================== */
+
+.o-carousel {
+
+  display: block;
+
+  overflow-x: auto;
+  white-space: nowrap;
+
+  &--small {
+
+    >.o-carousel__item {
+      padding: $inuit-global-spacing-unit/2;
+    }
+  }
+
+  &--medium {
+
+    >.o-carousel__item {
+      padding: $inuit-global-spacing-unit;
+    }
+  }
+}
+
+.o-carousel__item {
+
+  display: inline-block;
+
+  &:focus {
+    outline: none;
+  }
+
+  &.slick-slide {
+    padding-bottom: $inuit-global-spacing-unit/2;
+    padding-top: $inuit-global-spacing-unit/2;
+  }
+}
+
