@@ -52,6 +52,7 @@ app.listen(app.get('port'), () => {
 
 // mongodb connection
 
+/*
 mongoose.connect('mongodb://localhost/thesis', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -61,5 +62,6 @@ db.on('err', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
   console.log('Connected to database');
 });
+*/
 
 module.exports = app;

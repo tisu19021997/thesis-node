@@ -1,42 +1,74 @@
 extends ../wrapper/page
 
+//- #BLOCK: BODY
 block body
   #main.o-wrapper(class='o-wrapper--flush@not-desktop')
 
-    // Category Slider
-    .c-section.w-separator(class='[ ] u-padding-vertical-small@mobile u-display-none@desktop')
-      .slider.js-slider-cat.cat
+    //- Category Slider
+    if (mobile)
+      .c-section.w-separator(class='[ ] u-padding-vertical-small@mobile u-display-none@desktop')
+        .slider.js-slider-cat.cat
 
-        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
-          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
-            i.fas.fa-baby.large
-          p.u-txt--tiny(class='u-margin-bottom-small@mobile') Baby &amp; Mom
-        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
-          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
-            i.fas.fa-mobile-alt.large
-          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Mobile devices
-        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
-          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
-            i.fas.fa-air-freshener.large
-          p.u-txt--tiny.discount(class='u-margin-bottom-tiny@mobile') Electronic devices
-        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
-          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
-            i.fas.fa-ambulance.large
-          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Healthcare
-        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
-          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
-            i.fab.fa-android.large
-          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Android
-        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
-          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
-            i.fab.fa-apple.large
-          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Apple
-        .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
-          p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
-            i.fas.fa-mobile-alt.large
-          p.u-txt--tiny(class='u-margin-bottom-tiny@mobile') Nokia
+          .u-d-flex.u-txt--ac.u-fd--column.u-ai--center.item
+            p(class='u-margin-none@mobile u-margin-bottom-tiny@mobile')
+              i.fas.fa-baby.large
+            p.u-txt--tiny(class='u-margin-bottom-small@mobile') Baby &amp; Mom
 
-    // Promotion
+
+
+    //- Category and Ads
+    if (!mobile)
+      .o-layout.c-section.w-separator.w-gutter.w-same-height
+        .o-layout__item.c-section__wrapper
+          nav.c-nav.c-nav--list.c-nav--vertical.c-nav--multi-level.c-section__item(class='[ ] u-1/4')
+            ul.c-nav__wrapper.parent(data-nav-lv='0')
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Home Decoration
+                ul.c-nav__wrapper.child(data-nav-lv='1')
+                  li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                    a.u-txt--medium.u-txt--w500(href='#') Lights
+                    ul.c-nav__wrapper.child(data-nav-lv='2')
+                      li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                        a.u-txt--medium.u-txt--w500(href='#') Smart Lights
+                  li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                    a.u-txt--medium.u-txt--w500(href='#') Bulbs
+                    ul.c-nav__wrapper.child(data-nav-lv='2')
+                      li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                        a.u-txt--medium.u-txt--w500(href='#') Multicolor Bulbs
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Sports &amp; Outdoors
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Home &amp; Kitchen
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Clothing &amp; Shoes
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Kitchen &amp; Dining
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Backpacks &amp; Luggages
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Books &amp; Ebooks
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Movies &amp; Television
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Toy &amp; Games
+              li.u-txt--blur.c-nav__item(data-hover='darkblue')
+                a.u-txt--medium.u-txt--w500(href='#') Home Improvement
+          .c-section__item.ads(class='u-3/4')
+            .slider
+              div(class='js-slider-1p@desktop')
+                div
+                  a(href='#')
+                    img(src='')
+                div
+                  a(href='#')
+                    img(src='')
+                div
+                  a(href='#')
+                    img(src='')
+      script.
+        
+        
+    //- Promotion
     .c-section.w-separator(class='[ w-padding@desktop ]')
       .o-list-inline.title
         h2.u-h3.u-txt--w500.o-list-inline__item Promotion
@@ -45,14 +77,267 @@ block body
         #promotion.o-layout__item
           .c-product
             .c-product__img
-              img(src='asset/img/sales4.jpg', alt='Product 1')
+              img(src='', alt='Product 1')
               span.date 24/9 - 30/9
+
+
+    //- Hot Deals
+    .c-section.w-separator(class='[ w-padding@desktop ]')
+      .o-list-inline.title
+        h2.u-h3.u-txt--w500.o-list-inline__item Hot deals
+        a.o-list-inline__item.u-txt--small.u-fl--r.u-txt--blur(data-hover='darkblue', href='#') Shop now
+      .o-layout.slider.slider--small-gut(class='u-padding-bottom-small@mobile [ ]')
+        .js-slider-3m-5d.o-layout__item
           .c-product
             .c-product__img
-              img(src='asset/img/sales3.jpg', alt='Product 1')
-              span.date 24/9 - 30/9
+              img(src='asset/img/sample3.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -63%
+            .name Sample Product
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
           .c-product
             .c-product__img
-              img(src='asset/img/sales4.jpg', alt='Product 1')
-              span.date 24/9 - 30/9
+              img(src='asset/img/sample4.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -63%
+            .name Sample Product
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
+          .c-product
+            .c-product__img
+              img(src='asset/img/sample3.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -63%
+            .name Sample Product with A Very Long Name
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
+          .c-product
+            .c-product__img
+              img(src='asset/img/sample1.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -63%
+            .name Sample Product
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
+          .c-product
+            .c-product__img
+              img(src='asset/img/sample1.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -63%
+            .name Sample Product
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
+          .c-product
+            .c-product__img
+              img(src='asset/img/sample3.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -63%
+            .name Sample Product
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
+
+
+    //- Ads
+    .c-ads.w-separator(class='[ ]')
+      a.o-ratio(href='#', class='o-ratio--32:10')
+        img.o-ratio__content(src='', alt='Vòng xoay may mắn')
+
+
+    //- Recommendation
+    .c-section.w-separator(class='[ w-padding@desktop ]')
+      .o-list-inline.title
+        h2.u-h3.u-txt--w500.o-list-inline__item Just for you
+        a.o-list-inline__item.u-txt--small.u-fl--r.u-txt--blur(data-hover='darkblue', href='#') Shop now
+      .o-layout.slider.slider--small-gut(class='[ ]')
+        .o-layout__item.js-slider-3m-5d
+          .c-product
+            .c-product__img
+              img(src='asset/img/sample1.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -30%
+            .name Sample Product
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
+
+
+    //- One Sale Program
+    .c-section.w-separator(class='[ w-padding@desktop ]')
+      .o-list-inline.title
+        h2.u-h3.u-txt--w500.o-list-inline__item Big Sale
+        a.o-list-inline__item.u-txt--small.u-fl--r.u-txt--blur(data-hover='darkblue', href='#') Shop now
+      .o-layout.o-layout--small
+        .o-layout__item(class='u-1/3@desktop')
+          img(src='asset/img/sales2.jpg', alt='Like-new Iphone')
+        .o-layout__item.slider.slider--small-gut(class='u-2/3@desktop [ ]')
+          .o-carousel.o-carousel--small.u-d-block.js-slider-3m
+            .o-carousel__item.c-product.u-d-iblock(class='u-1/4@desktop')
+              .c-product__img
+                img(src='https://salt.tikicdn.com/cache/200x200/ts/product/f7/04/3f/9304613637d7575856d6dad4630b008f.jpg', alt='Product 1')
+                span.u-txt--tiny.discount -30%
+
+
+    //- History
+    .c-section.w-separator(class='[ w-padding@desktop ]')
+      .o-list-inline.title
+        h2.u-h3.u-txt--w500.o-list-inline__item Pick up where you left off
+        a.o-list-inline__item.u-txt--small.u-fl--r.u-txt--blur(data-hover='darkblue', href='#') All
+      .o-layout.slider.slider--small-gut(class='[ ]')
+        .o-layout__item.js-slider-3m-5d
+          .c-product
+            .c-product__img
+              img(src='asset/img/sample1.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -30%
+            .name Sample Product
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
+
+    //- Another random category
+    .c-section.w-separator(class='[ w-padding@desktop ]')
+      .o-list-inline.title
+        h2.u-h3.u-txt--w500.o-list-inline__item Gaming mouse
+        a.o-list-inline__item.u-txt--small.u-fl--r.u-txt--blur(data-hover='darkblue', href='#') All
+      .o-layout.slider.slider--small-gut(class='[ ]')
+        .o-layout__item.js-slider-3m-5d
+          .c-product
+            .c-product__img
+              img(src='asset/img/mouse1.jpg', alt='Product 1')
+              span.u-txt--tiny.discount -30%
+            .name Sample Product
+            .o-list-inline
+              .o-list-inline__item.price--before.u-txt--lt.u-txt--w500
+                span.currency $
+                | 7.99
+              .o-list-inline__item.price.u-txt--w500
+                span.currency $
+                | 7.99
+
+
+
+
+//- #BLOCK: SCRIPT-BODY
+block append script-body
+  script.
+
+    //- UI script
+    $(document).ready(function(){const t=$(".c-nav__item"),c=$(".c-nav.c-nav--multi-level"),i=c.outerHeight(),e=c.outerWidth();t.each(function(t){const c=$(this).find(".child").first();c.css("left",e).css("height",i+36).css("width",e+1),$(this).hover(function(t){c.addClass("active")},function(t){c.removeClass("active")})})}); 
+
+
+    //- category slider
+      $('.cat').slick({
+        slidesToShow: 6,
+        mobileFirst: true,
+        arrows: false,
+        draggable: true,
+        responsive: [
+          {
+            breakpoint: 740,
+            settings: {
+              arrows: true,
+              prevArrow: '<button type="button" class="left"><i class="fas fa-angle-left medium"></i></button>',
+              nextArrow: '<button type="button" class="right"><i class="fas fa-angle-right medium"></i></button>',
+            },
+          },
+        ],
+        });
+
+        //- 2 products per slide
+        $('#promotion').slick({
+          arrows: false,
+          infinite: false,
+          draggable: true,
+          mobileFirst: true,
+          slidesToShow: 1.5,
+          responsive: [
+            {
+              breakpoint: 980,
+              settings: {
+                arrows: true,
+                prevArrow: '<button type="button" class="left"><i class="fas fa-angle-left medium"></i></button>',
+                nextArrow: '<button type="button" class="right"><i class="fas fa-angle-right medium"></i></button>',
+                slidesToShow: 2,
+                infinite: true,
+                autoplay: true,
+                autoplaySpeed: 3000,
+              }
+            },
+          ]
+        });
+
+        $('.js-slider-3m-5d').slick({
+          arrows: false,
+          infinite: false,
+          mobileFirst: true,
+          slidesToShow: 2.5, // 3 slides and a half slide
+          draggable: true,
+          responsive: [
+            {
+              breakpoint: 980,
+              settings: {
+                arrows: true,
+                prevArrow: '<button type="button" class="left"><i class="fas fa-angle-left medium"></i></button>',
+                nextArrow: '<button type="button" class="right"><i class="fas fa-angle-right medium"></i></button>',
+                slidesToShow: 5,
+              }
+            },
+          ]
+        });
+
+        $('.js-slider-3m').slick({
+          arrows: false,
+          infinite: false,
+          mobileFirst: true,
+          slidesToShow: 2.5, // 3 slides and a half slide
+          draggable: true,
+          responsive: [
+            {
+              breakpoint: 980,
+              settings: "unslick"
+            },
+          ]
+        });
+
+        //- 5 products per slide
+        $('.js-slider-5p').slick({
+          arrows: false,
+          infinite: false,
+          slidesToShow: 4.5,
+          //slidesToScroll: 1,
+          mobileFirst: true,
+          draggable: true,
+        });
+
 

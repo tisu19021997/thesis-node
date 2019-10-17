@@ -1,10 +1,15 @@
 doctype html
-html
+<!--[if IE 8]>
+<html lang="en" class="lt-ie9">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en">
+<!--<![endif]-->
 
 
   head
-    title= title
-    
+    title= mobile
+
     // fix favicon error
     link(rel='shortcut icon' href='#')
 
@@ -13,86 +18,97 @@ html
     // stylesheets
     link(rel='stylesheet', href='/stylesheets/main.css') 
     link(rel='stylesheet', href='/font-awesome/css/all.css') 
-    link(rel='stylesheet', type='text/css', href='//cdn.jsdelivr.net/gh/kenwheeler/slick@1.8.1/slick/slick.css')
-    link(rel='stylesheet', type='text/css', href='//cdn.jsdelivr.net/gh/kenwheeler/slick@1.8.1/slick/slick-theme.css')
-    
-    
+    link(rel='stylesheet', href='/slick/slick-theme.min.css')
+    link(rel='stylesheet', href='/slick/slick.min.css')
+
+
 
     // script on head
     block script-head
-      
+
 
   body
 
     // header
     block header
       header.c-header
-        div(class='u-display-none@desktop')
-          .o-layout.o-layout--flush.u-d-flex.u-fw--wrap
+        if (mobile)
+          div
+            .o-layout.o-layout--flush.u-d-flex.u-fw--wrap
 
-            // hamburger menu
-            .o-layout__item.u-ai--center.u-jc--fs(class='u-1/4@mobile')
-              a(href='#')
-                i.fas.fa-bars.large
+              // hamburger menu
+              .o-layout__item.u-ai--center.u-jc--fs(class='u-1/4@mobile')
+                a(href='#')
+                  i.fas.fa-bars.large
 
-            // logo
-            .o-layout__item.u-txt--ac(class='u-1/2@mobile')
-              a(href='#top')
-                svg#Layer_1.logo(data-name='Layer 1', xmlns='http://www.w3.org/2000/svg', viewbox='0 0 365.9 480')
-                  defs
-                    style.
-                      .cls-1 {
-                      fill: #d88829;
-                      }
-                      .cls-2 {
-                      fill: #f1a814;
-                      }
-                  title logo-new
-                  path.cls-1(d='M800.2,840a136.8,136.8,0,0,1-12.8-11.2,134,134,0,0,1-27-39.1A129.3,129.3,0,0,1,749,741.9V525.6a82.2,82.2,0,0,0-7-29.2,80.2,80.2,0,0,0-73.2-47.3,80.2,80.2,0,0,0-74,49.1,79.4,79.4,0,0,0-6.3,31.2V688.7h56.4V529.4a24.1,24.1,0,0,1,7-16.8,23,23,0,0,1,16.8-7,24.1,24.1,0,0,1,9.3,1.8,26,26,0,0,1,7.6,5.1,25.5,25.5,0,0,1,4.9,7.2c2,4.3,1.5,2.2,2,7.3V740.1H537.1V529.4a130.8,130.8,0,0,1,38.5-93.1,133.2,133.2,0,0,1,41.8-28.1,131,131,0,0,1,51.3-10.4,131.8,131.8,0,0,1,120,77.5,130.3,130.3,0,0,1,11.4,47.9V840', transform='translate(-537.1 -360)')
-                  path.cls-2(d='M644.8,580.7V529.4a24.1,24.1,0,0,1,7-16.8,23,23,0,0,1,16.8-7,24.1,24.1,0,0,1,9.3,1.8,26,26,0,0,1,7.6,5.1,25.5,25.5,0,0,1,4.9,7.2c2,4.3,1.5,2.2,2,7.3V740.1h0V578.4c-.5-5.1,0-3-2-7.3a25.5,25.5,0,0,0-4.9-7.2,26,26,0,0,0-7.6-5.1,24.1,24.1,0,0,0-9.3-1.8,23,23,0,0,0-16.8,7,22.1,22.1,0,0,0-5.1,7.6,25.5,25.5,0,0,0-1.9,9.1m29.3-131.4-5.4-.2-5.5.2a131.5,131.5,0,0,0-87.6,38.5,129.6,129.6,0,0,0-28.2,41.8A132,132,0,0,0,537.1,580V529.4a130.8,130.8,0,0,1,38.5-93.1,133.2,133.2,0,0,1,41.8-28.1,131,131,0,0,1,51.3-10.4,131.8,131.8,0,0,1,120,77.5,130.3,130.3,0,0,1,11.4,47.9v51.4a130.3,130.3,0,0,0-11.4-47.9,131.3,131.3,0,0,0-114.6-77.4ZM588.4,688.7h56.4v51.4H588.4Z', transform='translate(-537.1 -360)')
-                  path.cls-2(d='M902.9,840a150.9,150.9,0,0,1-12.8-11.2,132.6,132.6,0,0,1-37.6-77.5V523.7l-.2-3a182.3,182.3,0,0,0-16-66.9,185,185,0,0,0-90.5-91.3,129.2,129.2,0,0,1,25.6-2.5A131.6,131.6,0,0,1,902.9,485.4V840', transform='translate(-537.1 -360)')
-            // shopping cart
-            .o-layout__item.u-txt--ar(class='u-1/4@mobile')
-              a.right
-                i.fas.fa-shopping-cart.large
+              // logo
+              .o-layout__item.u-txt--ac(class='u-1/2@mobile')
+                a(href='#top')
+                  svg#Layer_1.logo(data-name='Layer 1', xmlns='http://www.w3.org/2000/svg', viewbox='0 0 365.9 480')
+                    defs
+                      style.
+                        .cls-1 {
+                        fill: #d88829;
+                        }
+                        .cls-2 {
+                        fill: #f1a814;
+                        }
+                    title logo-new
+                    path.cls-1(d='M800.2,840a136.8,136.8,0,0,1-12.8-11.2,134,134,0,0,1-27-39.1A129.3,129.3,0,0,1,749,741.9V525.6a82.2,82.2,0,0,0-7-29.2,80.2,80.2,0,0,0-73.2-47.3,80.2,80.2,0,0,0-74,49.1,79.4,79.4,0,0,0-6.3,31.2V688.7h56.4V529.4a24.1,24.1,0,0,1,7-16.8,23,23,0,0,1,16.8-7,24.1,24.1,0,0,1,9.3,1.8,26,26,0,0,1,7.6,5.1,25.5,25.5,0,0,1,4.9,7.2c2,4.3,1.5,2.2,2,7.3V740.1H537.1V529.4a130.8,130.8,0,0,1,38.5-93.1,133.2,133.2,0,0,1,41.8-28.1,131,131,0,0,1,51.3-10.4,131.8,131.8,0,0,1,120,77.5,130.3,130.3,0,0,1,11.4,47.9V840', transform='translate(-537.1 -360)')
+                    path.cls-2(d='M644.8,580.7V529.4a24.1,24.1,0,0,1,7-16.8,23,23,0,0,1,16.8-7,24.1,24.1,0,0,1,9.3,1.8,26,26,0,0,1,7.6,5.1,25.5,25.5,0,0,1,4.9,7.2c2,4.3,1.5,2.2,2,7.3V740.1h0V578.4c-.5-5.1,0-3-2-7.3a25.5,25.5,0,0,0-4.9-7.2,26,26,0,0,0-7.6-5.1,24.1,24.1,0,0,0-9.3-1.8,23,23,0,0,0-16.8,7,22.1,22.1,0,0,0-5.1,7.6,25.5,25.5,0,0,0-1.9,9.1m29.3-131.4-5.4-.2-5.5.2a131.5,131.5,0,0,0-87.6,38.5,129.6,129.6,0,0,0-28.2,41.8A132,132,0,0,0,537.1,580V529.4a130.8,130.8,0,0,1,38.5-93.1,133.2,133.2,0,0,1,41.8-28.1,131,131,0,0,1,51.3-10.4,131.8,131.8,0,0,1,120,77.5,130.3,130.3,0,0,1,11.4,47.9v51.4a130.3,130.3,0,0,0-11.4-47.9,131.3,131.3,0,0,0-114.6-77.4ZM588.4,688.7h56.4v51.4H588.4Z', transform='translate(-537.1 -360)')
+                    path.cls-2(d='M902.9,840a150.9,150.9,0,0,1-12.8-11.2,132.6,132.6,0,0,1-37.6-77.5V523.7l-.2-3a182.3,182.3,0,0,0-16-66.9,185,185,0,0,0-90.5-91.3,129.2,129.2,0,0,1,25.6-2.5A131.6,131.6,0,0,1,902.9,485.4V840', transform='translate(-537.1 -360)')
+                    
+              // shopping cart
+              .o-layout__item.u-txt--ar(class='u-1/4@mobile')
+                a.right
+                  i.fas.fa-shopping-cart.large
 
-          // search-bar
-          form.c-searchbar.o-layout.o-layout--flush(method='get', role='search', accept-charset='utf-8')
-            .o-layout__item.c-searchbar__box
-              input(type='search', placeholder='Search', aria-label='Search')
-              .c-searchbar__button
-                span.icon
-                  i.fas.fa-search.medium
-                input(type='submit', tabindex='20', value='Go')
+            // search-bar
+            form.c-searchbar.o-layout.o-layout--flush(method='get', role='search', accept-charset='utf-8')
+              .o-layout__item.c-searchbar__box
+                input(type='search', placeholder='Search', aria-label='Search')
+                .c-searchbar__button
+                  span.icon
+                    i.fas.fa-search.medium
+                  input(type='submit', tabindex='20', value='Go')
 
-        div(class='u-display-none@mobile')
-  
+
     block body
 
     // script before end body
     block script-body
-      script(src='https://code.jquery.com/jquery-3.4.1.min.js', integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=', crossorigin='anonymous')
-      script(type='text/javascript', src='//cdn.jsdelivr.net/gh/kenwheeler/slick@1.8.1/slick/slick.min.js')
+      script(src='/jquery/jquery-3.4.1.min.js')
+      script(src='/slick/slick.min.js')
 
-      script.
-        // category slider
-        $('.cat').slick({
-          slidesToShow: 6,
-          mobileFirst: true,
-          arrows: false,
-          draggable: true,
-          responsive: [
-            {
-              breakpoint: 740,
-              settings: {
-                arrows: true,
-                prevArrow: '<button type="button" class="left"><i class="fas fa-angle-left medium"></i></button>',
-                nextArrow: '<button type="button" class="right"><i class="fas fa-angle-right medium"></i></button>',
-              },
-            },
-          ],
-        });
 
-  footer
+  footer.c-footer
     block footer
-    
+    .c-footer__outer
+      .o-col.o-col--small.o-col--center(class='[ ]')
+        .o-col__item
+          ul.o-list-bare
+            li.o-list-bare__item.parent
+              | Get to know us
+            li.o-list-bare__item.child Career
+            li.o-list-bare__item.child About Us
+            li.o-list-bare__item.child Policy
+        .o-col__item.o-col__separator
+        .o-col__item
+          ul.o-list-bare
+            li.o-list-bare__item.parent Let Us Help You
+            li.o-list-bare__item.child Your Account
+            li.o-list-bare__item.child Your Order
+            li.o-list-bare__item.child Manage Your Contents and Devices
+        .o-col__item.o-col__separator
+        .o-col__item
+          ul.o-list-bare
+            li.o-list-bare__item.parent
+              | Get to know us
+            li.o-list-bare__item.child Career
+            li.o-list-bare__item.child About Us
+            li.o-list-bare__item.child Policy
+        .o-col__item.o-col__separator
+    .c-footer__bottom
+      .txt.u-txt--blur &copy; 1996-2019, Xyz.com, Inc. or its affiliates
+
+
