@@ -8,6 +8,7 @@ router.get('/', (req, res) => {
   const md = new MobileDetect(req.headers['user-agent']);
   res.render('page/home', {
     mobile: !!md.mobile(),
+    n: 0, // variable for development usage
   });
 });
 
