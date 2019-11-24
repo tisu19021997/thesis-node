@@ -8,8 +8,8 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 
-const homeRouter = require('./routes/home.index');
-const usersRouter = require('./routes/users');
+const homeRouter = require('./routes/home');
+const productRouter = require('./routes/product');
 
 const app = express();
 
@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', homeRouter);
-app.use('/users', usersRouter);
+app.use('/product', productRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -52,7 +52,6 @@ app.listen(app.get('port'), () => {
 
 // mongodb connection
 
-/*
 mongoose.connect('mongodb://localhost/thesis', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -62,6 +61,6 @@ db.on('err', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
   console.log('Connected to database');
 });
-*/
+
 
 module.exports = app;

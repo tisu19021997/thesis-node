@@ -1,0 +1,316 @@
+extends ../wrapper/page
+
+append header
+    //- #CATEGORY
+    section.c-section(data-section='Category List')
+        .c-cat-list.c-cat-list--horizontal.c-cat-list--dark(class='[ ]')
+            ul.o-carousel.o-carousel--8col.o-carousel--small.u-margin-bottom-none(class='[ ]')
+                each category in categories
+                    li.o-carousel__item.c-cat-list__item.u-txt-align-center(id=category._id)
+                        a.c-cat-list__item-detail(href='/category/#{category.name}')
+                            i(class=category.iconClass + ' [ large ]', title=category.name)
+                            |#{category.name}
+    //- /Category
+
+
+
+
+
+//- #BLOCK: BODY
+block body
+
+
+    //- #MAIN CONTENT
+    .o-wrapper.u-ph-0
+
+        main(data-section="Main Content")
+
+
+            //- #PREVIEW PRODUCT
+            section.c-section(data-section='Product Preview')
+
+
+                //- #BREADCRUMB
+                .c-breadcrumb
+                    each categoryList in product.categories
+                        each category in categoryList
+                            span.c-breadcrumb__child(data-hover='darkblue')
+                                a(href='/category/' + category)
+                                    | #{category}
+
+
+                .o-layout.o-layout--small(class='[ ]')
+
+                    //-#IMAGES PRODUCT
+                    section.o-layout__item.u-margin-top(class='u-3/10', data-section='Product Images')
+                        .c-slider
+                            .c-slider__screen.c-slider__w-img.js-slider-screen-1d
+                                .c-slider__screen-item
+                                    img(data-id='1', data-lazy=product.imUrl, alt=product.name)
+                                .c-slider__screen-item
+                                    img(data-id='2', data-lazy=product.imUrl, alt=product.name)
+                                .c-slider__screen-item
+                                    img(data-id='3', data-lazy=product.imUrl, alt=product.name)
+
+                            .c-slider__nav.c-slider__w-img.js-slider-nav-3d
+                                .c-slider__nav-item
+                                    img(data-lazy=product.imUrl)
+                                .c-slider__nav-item
+                                    img(data-lazy=product.imUrl)
+                                .c-slider__nav-item
+                                    img(data-lazy=product.imUrl)
+
+
+                    //-#DETAIL PRODUCT
+                    section.o-layout__item(class='u-4/10 u-push-1/20', data-section='Product Detail')
+
+                        //-#NAME AND CATEGORY
+                        .u-txt--title.u-txt--dark.u-txt--bold.u-margin-bottom-small=product.name
+
+                        //-#SMALL PRODUCT DETAIL
+                        .u-margin-top-small.u-margin-bottom-tiny.u-cf
+                            //-#BRAND NAME
+                            span.u-txt--tiny(class='[ ]')
+                                | Brand:
+                                |
+
+                            //- If the product has a brand
+                            if (product.brand)
+                                span.u-txt--bright.u-txt--xbold(class='[ ]')=product.brand
+
+
+                            //-#RATING AND RATING COUNTER
+                            .u-float-right.u-d-flex.u-fd--column(class='[ ]')
+                                .star
+                                    i.fas.fa-star.tiny.rect(class='[ ]', data-rating='1')
+                                    i.fas.fa-star.tiny.rect(class='[ ]', data-rating='2')
+                                    i.fas.fa-star.tiny.rect(class='[ ]', data-rating='3')
+                                    i.fas.fa-star.tiny.rect(class='[ ]', data-rating='4')
+                                    i.fas.fa-star.tiny.rect(class='[ ]', data-rating='5')
+                                span.u-txt--tiny.u-txt--light(class='[ ]')=product.rating
+
+
+                        //-/Small product detail
+                        hr
+                        //-#OPTION PRODUCT
+                        if(product.options)
+                            .c-option.c-option--bordered(class='[ ]')
+                                p.c-option__detail
+                                    | Color:
+                                    span.c-option__value White Black
+                                ul.o-layout.o-carousel.o-carousel--8col.o-carousel--tiny.c-option__control(class='[ ]')
+                        //-/Product option
+
+
+
+
+                        //-#DESCRIPTION PRODUCT
+                        section.u-cf(data-section='Product Information')
+                            ul.u-txt-12.u-margin-bottom-none.u-margin-left-small
+                                li
+                                    span=product.description
+
+                            a.u-float-left.u-txt-10.u-txt-underline(href='#0')
+                                span
+                                    i.fas.fa-caret-down
+                                    | More
+                        //-/Product Description
+
+
+                    //-/Product Detail
+
+
+
+
+                    //-#CTA AND RECOMMENDATION
+                    section.o-layout__item(class='u-2/10 u-push-1/10', data-section='Call to Action')
+                        .o-list-inline
+                            .o-list-inline__item.t-price.u-txt--larger
+                                span.u-txt-16 $
+                                | #{product.price}
+                            //.o-list-inline__item.t-price--before.u-txt-linethrough.u-txt--light
+                            //    span.u-txt-12 $
+                            //    | 7.99
+
+
+                        .c-option.c-option--control.u-margin-top-small(class='[ ]')
+                            .c-option__board
+                                label.u-txt--blur.u-txt-12.u-mr-6 Quantity:
+                                input#qty.js-option-screen(type='number', min='0', value='1')
+
+                        //-#CTA
+                        .u-d-flex.u-fd--column.u-margin-top.u-margin-bottom-large
+                            button.c-btn.c-btn--cta.c-btn--rounded.c-btn--type-large.u-flex-1.u-margin-bottom-small(class='[ ]', type='submit', title='Buy Now') Buy Now
+                            button.c-btn.c-btn--primary.c-btn--rounded.c-btn--type-large.u-flex-1(class='[ ]', type='button', title='Add to Cart') Add to Cart
+                        hr
+
+                        //-#SAME BRAND
+                        section.c-section(data-section='Same Brand Products')
+                            .c-section__title.c-section__title--no-margin(class='[ ]')
+                                | From our brand
+                            ul.o-list-bare
+                                li.o-media.c-product.c-product--secondary(class='[ ]')
+                                    img.o-media__img.c-product__img.u-w--30.u-mr-6( alt='Product 1')
+                                    .o-media__body
+                                        .c-product__name.u-txt--bold
+                                            | DualShock 4 Wireless Controller
+                                            | for PlayStation...
+                                        .c-product__rating
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='1')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='2')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='3')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='4')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='5')
+                                        .c-price.c-price--small(class='[ ]')
+                                            .c-price__price
+                                                span.c-price__currency $
+                                                | 30.00
+                                            .c-price__price--secondary
+                                                span.c-price__currency $
+                                                | 7.99
+                                li.o-media.c-product.c-product--secondary(class='[ ]')
+                                    img.o-media__img.c-product__img.u-w--30.u-mr-6( alt='Product 1')
+                                    .o-media__body
+                                        .c-product__name.u-txt--bold
+                                            | DualShock 4 Wireless Controller
+                                            | for PlayStation...
+                                        .c-product__rating
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='1')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='2')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='3')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='4')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='5')
+                                        .c-price.c-price--small(class='[ ]')
+                                            .c-price__price
+                                                span.c-price__currency $
+                                                | 30.00
+                                            .c-price__price--secondary
+                                                span.c-price__currency $
+                                                | 7.99
+                                li.o-media.c-product.c-product--secondary(class='[ ]')
+                                    img.o-media__img.c-product__img.u-w--30.u-mr-6( alt='Product 1')
+                                    .o-media__body
+                                        .c-product__name.u-txt--bold
+                                            | DualShock 4 Wireless Controller
+                                            | for PlayStation...
+                                        .c-product__rating
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='1')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='2')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='3')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='4')
+                                            i.fas.fa-star.tiny.rect(class='[ ]', data-rating='5')
+                                        .c-price.c-price--small(class='[ ]')
+                                            .c-price__price
+                                                span.c-price__currency $
+                                                | 30.00
+                                            .c-price__price--secondary
+                                                span.c-price__currency $
+                                                | 7.99
+                        //-/Same brand
+                    //-/Cta and Recommendations
+            //-/Product Preview
+
+
+
+            //- #BUNDLE
+            section.c-section(class='u-6/10', data-section='Product Bundle')
+
+                .c-section__title.c-section__title--no-margin(class='[ ]')
+                    | Usually bought together
+                .c-section__content
+                    .o-layout.o-layout--tiny(class='[ ]')
+                        .o-layout__item(class='u-2/3')
+
+
+                            ul.c-bundle.u-m-0
+                                .o-layout.o-layout--flush(class='[ ]')
+                                    li.o-layout__item.c-bundle__product(id=product.asin)
+                                        span
+                                            a(href='/product/' + product.asin)
+                                                img.c-bundle__img(src=product.imUrl, title=product.name)
+                                        span.c-bundle__separator +
+
+                                    each product, index in boughtTogether
+                                        li.o-layout__item.c-bundle__product(id=product.asin)
+                                            span
+                                                a(href='/product/' + product.asin)
+                                                    img.c-bundle__img(src=product.imUrl, title=product.name)
+                                            if (index < boughtTogether.length - 1)
+                                                span.c-bundle__separator +
+                            // /Bundle
+
+
+                        .o-layout__item(class='u-1/3')
+                            .u-txt--bold.u-txt-14
+                                | Total:
+                                span.c-price.c-price--small(class='[ ]')
+                                    span.c-price__price
+                                        span.c-price__currency $
+                                        | 25.98
+                            button.c-btn.c-btn--cta.c-btn--rounded.c-btn--type-large.c-btn--stretch.u-mt-12(class='[ ]')
+                                | Add Both to Cart
+                    form.o-layout.o-layout--tiny.u-mt-12(class='[ ]')
+                        .o-layout__item(class='u-2/3')
+                            ul.o-list-bare
+                                li.o-list-bare__item.u-pos-relative
+                                    input(type='checkbox', name='1', value='1')
+                                    label.u-txt-14(for='1')
+                                        | DualShock 4 Wireless Controller for PlayStation -
+                                        | Dark Blue
+                                        span.c-price.c-price--small.u-pos-absolute.u-pos-left-100
+                                            span.c-price__price
+                                                span.c-price__currency $
+                                                | 10.99
+                                li.o-list-bare__item.u-pos-relative
+                                    input(type='checkbox', name='2', value='2', checked='')
+                                    label.u-txt-14(for='2')
+                                        span.u-txt--bold Current:
+                                        | TriShock 2
+                                        |                                         Wireless Controller for Xbox - Sky Blue
+                                        span.c-price.c-price--small.u-pos-absolute.u-pos-left-100
+                                            span.c-price__price
+                                                span.c-price__currency $
+                                                | 14.99
+                                li.o-list-bare__item.u-pos-relative
+                                    input(type='checkbox', name='3', value='3')
+                                    label.u-txt-14(for='3')
+                                        | DualShock 4 Wireless Controller for
+                                        | PlayStation
+                                        span.c-price.c-price--small.u-pos-absolute.u-pos-left-100
+                                            span.c-price__price
+                                                span.c-price__currency $
+                                                | 16.99
+
+
+
+
+
+
+
+//- #BLOCK: SCRIPT-BODY
+append script-body
+    script.
+
+
+        $('.js-slider-screen-1d')
+            .slick({
+              slidesToShow: 1,
+              slidesToScroll: 1,
+              arrows: false,
+              fade: false,
+              infinite: false,
+              useTransform: true,
+              speed: 200,
+              cssEase: 'cubic-bezier(0.77, 0, 0.18, 1)',
+              asNavFor: '.js-slider-nav-3d'
+        })
+
+        $('.js-slider-nav-3d')
+          .slick({
+            slidesToShow: 3,
+            slidesToScroll: 1,
+            dots: false,
+            focusOnSelect: true,
+            infinite: false,
+            asNavFor: '.js-slider-screen-1d',
+        })

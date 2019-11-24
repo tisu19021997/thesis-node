@@ -1,0 +1,196 @@
+extends ../wrapper/page
+
+//- #BLOCK: BODY
+block body
+
+
+    //- #HERO BANNER
+    .c-hero
+    .c-hero__wrapper.c-slider.js-slider-hero
+      .c-hero__banner
+        img.c-hero__banner-img(src='/img/main-banner-1.png', alt='Holiday Sales', title='Holiday Sales')
+        .c-hero__text.u-mt-48.u-w--100
+          .u-txt-40.u-txt--hairline Happy Holiday Deals
+            div
+              | on
+              |
+              span Laptop
+          .u-txt-20.u-txt--bold.u-mt-12 Nov 30 - Dec 12
+          button.c-hero__cta.c-btn.c-btn--primary.c-btn--rounded.u-txt-12.u-mt-36(class='[ ]', title='Shop') Shop Now
+      .c-hero__banner
+        img.c-hero__banner-img(src='/img/main-banner-2.jpg', alt='Holiday Sales', title='Holiday Sales')
+        .c-hero__text.u-mt-48.u-w--100
+          .u-txt-40.u-txt--hairline Happy Holiday Deals
+            div
+              | on
+              |
+              span Home Decor
+          .u-txt-20.u-txt--bold.u-mt-12 Dec 1 - Dec 5
+          button.c-hero__cta.c-btn.c-btn--primary.c-btn--rounded.u-txt-12.u-mt-36(class='[ ]', title='Shop') Shop Now
+    //- /Hero Banner
+
+
+
+    //- #MAIN CONTENT
+    #main.o-wrapper.u-ph-0
+
+
+        //- #CATEGORY RECOMMENDATIONS
+        section.c-section(data-section='Category Recommendation')
+          .c-section__title.c-section__title--no-margin(class='[ ]')
+            | Recommendation for you, Quang
+            a.u-txt-12.u-txt--blur.u-float-right.u-txt--light.u-txt-underline(href='#0', data-hover='darkblue')
+          .c-section__content.c-slider.c-slider--small-gut.c-slider--same-h.c-slider--right-dots.js-slider-3d-25m(class='[ ]')
+            .u-pos-relative
+              .u-pos-absolute.u-txt-22.u-txt--bold.u-ml-12.u-mt-12.u-w--33
+                | Electronic Devices
+              a.u-pos-absolute.u-pos-bot-0.u-txt-10.u-txt-underline.u-txt--light.u-ml-12.u-mb-12(href='#0')
+                | More
+              img.u-w--100(src='/img/banner.png', alt='Category Banner')
+            .u-pos-relative
+              .u-pos-absolute.u-txt-22.u-txt--bold.u-ml-12.u-mt-12.u-w--33
+                | Smart Watch
+              a.u-pos-absolute.u-pos-bot-0.u-txt-10.u-txt-underline.u-txt--light.u-ml-12.u-mb-12(href='#0')
+                | More
+              img.u-w--100(src='/img/banner2.png', alt='Category Banner')
+            .u-pos-relative
+              .u-pos-absolute.u-txt-22.u-txt--bold.u-ml-12.u-mt-12.u-w--33
+                | Home Decoration
+              a.u-pos-absolute.u-pos-bot-0.u-txt-10.u-txt-underline.u-txt--light.u-ml-12.u-mb-12(href='#0')
+                | More
+              img.u-w--100(src='/img/banner1.png', alt='Category Banner')
+            .u-pos-relative
+              .u-pos-absolute.u-txt-22.u-txt--bold.u-ml-12.u-mt-12.u-w--33
+                | Home Equipment
+              a.u-pos-absolute.u-pos-bot-0.u-txt-10.u-txt-underline.u-txt--light.u-ml-12.u-mb-12(href='#0')
+                | More
+              img.u-w--100(src='/img/banner4.jpg', alt='Category Banner')
+            .u-pos-relative
+              .u-pos-absolute.u-txt-22.u-txt--bold.u-ml-12.u-mt-12.u-w--33
+                | Office Furniture
+              a.u-pos-absolute.u-pos-bot-0.u-txt-10.u-txt-underline.u-txt--light.u-ml-12.u-mb-12(href='#0')
+                | More
+              img.u-w--100(src='/img/banner3.jpg', alt='Category Banner')
+          //- Slider dots container
+          .c-section__dots
+        //- /Category Recommendations
+
+
+
+
+        //- #HISTORY
+        section.c-section(data-section='History')
+          .c-section__title.c-section__title--no-margin(class='[ ]') Pick up where you left off
+          .c-section__content.c-slider.c-slider--tiny-gut.c-slider--right-dots.js-slider-4d-35m.u-ph-48(class='[ ]')
+
+
+            //- #SLIDER
+            each product in products
+                a.c-product(href='/product/' + product.asin,data-id=product._id, data-asin=product.asin)
+
+                  .c-product__img
+                    img(data-lazy=product.imUrl, alt=product.imUrl)
+
+                  .c-product__name=product.title
+
+                  .c-product__rating
+                    span
+                      i.fas.fa-star.tiny.rect(class='[ ]', data-rating='1')
+                      i.fas.fa-star.tiny.rect(class='[ ]', data-rating='2')
+                      i.fas.fa-star.tiny.rect(class='[ ]', data-rating='3')
+                      i.fas.fa-star.tiny.rect(class='[ ]', data-rating='4')
+                      i.fas.fa-star.tiny.rect(class='[ ]', data-rating='5')
+                    span.u-txt-12
+                      | 12,345 ratings
+
+                  .c-price
+                    span.c-price__price
+                      span.c-price__currency $
+                      |#{product.price}
+                    if (product.priceAfter)
+                        span.c-price__price--secondary
+                          span.c-price__currency $
+
+            //- /Silder
+
+
+          //- Slider dots container
+          .c-section__dots
+
+
+
+
+
+//- #BLOCK: SCRIPT-BODY
+append script-body
+  script.
+
+
+    //- Hero slider
+        $('.js-slider-hero').slick({
+            lazyLoad: 'ondemand',
+            arrows: true,
+            dots: false,
+            prevArrow: '<button type="button" class="left"><i class="fas fa-angle-left [ large ]"></i></button>',
+            nextArrow: '<button type="button" class="right"><i class="fas fa-angle-right [ large ]"></i></button>',
+            slidesToShow: 1,
+            autoplay: true,
+            autoplaySpeed: 3000,
+            mobileFirst: true,
+            draggable: true,
+            cssEase: 'linear',
+            responsive: [{
+                breakpoint: 980,
+                settings: {
+                    arrows: false,
+                    dots: true,
+                    dotsClass: 'c-hero__dots slick-dots',
+                }
+            }, ]
+        });
+
+
+    //- 3desktop 2.5mobile
+        $('.js-slider-3d-25m').slick({
+            lazyLoad: 'ondemand',
+            slidesToShow: 1.5,
+            dots: false,
+            arrows: false,
+            infinite: false,
+            mobileFirst: true,
+            draggable: true,
+            responsive: [{
+                breakpoint: 980,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                    dots: true,
+                    dotsClass: 'c-section__dots slick-dots',
+                }
+            }, ]
+        });
+
+
+    //- 4desktop 3.5mobile
+        $('.js-slider-4d-35m ').slick({
+            slidesToShow: 2.5,
+            slidesToScroll: 2.5,
+            infinite: false,
+            mobileFirst: true,
+            draggable: true,
+            lazyLoad: 'ondemand',
+            dots: false,
+            arrows: false,
+            responsive: [{
+                breakpoint: 980,
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 4,
+                    dots: true,
+                    arrows: true,
+                    prevArrow: '<button type="button" class="left"><i class="fas fa-angle-left [ large ]"></i></button>',
+                    nextArrow: '<button type="button" class="right"><i class="fas fa-angle-right [ large ]"></i></button>',
+                    dotsClass: 'c-section__dots slick-dots',
+                }
+            }, ]
+        });

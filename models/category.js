@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = new mongoose.Schema({
   name: { type: String, required: true },
-  parent_id: [Number],
+  iconClass: String,
+  parent: String,
 });
 
 const Category = mongoose.model('Categories', Schema);
