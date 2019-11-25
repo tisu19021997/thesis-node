@@ -5,19 +5,19 @@ const Products = require('../models/product');
 const router = express.Router();
 
 /* GET home page. */
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
   const md = new MobileDetect(req.headers['user-agent']);
 
   if (!md.mobile()) {
-    Products.find({}, (err, products) => {
-      if (err) {
-        throw new Error(err);
-      }
-
-      res.render('page/home-desktop', {
-        products,
+    Products.find({})
+      .then((products) => {
+        res.json({
+          products,
+        });
+      })
+      .catch((err) => {
+        next(err);
       });
-    });
   }
 });
 

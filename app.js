@@ -1,6 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-require('dotenv').config();
+require('dotenv')
+  .config();
 const createError = require('http-errors');
+const cors = require('cors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -23,6 +25,7 @@ app.set('view engine', 'pug');
 app.set('port', process.env.PORT || 8081);
 
 app.use(logger('dev'));
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
