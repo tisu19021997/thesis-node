@@ -1,14 +1,12 @@
 const express = require('express');
-const Products = require('../models/product');
-
 const router = express.Router();
+const Categories = require('../models/category');
 
-/* GET home page. */
 router.get('/', (req, res, next) => {
-  Products.find({})
-    .then((products) => {
+  Categories.find({})
+    .then((categories) => {
       res.json({
-        products,
+        categories,
       });
     })
     .catch((err) => {

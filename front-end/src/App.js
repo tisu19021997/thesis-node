@@ -1,95 +1,60 @@
 import React from 'react';
 import './App.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { fab } from '@fortawesome/free-brands-svg-icons';
+import { fab, faApple } from '@fortawesome/free-brands-svg-icons';
 import {
-  faSearch, faGlobe, faUser, faShoppingCart,
+  faSearch,
+  faGlobe,
+  faUser,
+  faShoppingCart,
+  faAngleLeft,
+  faAngleRight,
+  faBasketballBall,
+  faTshirt,
+  faCameraRetro,
+  faLaptopCode,
+  faHeadphonesAlt,
+  faTv,
+  faTrain,
 } from '@fortawesome/free-solid-svg-icons';
 
-import axiosInstance from './helper/axios';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
 import Header from './components/Header';
-import SlickSlider from './components/SlickSlider';
+import Footer from './components/Footer';
+import Home from './components/page/Home';
+import ProductDetail from './components/page/ProductDetail';
+
+const axios = require('axios');
 
 // Add a Font-Awesome library
-library.add(fab, faSearch, faGlobe, faUser, faShoppingCart);
+library.add(fab, faSearch, faGlobe, faUser, faShoppingCart, faAngleLeft, faAngleRight, faApple,
+  faBasketballBall, faTshirt, faCameraRetro, faLaptopCode, faHeadphonesAlt, faTv, faTrain);
+
+// Axios defaults
+axios.defaults.baseURL = process.env.REACT_APP_SERVER_HOST || 'http://localhost:8081';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      products: [],
-    };
-
-  }
-
-  componentDidMount() {
-    axiosInstance.get('/')
-      .then((res) => {
-        const { products } = res.data;
-
-        this.setState({
-          products,
-        });
-      })
-      .catch((error) => {
-        throw new Error(error);
-      });
-  }
-
-
   render() {
-    const { products } = this.state;
-
-    const productList = products.map((product) => (
-      <div
-        className="c-product"
-      >
-        <div className="c-product__img">
-          <img src={product.imUrl} />
-        </div>
-      </div>
-    ));
-
-    console.log(this.settings);
     return (
+      <Router>
+        <div className="App">
 
-      // eslint-disable-next-line react/jsx-filename-extension
-      <div className="App ">
-        <Header />
+          <Header useCategoryList />
 
-        <SlickSlider settings={
-          {
-            slidesToShow: 2.5,
-            slidesToScroll: 2.5,
-            infinite: false,
-            mobileFirst: true,
-            draggable: true,
-            lazyLoad: 'ondemand',
-            dots: false,
-            arrows: false,
-            responsive: [
-              {
-                breakpoint: 980,
-                settings: {
-                  slidesToShow: 4,
-                  slidesToScroll: 4,
-                  dots: true,
-                  arrows: true,
-                  prevArrow: '<button type="button" class="left"><i class="fas fa-angle-left [ large ]"></i></button>',
-                  nextArrow: '<button type="button" class="right"><i class="fas fa-angle-right [ large ]"></i></button>',
-                  dotsClass: 'c-section__dots slick-dots',
-                },
-              },
-            ],
-          }
-        }
-          class="c-section__content c-slider [ c-slider--tiny-gut c-slider--right-dots ] u-ph-48"
-        >
-          {productList}
-        </SlickSlider>
+          <Switch>
 
-      </div>
+            <Route exact path="/" component={Home} />
+
+            <Route path="/product/:asin" component={ProductDetail} />
+
+          </Switch>
+
+          <Footer />
+
+
+        </div>
+      </Router>
     );
   }
 }
