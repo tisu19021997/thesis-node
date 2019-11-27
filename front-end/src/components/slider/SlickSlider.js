@@ -1,8 +1,6 @@
 import React from 'react';
 import Slider from 'react-slick';
 import PropTypes from 'prop-types';
-import NextArrow from './NextArrow';
-import PrevArrow from './PrevArrow';
 
 const SlickSlider = (props) => {
   const { children, className, settings, } = props;

@@ -78,7 +78,7 @@ class Home extends React.Component {
           >
             {historyProducts}
           </SlickSlider>
-          
+
         </Section>
       </Wrapper>
     );

@@ -7,7 +7,7 @@ const Product = (props) => {
 
   return (
     <Link
-      to={`/products/${product.asin}`}
+      to={`/product/${product.asin}`}
       className="c-product"
     >
 

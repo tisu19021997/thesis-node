@@ -1,19 +1,33 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import {
+  Tab,
+  Tabs,
+  TabList,
+  TabPanel,
+} from 'react-tabs';
+import axios from 'axios';
 import Wrapper from '../Wrapper';
 import Section from '../Section';
 import Breadcrumb from '../Breadcrumb';
 import ProductZoom from '../ProductZoom';
+import Bundle from '../Bundle';
+import ProductSlider from '../slider/ProductSlider';
+import PrevArrow from '../slider/PrevArrow';
+import NextArrow from '../slider/NextArrow';
 
-const axios = require('axios');
 
 class ProductDetail extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      ready: false,
       product: {},
+      alsoBought: {},
+      alsoViewed: {},
+      bundleProducts: {},
+      sameCategory: {},
+      ready: false,
     };
   }
 
@@ -21,12 +35,20 @@ class ProductDetail extends React.Component {
     const { match } = this.props;
     const { params } = match;
 
+    // Make a call to server to get the necessary data
+
     axios.get(`/product/${params.asin}`)
       .then((res) => {
-        const { product } = res.data;
+        const {
+          product, alsoBought, alsoViewed, bundleProducts, sameCategory,
+        } = res.data;
 
         this.setState({
           product,
+          alsoBought,
+          alsoViewed,
+          bundleProducts,
+          sameCategory,
           ready: true,
         });
       })
@@ -43,8 +65,22 @@ class ProductDetail extends React.Component {
       return false;
     }
 
-    const { product } = this.state;
+    const {
+      product,
+      bundleProducts,
+      alsoBought,
+      alsoViewed,
+      sameCategory,
+    } = this.state;
     const { categories } = product;
+    const sliderSettings = {
+      slidesToShow: 6,
+      slidesToScroll: 6,
+      arrows: true,
+      infinite: false,
+      prevArrow: <PrevArrow />,
+      nextArrow: <NextArrow />,
+    };
 
     return (
       <Wrapper className="u-ph-0">
@@ -245,89 +281,178 @@ class ProductDetail extends React.Component {
 
 
           {/* #BUNDLE PRODUCT */}
-          <Section title="Usually Bought Together" titleClass="c-section__title--no-margin">
+          <Section
+            className="u-6/10"
+            title="Usually Bought Together"
+            titleClass="c-section__title--no-margin"
+          >
 
-            <div className="o-layout [ o-layout--tiny ]">
-              <div className="o-layout__item u-2/3">
-                <ul className="c-bundle u-m-0">
-                  <div className="o-layout [ o-layout--flush ]">
-                    <li
-                      className="o-layout__item c-bundle__product [ c-bundle__product--disabled ]">
-                      <span>
-                        <Link to={`/product/${product.asin}`}>
-                          <img
-                            className="c-bundle__img"
-                            src={product.imUrl}
-                            alt="Sample Product"
-                          />
-                        </Link>
-                      </span>
-                      <span className="c-bundle__separator">+</span>
-                    </li>
-                  </div>
-                </ul>
-                {/* /Bundle */}
-              </div>
-              <div className="o-layout__item u-1/3">
-                <div className="u-txt--bold u-txt-14">
-                  Total:
-                  <span className="c-price [ c-price--small ]">
-                <span className="c-price__price">
-                  <span className="c-price__currency">$</span>25.98
-                </span>
-              </span>
-                </div>
-                <button
-                  className="c-btn [ c-btn--cta c-btn--rounded c-btn--type-large c-btn--stretch ] u-mt-12">
-                  Add Both to Cart
-                </button>
-              </div>
-            </div>
-            <form className="o-layout [ o-layout--tiny ] u-mt-12">
-              <div className="o-layout__item u-2/3">
-                <ul className="o-list-bare">
-                  <li className="o-list-bare__item u-pos-relative">
-                    <input type="checkbox" name={1} defaultValue={1} />
-                    <label htmlFor={1} className="u-txt-14">DualShock 4 Wireless Controller for
-                      PlayStation -
-                      Dark Blue
-                      <span className="c-price c-price--small u-pos-absolute u-pos-left-100">
-                    <span className="c-price__price">
-                      <span className="c-price__currency">$</span>10.99
-                    </span>
-                  </span>
-                    </label>
-                  </li>
-                  <li className="o-list-bare__item u-pos-relative">
-                    <input type="checkbox" name={2} defaultValue={2} defaultChecked />
-                    <label htmlFor={2} className="u-txt-14"><span
-                      className="u-txt--bold">Current: </span>TriShock 2
-                      Wireless Controller for Xbox - Sky Blue
-                      <span className="c-price c-price--small u-pos-absolute u-pos-left-100">
-                    <span className="c-price__price">
-                      <span className="c-price__currency">$</span>14.99
-                    </span>
-                  </span>
-                    </label>
-                  </li>
-                  <li className="o-list-bare__item u-pos-relative">
-                    <input type="checkbox" name={3} defaultValue={3} />
-                    <label htmlFor={3} className="u-txt-14">DualShock 4 Wireless Controller for
-                      PlayStation
-                      <span className="c-price c-price--small u-pos-absolute u-pos-left-100">
-                    <span className="c-price__price">
-                      <span className="c-price__currency">$</span>16.99
-                    </span>
-                  </span>
-                    </label>
-                  </li>
-                </ul>
-              </div>
-            </form>
+            <Bundle
+              bundleProducts={bundleProducts.products}
+              bundleProductIds={product.related.bought_together}
+              currentProduct={product}
+              totalPrice={bundleProducts.totalPrice}
+            />
+
           </Section>
-
-
           {/* /BUNDLE PRODUCT */}
+
+
+          <hr />
+
+
+          {/* #ViEWED ALSO VIEWED */}
+          {alsoViewed.length
+            ? (
+              <Section
+                title="Customers who viewed this item also viewed"
+                titleClass="c-section__title--no-margin"
+              >
+
+                <ProductSlider
+                  products={alsoViewed}
+                  settings={sliderSettings}
+                  className="c-slider--tiny-gut u-ph-48"
+                />
+
+              </Section>
+            )
+            : ''}
+          {/* /ViEWED ALSO VIEWED */}
+
+
+          {/* #TABS */}
+          <Tabs className="c-tab u-mt-36 u-mb-24">
+            <TabList className="c-tab__header u-border--m-blur">
+              <Tab
+                className="c-tab__header-name u-txt-14"
+                selectedClassName="active"
+              >
+                Description
+              </Tab>
+              <Tab
+                className="c-tab__header-name u-txt-14"
+                selectedClassName="active"
+              >
+                Additional Information
+              </Tab>
+              <Tab
+                className="c-tab__header-name u-txt-14"
+                selectedClassName="active"
+              >
+                Customer Q&A
+              </Tab>
+              <Tab
+                className="c-tab__header-name u-txt-14"
+                selectedClassName="active"
+              >
+                Customer Reviews
+              </Tab>
+            </TabList>
+
+
+            <div className="c-tab__content">
+
+              <TabPanel className="c-tab__content-item u-txt--normal u-txt-14 u-2/3">
+                {product.description}
+              </TabPanel>
+
+              <TabPanel className="c-tab__content-item u-txt--normal u-txt-14">
+                {/* Example Table */}
+                <div className="c-table">
+                  <div className="c-table__row">
+                    <div className="c-table__row-col c-table__attr">
+                      Package Dimensions
+                    </div>
+                    <div className="c-table__row-col c-table__value">
+                      13.6 x 6.6 x 1.9 inches
+                    </div>
+                  </div>
+                  <div className="c-table__row">
+                    <div className="c-table__row-col c-table__attr">
+                      Weight
+                    </div>
+                    <div className="c-table__row-col c-table__value">
+                      2.33 pounds
+                    </div>
+                  </div>
+                  <div className="c-table__row">
+                    <div className="c-table__row-col c-table__attr">
+                      Color
+                    </div>
+                    <div className="c-table__row-col c-table__value">
+                      Red/Blue/Green/Black
+                    </div>
+                  </div>
+                  <div className="c-table__row">
+                    <div className="c-table__row-col c-table__attr">
+                      Manufacturer
+                    </div>
+                    <div className="c-table__row-col c-table__value">
+                      Microsoft
+                    </div>
+                  </div>
+                  <div className="c-table__row">
+                    <div className="c-table__row-col c-table__attr">
+                      Status
+                    </div>
+                    <div className="c-table__row-col c-table__value">
+                      Out of Stock
+                    </div>
+                  </div>
+                </div>
+                {/* /Example Table */}
+              </TabPanel>
+
+              <TabPanel className="c-tab__content-item u-txt-14" />
+
+              <TabPanel className="c-tab__content-item u-txt-14" />
+
+            </div>
+          </Tabs>
+          {/* /TABS */}
+
+
+          {/* #BOUGHT ALSO BOUGHT */}
+          {alsoBought.length
+            ? (
+              <Section
+                title="Customers who bought this item also bought"
+                titleClass="c-section__title--no-margin"
+              >
+
+                <ProductSlider
+                  products={alsoBought}
+                  settings={sliderSettings}
+                  className="c-slider--tiny-gut u-ph-48"
+                />
+
+
+              </Section>
+            )
+            : ''}
+          {/* /BOUGHT ALSO BOUGHT */}
+
+
+          {/* #SAME CATGORY */}
+          {sameCategory.length
+            ? (
+              <Section
+                title="From the same category"
+                titleClass="c-section__title--no-margin"
+              >
+
+                <ProductSlider
+                  products={sameCategory}
+                  settings={sliderSettings}
+                  className="c-slider--tiny-gut u-ph-48"
+                />
+
+
+              </Section>
+            )
+            : ''}
+          {/* /SAME CATEGORY */}
 
         </main>
       </Wrapper>
@@ -335,4 +460,4 @@ class ProductDetail extends React.Component {
   }
 }
 
-export default ProductDetail;
+export default withRouter(ProductDetail);

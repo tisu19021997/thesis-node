@@ -36,9 +36,8 @@ class ProductZoom extends React.Component {
     const { productImages } = this.props;
 
     const imagesDOM = productImages.map((imgUrl, index) => (
-      <React.Fragment>
+      <React.Fragment key={index.toString()}>
         <div
-          key={index.toString()}
           className="c-slider__item"
         >
           <img src={imgUrl} alt="Product" />
