@@ -20,7 +20,7 @@ const ProductSlider = (props) => {
 };
 
 ProductSlider.propTypes = {
-  products: PropTypes.object.isRequired,
+  products: PropTypes.array.isRequired,
   settings: PropTypes.object.isRequired,
   className: PropTypes.string,
 };

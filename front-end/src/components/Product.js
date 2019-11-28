@@ -9,6 +9,7 @@ const Product = (props) => {
     <Link
       to={`/product/${product.asin}`}
       className="c-product"
+      replace
     >
 
       <div className="c-product__img">

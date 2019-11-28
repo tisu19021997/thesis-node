@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const flash = require('connect-flash');
 
 // authentication
 const passport = require('passport');
@@ -17,7 +18,7 @@ const passport = require('passport');
 const homeRouter = require('./routes/home');
 const productRouter = require('./routes/product');
 const categoryRouter = require('./routes/category');
-const loginRouter = require('./routes/login');
+const userRouter = require('./routes/user');
 
 const app = express();
 
@@ -49,10 +50,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(flash());
+
 app.use('/', homeRouter);
 app.use('/product', productRouter);
 app.use('/categories', categoryRouter);
-app.use('/login', loginRouter);
+app.use('/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

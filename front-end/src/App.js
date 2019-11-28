@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './App.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab, faApple } from '@fortawesome/free-brands-svg-icons';
@@ -18,6 +19,7 @@ import {
   faTrain,
 } from '@fortawesome/free-solid-svg-icons';
 
+import { withCookies, Cookies } from 'react-cookie';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import Header from './components/Header';
@@ -35,12 +37,49 @@ library.add(fab, faSearch, faGlobe, faUser, faShoppingCart, faAngleLeft, faAngle
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_HOST || 'http://localhost:8081';
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const { cookies } = props;
+    this.state = {
+      currentUser: cookies.get('user') || '',
+    };
+
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+  }
+
+  login(user) {
+    const { cookies } = this.props;
+
+    this.setState({
+      currentUser: user,
+    });
+    cookies.set('user', user);
+  }
+
+  logout() {
+    const { cookies } = this.props;
+
+    this.setState({
+      currentUser: '',
+    });
+    cookies.set('user', '');
+  }
+
   render() {
+    const { currentUser } = this.state;
+
     return (
       <Router>
         <div className="App">
 
-          <Header useCategoryList />
+          <Header
+            currentUser={currentUser}
+            login={this.login}
+            logout={this.logout}
+            useCategoryList
+          />
 
           <Switch>
 
@@ -59,4 +98,8 @@ class App extends React.Component {
   }
 }
 
-export default App;
+App.propTypes = {
+  cookies: PropTypes.instanceOf(Cookies).isRequired,
+};
+
+export default withCookies(App);

@@ -690,6 +690,14 @@ dd, ol, ul {
   margin-left: 24px;
 }
 
+/* line 1, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/generic/_generic.react.scss */
+.ReactModal__Body--open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
 /* ==========================================================================
    #PAGE
    ========================================================================== */
@@ -951,7 +959,8 @@ select {
 
 /* line 28, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="search"],
-[type="text"] {
+[type="text"],
+[type="password"] {
   background-color: #fff;
   border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -960,9 +969,10 @@ select {
   -o-border-radius: 3px;
 }
 
-/* line 37, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 38, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="search"][data-border="rounded"],
-[type="text"][data-border="rounded"] {
+[type="text"][data-border="rounded"],
+[type="password"][data-border="rounded"] {
   border-radius: 36px;
   -webkit-border-radius: 36px;
   -moz-border-radius: 36px;
@@ -970,10 +980,11 @@ select {
   -o-border-radius: 36px;
 }
 
-/* line 46, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 47, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="text"],
 [type="search"],
 [type="number"],
+[type="password"],
 select,
 textarea {
   border: 0.5px solid #dfe1e5;
@@ -981,22 +992,23 @@ textarea {
 }
 
 @media (min-width: 61.25em) {
-  /* line 46, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+  /* line 47, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
   [type="text"],
   [type="search"],
   [type="number"],
+  [type="password"],
   select,
   textarea {
     padding: 6px 6px 6px 12px;
   }
 }
 
-/* line 60, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 62, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="checkbox"] {
   opacity: .35;
 }
 
-/* line 63, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 65, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="checkbox"] + label {
   transition: opacity 300ms cubic-bezier(0.645, 0.045, 0.355, 1);
   -webkit-transition: opacity 300ms cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -1007,48 +1019,48 @@ textarea {
   font-weight: 300;
 }
 
-/* line 74, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 76, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="checkbox"]:checked {
   opacity: 1;
 }
 
-/* line 77, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 79, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="checkbox"]:checked + label {
   opacity: 1;
 }
 
-/* line 84, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 86, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 textarea {
   resize: none;
 }
 
 /* Pseudo elements */
-/* line 90, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 92, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::placeholder {
   color: #999;
   opacity: 1;
   /* Firefox */
 }
 
-/* line 95, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 97, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
   color: #999;
 }
 
-/* line 98, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 100, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::-moz-placeholder {
   /* Firefox 19+ */
   color: #999;
 }
 
-/* line 101, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 103, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 :-ms-input-placeholder {
   /* IE 10+ */
   color: #999;
 }
 
-/* line 104, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 106, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 :-moz-placeholder {
   /* Firefox 18- */
   color: #999;
@@ -5888,6 +5900,11 @@ progress::-moz-progress-bar {
   text-align: justify;
 }
 
+/* line 86, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+.u-txt-align-left {
+  text-align: left;
+}
+
 /* line 19, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/tools/_tools.helper.scss */
 .u-txt--hairline {
   font-weight: 100;
@@ -5938,22 +5955,22 @@ progress::-moz-progress-bar {
   font-weight: 950;
 }
 
-/* line 104, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+/* line 108, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
 .u-txt-linethrough {
   text-decoration: line-through;
 }
 
-/* line 108, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+/* line 112, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
 .u-txt-underline {
   text-decoration: underline;
 }
 
-/* line 114, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+/* line 118, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
 .u-txt--i {
   font-style: italic;
 }
 
-/* line 125, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+/* line 129, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
 .u-txt-truncate-1 {
   overflow: hidden;
   display: -webkit-box;
@@ -5961,7 +5978,7 @@ progress::-moz-progress-bar {
   -webkit-box-orient: vertical;
 }
 
-/* line 125, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+/* line 129, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
 .u-txt-truncate-2 {
   overflow: hidden;
   display: -webkit-box;
@@ -5969,7 +5986,7 @@ progress::-moz-progress-bar {
   -webkit-box-orient: vertical;
 }
 
-/* line 125, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+/* line 129, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
 .u-txt-truncate-3 {
   overflow: hidden;
   display: -webkit-box;
@@ -5977,7 +5994,7 @@ progress::-moz-progress-bar {
   -webkit-box-orient: vertical;
 }
 
-/* line 125, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+/* line 129, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
 .u-txt-truncate-4 {
   overflow: hidden;
   display: -webkit-box;

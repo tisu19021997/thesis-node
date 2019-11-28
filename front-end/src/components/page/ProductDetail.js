@@ -1,5 +1,4 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
 import {
   Tab,
   Tabs,
@@ -55,6 +54,32 @@ class ProductDetail extends React.Component {
       .catch((error) => {
         throw new Error(error.message);
       });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { match } = this.props;
+    const { params } = match;
+
+    if (prevProps.match.params !== params) {
+      axios.get(`/product/${params.asin}`)
+        .then((res) => {
+          const {
+            product, alsoBought, alsoViewed, bundleProducts, sameCategory,
+          } = res.data;
+
+          this.setState({
+            product,
+            alsoBought,
+            alsoViewed,
+            bundleProducts,
+            sameCategory,
+            ready: true,
+          });
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    }
   }
 
   render() {
@@ -460,4 +485,4 @@ class ProductDetail extends React.Component {
   }
 }
 
-export default withRouter(ProductDetail);
+export default ProductDetail;

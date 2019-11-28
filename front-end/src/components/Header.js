@@ -1,9 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Modal from 'react-modal';
+import axios from 'axios';
 
-const axios = require('axios');
+// bind modal to root, see http://reactcommunity.org/react-modal/accessibility/
+Modal.setAppElement('#root');
+
+const modalStyles = {
+  content: {
+    inset: '50% auto auto 50%',
+    width: '55%',
+    height: '45%',
+    transform: 'translate(-50%, -50%)',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, .35)',
+  },
+};
 
 class Header extends React.Component {
   constructor(props) {
@@ -11,7 +26,15 @@ class Header extends React.Component {
 
     this.state = {
       categories: [],
+      isLoginModalOpen: false,
     };
+
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+    this.register = this.register.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   componentDidMount() {
@@ -28,9 +51,96 @@ class Header extends React.Component {
       });
   }
 
+  handleInputChange(event) {
+    const { target } = event;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const { name } = target;
+
+    this.setState({
+      [name]: value,
+    });
+  }
+
+  login(event) {
+    event.preventDefault();
+    const { usernameLogin, passwordLogin } = this.state;
+    const { login } = this.props;
+
+    if (usernameLogin && passwordLogin) {
+      axios.post('/user/login', {
+        username: usernameLogin,
+        password: passwordLogin,
+      })
+        .then((res) => {
+          const { data } = res;
+          const { status } = data;
+
+          // login failed
+          if (status === 404) {
+            return false;
+          }
+
+          // login success
+          const { user } = data;
+          login(user);
+
+          // close the modal
+          this.closeModal();
+
+          return true;
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    }
+
+    return false;
+  }
+
+  logout() {
+    const { logout } = this.props;
+    logout();
+  }
+
+  register(event) {
+    event.preventDefault();
+    const { usernameRegister, passwordRegister } = this.state;
+
+    if (usernameRegister && passwordRegister) {
+      axios.post('/user/register', {
+        username: usernameRegister,
+        password: passwordRegister,
+      })
+        .then((res) => {
+          return true;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    return false;
+  }
+
+  openModal(e) {
+    e.preventDefault();
+    this.setState({
+      isLoginModalOpen: true,
+    });
+  }
+
+  closeModal() {
+    this.setState({
+      isLoginModalOpen: false,
+    });
+  }
+
   render() {
-    const { categories } = this.state;
-    const { useCategoryList } = this.props;
+    const {
+      categories,
+      isLoginModalOpen,
+    } = this.state;
+    const { useCategoryList, currentUser } = this.props;
 
     const categoriesItem = categories.map((category, index) => (
       <li
@@ -61,7 +171,6 @@ class Header extends React.Component {
 
     return (
       <header className="c-header">
-
 
         <nav className="c-header__topnav">
           <div className="c-header__topnav-wrapper">
@@ -152,26 +261,31 @@ class Header extends React.Component {
               <FontAwesomeIcon icon="globe" className="large" />
               <span className="c-header__nav-tool-text">English</span>
             </a>
-            <a
-              href="/"
+            <div
               className="u-margin-horizontal-tiny"
               data-display="inline-flex"
               data-hover="darkblue"
             >
               <FontAwesomeIcon icon="user" className="large" />
-              <span className="c-header__nav-tool-text">
-                <span>
-                Hello,
-                  <span
-                    className="u-txt--bold"
-                  >
-                    Karl Max
-                  </span>
-                </span>
-                <br />
-              Account Settings
-              </span>
-            </a>
+              {!currentUser
+                ? (
+                  <a onClick={this.openModal}>
+                    <span className="c-header__nav-tool-text">Log-in</span>
+                  </a>)
+                : (
+                  <React.Fragment>
+                    <div className="c-header__nav-tool-text">{`Hello, ${currentUser}`}</div>
+                    <a
+                      onClick={this.logout}
+                      className="c-header__nav-tool-text u-txt-underline"
+                    >
+                      Log-out
+                    </a>
+                  </React.Fragment>
+                )
+              }
+            </div>
+
             <a
               href="/"
               className="c-header__cart"
@@ -191,6 +305,82 @@ class Header extends React.Component {
 
         </div>
 
+        {!currentUser
+          ? <Modal
+            style={modalStyles}
+            isOpen={isLoginModalOpen}
+            onRequestClose={this.closeModal}
+            contentLabel="Example Modal"
+          >
+            <div className="o-layout o-layout--flush">
+
+              {/* #LOG-IN FORM */}
+              <div className="o-layout__item u-1/2">
+                <div className="modal-title u-txt-40 u-txt--hairline u-mt-12 u-mb-36">Log-in</div>
+                <form onSubmit={this.login}>
+                  <input
+                    type="text"
+                    name="usernameLogin"
+                    placeholder="username"
+                    className="u-d-block u-mb-12 u-w--60"
+                    required
+                    onChange={this.handleInputChange}
+                  />
+                  <input
+                    type="password"
+                    name="passwordLogin"
+                    placeholder="password"
+                    className="u-d-block u-mb-6 u-w--60"
+                    required
+                    onChange={this.handleInputChange}
+                  />
+                  <a>
+                    <span className="u-txt-underline u-txt-8">Forget your password?</span>
+                  </a>
+                  <input
+                    type="submit"
+                    className="c-btn c-btn--primary c-btn--rounded u-d-block u-txt-12 u-mt-36 u-1/3"
+                    value="Log-in"
+                  />
+                </form>
+              </div>
+              {/* /LOG-IN FORM */}
+
+              {/* #SIGN-UP FORM */}
+              <div className="o-layout__item u-1/2">
+                <div className="modal-title u-txt-40 u-txt--hairline u-mt-12 u-mb-36">Sign-up</div>
+                <form onSubmit={this.register}>
+                  <input
+                    type="text"
+                    name="usernameRegister"
+                    placeholder="username"
+                    required
+                    className="u-d-block u-mb-12 u-w--70"
+                    onChange={this.handleInputChange}
+                  />
+                  <input
+                    type="password"
+                    name="passwordRegister"
+                    placeholder="password"
+                    required
+                    className="u-d-block u-mb-6 u-w--70"
+                    onChange={this.handleInputChange}
+                  />
+                  <input
+                    type="submit"
+                    className="c-btn c-btn--primary c-btn--rounded u-d-block u-txt-12 u-mt-36 u-1/3"
+                    value="Sign-up"
+                  />
+                </form>
+              </div>
+              {/* /SIGN-UP FORM */}
+
+            </div>
+
+          </Modal>
+          : ''}
+
+
         {categoryList}
 
 
@@ -201,10 +391,13 @@ class Header extends React.Component {
 
 Header.propTypes = {
   useCategoryList: PropTypes.bool,
+  login: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
+  currentUser: PropTypes.string.isRequired,
 };
 
 Header.defaultProps = {
   useCategoryList: false,
 };
 
-export default Header;
+export default withRouter(Header);
