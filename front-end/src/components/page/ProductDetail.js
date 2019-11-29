@@ -28,6 +28,8 @@ class ProductDetail extends React.Component {
       sameCategory: {},
       ready: false,
     };
+
+    this.purchase = this.purchase.bind(this);
   }
 
   componentDidMount() {
@@ -80,6 +82,13 @@ class ProductDetail extends React.Component {
           throw new Error(error.message);
         });
     }
+  }
+
+  purchase() {
+    const { product } = this.state;
+    const { onPurchase } = this.props;
+
+    onPurchase(product);
   }
 
   render() {
@@ -239,6 +248,7 @@ class ProductDetail extends React.Component {
                     Buy Now
                   </button>
                   <button
+                    onClick={this.purchase}
                     className="c-btn [ c-btn--primary c-btn--rounded c-btn--type-large ] u-flex-1"
                     type="button"
                     title="Add to Cart"
@@ -306,20 +316,23 @@ class ProductDetail extends React.Component {
 
 
           {/* #BUNDLE PRODUCT */}
-          <Section
-            className="u-6/10"
-            title="Usually Bought Together"
-            titleClass="c-section__title--no-margin"
-          >
+          {bundleProducts
+            ? (
+              <Section
+                className="u-6/10"
+                title="Usually Bought Together"
+                titleClass="c-section__title--no-margin"
+              >
 
-            <Bundle
-              bundleProducts={bundleProducts.products}
-              bundleProductIds={product.related.bought_together}
-              currentProduct={product}
-              totalPrice={bundleProducts.totalPrice}
-            />
-
-          </Section>
+                <Bundle
+                  bundleProducts={bundleProducts.products}
+                  bundleProductIds={product.related.bought_together}
+                  currentProduct={product}
+                  totalPrice={bundleProducts.totalPrice}
+                />
+              </Section>
+            )
+            : ''}
           {/* /BUNDLE PRODUCT */}
 
 

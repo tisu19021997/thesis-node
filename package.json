@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "acorn": "^7.1.0",
+    "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.4",
@@ -31,7 +32,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.11.2",
-    "dotenv": "^8.1.0",
+    "dotenv": "^8.2.0",
     "eslint": "^6.5.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",

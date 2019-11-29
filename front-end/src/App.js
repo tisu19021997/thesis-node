@@ -22,12 +22,12 @@ import {
 import { withCookies, Cookies } from 'react-cookie';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
+import axios from 'axios';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/page/Home';
 import ProductDetail from './components/page/ProductDetail';
 
-const axios = require('axios');
 
 // Add a Font-Awesome library
 library.add(fab, faSearch, faGlobe, faUser, faShoppingCart, faAngleLeft, faAngleRight, faApple,
@@ -43,10 +43,14 @@ class App extends React.Component {
     const { cookies } = props;
     this.state = {
       currentUser: cookies.get('user') || '',
+      cart: [],
     };
 
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
+    
+    this.purchase = this.purchase.bind(this);
+    this.initCart = this.initCart.bind(this);
   }
 
   login(user) {
@@ -67,6 +71,23 @@ class App extends React.Component {
     cookies.set('user', '');
   }
 
+  purchase(product) {
+    const { cart } = this.state;
+
+    this.setState({
+      cart: [
+        ...cart,
+        product,
+      ],
+    });
+  }
+
+  initCart(product) {
+    this.setState({
+      cart: product,
+    });
+  }
+
   render() {
     const { currentUser } = this.state;
 
@@ -75,6 +96,7 @@ class App extends React.Component {
         <div className="App">
 
           <Header
+            initCart={this.initCart}
             currentUser={currentUser}
             login={this.login}
             logout={this.logout}
@@ -85,7 +107,12 @@ class App extends React.Component {
 
             <Route exact path="/" component={Home} />
 
-            <Route path="/product/:asin" component={ProductDetail} />
+            <Route
+              path="/product/:asin"
+              render={(props) => (
+                <ProductDetail {...props} onPurchase={this.purchase} />
+              )}
+            />
 
           </Switch>
 

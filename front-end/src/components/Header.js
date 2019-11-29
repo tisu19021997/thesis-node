@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'react-modal';
+import Cart from './Cart';
 import axios from 'axios';
 
 // bind modal to root, see http://reactcommunity.org/react-modal/accessibility/
@@ -31,10 +32,13 @@ class Header extends React.Component {
 
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.register = this.register.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+
+    this.initCartHandle = this.initCartHandle.bind(this);
   }
 
   componentDidMount() {
@@ -133,6 +137,11 @@ class Header extends React.Component {
     this.setState({
       isLoginModalOpen: false,
     });
+  }
+
+  initCartHandle(product) {
+    const { initCart } = this.props;
+    initCart(product);
   }
 
   render() {
@@ -292,6 +301,7 @@ class Header extends React.Component {
               data-display="inline-flex"
               data-hover="darkblue"
             >
+              <Cart onInitCart={this.initCartHandle} />
               <FontAwesomeIcon icon="shopping-cart" className="large" />
 
               <span className="c-header__nav-tool-text">
@@ -382,8 +392,6 @@ class Header extends React.Component {
 
 
         {categoryList}
-
-
       </header>
     );
   }

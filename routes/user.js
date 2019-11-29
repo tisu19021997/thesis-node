@@ -5,11 +5,9 @@ const router = express.Router();
 // authentication
 const passport = require('passport');
 const { Strategy } = require('passport-local');
-const controller = require('../controllers/user');
 
 // users model
 const User = require('../models/user');
-
 
 // passport configuration methods
 passport.serializeUser((user, cb) => {
@@ -21,7 +19,8 @@ passport.deserializeUser((username, cb) => {
     if (err) {
       return cb(err);
     }
-    cb(null, user);
+
+    return cb(null, user);
   });
 });
 
@@ -63,7 +62,28 @@ passport.use('local-signup', new Strategy(
   }),
 ));
 
+
 // routes request
+
+router.get('/:username/cart', (req, res, next) => {
+  const { username } = req.params;
+
+  User.findOne({ username })
+    .populate('cart')
+    .exec((err, user) => {
+      if (err) {
+        return next(err);
+      }
+
+      const { cart } = user;
+
+      return res.json({
+        username,
+        cart,
+      });
+    });
+});
+
 router.get('/login', (req, res) => {
   res.render('login');
 });

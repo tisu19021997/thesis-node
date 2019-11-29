@@ -3,13 +3,6 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 class Bundle extends React.Component {
-  static propTypes = {
-    bundleProducts: PropTypes.array.isRequired,
-    bundleProductIds: PropTypes.array.isRequired,
-    currentProduct: PropTypes.object.isRequired,
-    totalPrice: PropTypes.number.isRequired,
-  };
-
   constructor(props) {
     super(props);
 
@@ -182,5 +175,12 @@ class Bundle extends React.Component {
     );
   }
 }
+
+Bundle.propTypes = {
+  bundleProducts: PropTypes.array.isRequired,
+  bundleProductIds: PropTypes.array.isRequired,
+  currentProduct: PropTypes.object.isRequired,
+  totalPrice: PropTypes.number.isRequired,
+};
 
 export default Bundle;
