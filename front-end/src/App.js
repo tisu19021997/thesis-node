@@ -48,8 +48,7 @@ class App extends React.Component {
 
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-    
-    this.purchase = this.purchase.bind(this);
+
     this.initCart = this.initCart.bind(this);
   }
 
@@ -71,17 +70,6 @@ class App extends React.Component {
     cookies.set('user', '');
   }
 
-  purchase(product) {
-    const { cart } = this.state;
-
-    this.setState({
-      cart: [
-        ...cart,
-        product,
-      ],
-    });
-  }
-
   initCart(product) {
     this.setState({
       cart: product,
@@ -96,7 +84,6 @@ class App extends React.Component {
         <div className="App">
 
           <Header
-            initCart={this.initCart}
             currentUser={currentUser}
             login={this.login}
             logout={this.logout}
@@ -110,7 +97,11 @@ class App extends React.Component {
             <Route
               path="/product/:asin"
               render={(props) => (
-                <ProductDetail {...props} onPurchase={this.purchase} />
+                <ProductDetail
+                  {...props}
+                  initCart={this.initCart}
+                  onPurchase={this.purchase}
+                />
               )}
             />
 

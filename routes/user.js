@@ -84,6 +84,23 @@ router.get('/:username/cart', (req, res, next) => {
     });
 });
 
+router.put('/:username/cart', (req, res, next) => {
+  const { username } = req.params;
+  const newCart = req.body;
+  console.log(newCart);
+
+  User.findOne({ username })
+    .populate('cart')
+    .exec((err, userToUpdate) => {
+      if (err) {
+        next(err);
+      }
+      userToUpdate.cart = JSON.stringify(newCart);
+      userToUpdate.save();
+      res.json(userToUpdate);
+    });
+});
+
 router.get('/login', (req, res) => {
   res.render('login');
 });

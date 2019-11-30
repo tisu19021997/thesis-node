@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'react-modal';
-import Cart from './Cart';
 import axios from 'axios';
+import Cart from './Cart';
 
 // bind modal to root, see http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root');
@@ -21,6 +22,7 @@ const modalStyles = {
   },
 };
 
+
 class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -28,6 +30,7 @@ class Header extends React.Component {
     this.state = {
       categories: [],
       isLoginModalOpen: false,
+      cart: [],
     };
 
     this.openModal = this.openModal.bind(this);
@@ -37,22 +40,25 @@ class Header extends React.Component {
     this.logout = this.logout.bind(this);
     this.register = this.register.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
-
-    this.initCartHandle = this.initCartHandle.bind(this);
   }
 
   componentDidMount() {
-    axios.get('/categories')
-      .then((res) => {
-        const { categories } = res.data;
+    // get request from server if the categories list is used
+    const { useCategoryList } = this.props;
 
-        this.setState({
-          categories,
+    if (useCategoryList) {
+      axios.get('/categories')
+        .then((res) => {
+          const { categories } = res.data;
+
+          this.setState({
+            categories,
+          });
+        })
+        .catch((error) => {
+          throw new Error(error.message);
         });
-      })
-      .catch((error) => {
-        throw new Error(error.message);
-      });
+    }
   }
 
   handleInputChange(event) {
@@ -115,9 +121,7 @@ class Header extends React.Component {
         username: usernameRegister,
         password: passwordRegister,
       })
-        .then((res) => {
-          return true;
-        })
+        .then((res) => true)
         .catch((error) => {
           console.log(error);
         });
@@ -139,17 +143,12 @@ class Header extends React.Component {
     });
   }
 
-  initCartHandle(product) {
-    const { initCart } = this.props;
-    initCart(product);
-  }
-
   render() {
     const {
       categories,
       isLoginModalOpen,
     } = this.state;
-    const { useCategoryList, currentUser } = this.props;
+    const { useCategoryList, currentUser, purchase } = this.props;
 
     const categoriesItem = categories.map((category, index) => (
       <li
@@ -301,9 +300,7 @@ class Header extends React.Component {
               data-display="inline-flex"
               data-hover="darkblue"
             >
-              <Cart onInitCart={this.initCartHandle} />
               <FontAwesomeIcon icon="shopping-cart" className="large" />
-
               <span className="c-header__nav-tool-text">
                 Cart
                 <span className="u-txt--bold">

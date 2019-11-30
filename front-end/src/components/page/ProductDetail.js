@@ -6,6 +6,7 @@ import {
   TabPanel,
 } from 'react-tabs';
 import axios from 'axios';
+import { Cookies, withCookies } from 'react-cookie';
 import Wrapper from '../Wrapper';
 import Section from '../Section';
 import Breadcrumb from '../Breadcrumb';
@@ -14,6 +15,7 @@ import Bundle from '../Bundle';
 import ProductSlider from '../slider/ProductSlider';
 import PrevArrow from '../slider/PrevArrow';
 import NextArrow from '../slider/NextArrow';
+import Cart from '../Cart';
 
 
 class ProductDetail extends React.Component {
@@ -22,6 +24,7 @@ class ProductDetail extends React.Component {
 
     this.state = {
       product: {},
+      cart: [],
       alsoBought: {},
       alsoViewed: {},
       bundleProducts: {},
@@ -29,7 +32,7 @@ class ProductDetail extends React.Component {
       ready: false,
     };
 
-    this.purchase = this.purchase.bind(this);
+    this.purchaseHandle = this.purchaseHandle.bind(this);
   }
 
   componentDidMount() {
@@ -56,6 +59,9 @@ class ProductDetail extends React.Component {
       .catch((error) => {
         throw new Error(error.message);
       });
+
+    // initialize the cart
+    this.initCartHandle();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -84,12 +90,74 @@ class ProductDetail extends React.Component {
     }
   }
 
-  purchase() {
-    const { product } = this.state;
-    const { onPurchase } = this.props;
+  initCartHandle() {
+    const { initCart, cookies } = this.props;
+    const username = cookies.get('user');
 
-    onPurchase(product);
+    const loggedIn = !!username;
+
+    this.setState({
+      loggedIn,
+    });
+
+    // if the user is logged-in, get the cart object from server
+    if (loggedIn) {
+      axios.get(`/user/${username}/cart`)
+        .then((res) => {
+          const { cart } = res.data;
+
+          this.setState({
+            cart,
+          });
+
+          // send cart object back to App
+          initCart(cart);
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    } else {
+      const cart = cookies.get('cart', { doNotParse: false }) || [];
+
+      this.setState({
+        cart,
+      });
+    }
   }
+
+  purchaseHandle() {
+    const { product, cart, loggedIn } = this.state;
+    const { cookies } = this.props;
+
+    if (loggedIn) {
+      const username = cookies.get('user');
+      // send request to update the cart in user
+      axios.put(`/user/${username}/cart`, {
+        cart: [
+          ...cart,
+          product,
+        ],
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    } else {
+      // update cookies
+      cookies.remove('cart', { path: '/' });
+      cookies.set('cart', [...cart, product], { path: '/' });
+    }
+
+    this.setState({
+      cart: [
+        ...cart,
+        product,
+      ],
+    });
+  }
+
 
   render() {
     const { ready } = this.state;
@@ -105,6 +173,7 @@ class ProductDetail extends React.Component {
       alsoBought,
       alsoViewed,
       sameCategory,
+      cart,
     } = this.state;
     const { categories } = product;
     const sliderSettings = {
@@ -248,7 +317,7 @@ class ProductDetail extends React.Component {
                     Buy Now
                   </button>
                   <button
-                    onClick={this.purchase}
+                    onClick={this.purchaseHandle}
                     className="c-btn [ c-btn--primary c-btn--rounded c-btn--type-large ] u-flex-1"
                     type="button"
                     title="Add to Cart"
@@ -493,9 +562,15 @@ class ProductDetail extends React.Component {
           {/* /SAME CATEGORY */}
 
         </main>
+
+        {/* #CART */}
+        <Cart
+          products={cart}
+        />
+        {/* /CART */}
       </Wrapper>
     );
   }
 }
 
-export default ProductDetail;
+export default withCookies(ProductDetail);
