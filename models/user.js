@@ -18,11 +18,14 @@ const Schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Products',
   }],
-  cart: [{
+  products: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Products',
+    autopopulate: true,
   }],
 });
+
+Schema.plugin(require('mongoose-autopopulate'));
 
 const User = mongoose.model('User', Schema);
 

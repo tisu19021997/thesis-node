@@ -1003,12 +1003,12 @@ textarea {
   }
 }
 
-/* line 62, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 61, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="checkbox"] {
   opacity: .35;
 }
 
-/* line 65, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 64, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="checkbox"] + label {
   transition: opacity 300ms cubic-bezier(0.645, 0.045, 0.355, 1);
   -webkit-transition: opacity 300ms cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -1019,48 +1019,48 @@ textarea {
   font-weight: 300;
 }
 
-/* line 76, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 75, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="checkbox"]:checked {
   opacity: 1;
 }
 
-/* line 79, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 78, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 [type="checkbox"]:checked + label {
   opacity: 1;
 }
 
-/* line 86, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 85, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 textarea {
   resize: none;
 }
 
 /* Pseudo elements */
-/* line 92, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 91, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::placeholder {
   color: #999;
   opacity: 1;
   /* Firefox */
 }
 
-/* line 97, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 96, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
   color: #999;
 }
 
-/* line 100, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 99, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::-moz-placeholder {
   /* Firefox 19+ */
   color: #999;
 }
 
-/* line 103, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 102, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 :-ms-input-placeholder {
   /* IE 10+ */
   color: #999;
 }
 
-/* line 106, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 105, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 :-moz-placeholder {
   /* Firefox 18- */
   color: #999;
@@ -2936,7 +2936,6 @@ progress::-moz-progress-bar {
 @media (min-width: 61.25em) {
   /* line 90, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
   .c-header__nav {
-    overflow: hidden;
     max-width: 1198px;
     margin: 48px auto;
   }
@@ -2992,27 +2991,28 @@ progress::-moz-progress-bar {
 
 /* line 143, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .c-header__nav-tool {
+  position: relative;
   font-size: 10px;
   font-size: 0.625rem;
   line-height: 1.8;
   text-align: right;
 }
 
-/* line 147, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 148, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .c-header__nav-tool [class^="fa"],
 .c-header__nav-tool .svg-inline--fa {
   margin-right: 8px;
 }
 
 @media (max-width: 61.24em) {
-  /* line 147, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+  /* line 148, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
   .c-header__nav-tool [class^="fa"],
   .c-header__nav-tool .svg-inline--fa {
     margin-right: 0;
   }
 }
 
-/* line 156, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 157, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .c-header__nav-tool [data-display="inline-flex"] {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
@@ -3022,22 +3022,27 @@ progress::-moz-progress-bar {
   align-items: flex-end;
 }
 
-/* line 165, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 166, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .c-header__nav-tool > * {
   margin-right: 24px;
 }
 
-/* line 168, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 169, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .c-header__nav-tool > *:last-child {
   margin-right: 0;
 }
 
 /* line 175, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+.c-header__cart {
+  position: relative;
+}
+
+/* line 178, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .c-header__cart > [class^="fa"] {
   position: relative;
 }
 
-/* line 180, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 183, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .c-header__cart-counter {
   font-size: 8px;
   font-size: 0.5rem;
@@ -3057,7 +3062,62 @@ progress::-moz-progress-bar {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16), 0 1px 2px #dfe1e5;
 }
 
-/* line 202, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 204, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+.cart-caret {
+  display: block;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  bottom: -5px;
+  width: 100%;
+  height: 8px;
+  z-index: 1;
+}
+
+/* line 214, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+.cart-caret:after {
+  background-color: #fff;
+  border-color: #d2d2d7;
+  border-radius: 2px 0 0 0;
+  left: 50%;
+  border: 1px solid;
+  border-top-color: currentcolor;
+  border-right-color: currentcolor;
+  border-bottom-color: currentcolor;
+  border-left-color: currentcolor;
+  content: "";
+  display: block;
+  position: absolute;
+  top: -0.5px;
+  width: 10px;
+  height: 10px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transform-origin: 0% 0;
+  transform-origin: 0% 0;
+  z-index: 1;
+  -webkit-border-radius: 2px 0 0 0;
+  -moz-border-radius: 2px 0 0 0;
+  -ms-border-radius: 2px 0 0 0;
+  -o-border-radius: 2px 0 0 0;
+}
+
+/* line 243, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+.cart-view {
+  margin-right: -113px;
+  right: 0;
+  position: absolute;
+  top: 48px;
+  z-index: 1;
+}
+
+/* line 251, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+.cart-view__content {
+  padding: 24px;
+  background: #fff;
+}
+
+/* line 257, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 [data-section="Category List"][data-section="Category List"] {
   background-color: #232f3e;
   max-width: 1198px;

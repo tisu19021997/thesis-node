@@ -105,7 +105,6 @@ class ProductDetail extends React.Component {
       axios.get(`/user/${username}/cart`)
         .then((res) => {
           const { cart } = res.data;
-
           this.setState({
             cart,
           });
@@ -132,22 +131,17 @@ class ProductDetail extends React.Component {
     if (loggedIn) {
       const username = cookies.get('user');
       // send request to update the cart in user
-      axios.put(`/user/${username}/cart`, {
-        cart: [
-          ...cart,
-          product,
-        ],
-      })
+      axios.put(`/user/${username}/cart`, product)
         .then((res) => {
-          console.log(res);
+          console.log(res.data);
         })
         .catch((error) => {
           throw new Error(error.message);
         });
     } else {
       // update cookies
-      cookies.remove('cart', { path: '/' });
-      cookies.set('cart', [...cart, product], { path: '/' });
+      const updatedCart = [...cart, product];
+      cookies.set('cart', JSON.stringify(updatedCart), { path: '/' });
     }
 
     this.setState({

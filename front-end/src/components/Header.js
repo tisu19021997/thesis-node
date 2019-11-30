@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'react-modal';
 import axios from 'axios';
@@ -30,7 +29,6 @@ class Header extends React.Component {
     this.state = {
       categories: [],
       isLoginModalOpen: false,
-      cart: [],
     };
 
     this.openModal = this.openModal.bind(this);
@@ -144,11 +142,8 @@ class Header extends React.Component {
   }
 
   render() {
-    const {
-      categories,
-      isLoginModalOpen,
-    } = this.state;
-    const { useCategoryList, currentUser, purchase } = this.props;
+    const { categories, isLoginModalOpen } = this.state;
+    const { useCategoryList, currentUser, cart } = this.props;
 
     const categoriesItem = categories.map((category, index) => (
       <li
@@ -269,6 +264,7 @@ class Header extends React.Component {
               <FontAwesomeIcon icon="globe" className="large" />
               <span className="c-header__nav-tool-text">English</span>
             </a>
+
             <div
               className="u-margin-horizontal-tiny"
               data-display="inline-flex"
@@ -304,7 +300,7 @@ class Header extends React.Component {
               <span className="c-header__nav-tool-text">
                 Cart
                 <span className="u-txt--bold">
-                  1
+                  {cart.length}
                 </span>
               </span>
             </a>
@@ -399,6 +395,7 @@ Header.propTypes = {
   login: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
   currentUser: PropTypes.string.isRequired,
+  cart: PropTypes.array.isRequired,
 };
 
 Header.defaultProps = {

@@ -77,7 +77,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { currentUser } = this.state;
+    const { currentUser, cart } = this.state;
 
     return (
       <Router>
@@ -87,6 +87,7 @@ class App extends React.Component {
             currentUser={currentUser}
             login={this.login}
             logout={this.logout}
+            cart={cart}
             useCategoryList
           />
 

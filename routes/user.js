@@ -7,7 +7,10 @@ const passport = require('passport');
 const { Strategy } = require('passport-local');
 
 // users model
+const mongoose = require('mongoose');
 const User = require('../models/user');
+const Product = require('../models/product');
+
 
 // passport configuration methods
 passport.serializeUser((user, cb) => {
@@ -69,35 +72,38 @@ router.get('/:username/cart', (req, res, next) => {
   const { username } = req.params;
 
   User.findOne({ username })
-    .populate('cart')
+    .populate('products')
     .exec((err, user) => {
       if (err) {
         return next(err);
       }
 
-      const { cart } = user;
-
       return res.json({
+        cart: user.products,
         username,
-        cart,
       });
     });
 });
 
 router.put('/:username/cart', (req, res, next) => {
   const { username } = req.params;
-  const newCart = req.body;
-  console.log(newCart);
+  const product = req.body;
+  console.log(product._id);
 
   User.findOne({ username })
-    .populate('cart')
-    .exec((err, userToUpdate) => {
-      if (err) {
-        next(err);
-      }
-      userToUpdate.cart = JSON.stringify(newCart);
-      userToUpdate.save();
-      res.json(userToUpdate);
+    .populate('products')
+    .exec()
+    .then((userToUpdate) => {
+      userToUpdate.products.push(product._id);
+      userToUpdate.save((err) => {
+        if (err) {
+          next(err);
+        }
+      });
+      res.json(`Added ${product.name} to your cart.`);
+    })
+    .catch((error) => {
+      next(error);
     });
 });
 
