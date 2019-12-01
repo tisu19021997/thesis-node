@@ -4,7 +4,6 @@ import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'react-modal';
 import axios from 'axios';
-import Cart from './Cart';
 
 // bind modal to root, see http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root');
@@ -29,10 +28,14 @@ class Header extends React.Component {
     this.state = {
       categories: [],
       isLoginModalOpen: false,
+      isCartOpen: false,
     };
 
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+
+    this.openCart = this.openCart.bind(this);
+    this.deleteCartItem = this.deleteCartItem.bind(this);
 
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
@@ -119,9 +122,9 @@ class Header extends React.Component {
         username: usernameRegister,
         password: passwordRegister,
       })
-        .then((res) => true)
+        .then(() => true)
         .catch((error) => {
-          console.log(error);
+          throw new Error(error.message);
         });
     }
 
@@ -141,8 +144,27 @@ class Header extends React.Component {
     });
   }
 
+  openCart() {
+    const { isCartOpen } = this.state;
+
+    this.setState({
+      isCartOpen: !isCartOpen,
+    });
+  }
+
+  deleteCartItem(event) {
+    const { cart, updateCart } = this.props;
+    const productAsin = event.currentTarget.getAttribute('data-product');
+    // filter the product that we need to delete from the current cart
+    const newCart = cart.filter((product) => (product.asin !== productAsin));
+
+
+
+    return updateCart(newCart);
+  }
+
   render() {
-    const { categories, isLoginModalOpen } = this.state;
+    const { categories, isLoginModalOpen, isCartOpen } = this.state;
     const { useCategoryList, currentUser, cart } = this.props;
 
     const categoriesItem = categories.map((category, index) => (
@@ -171,6 +193,88 @@ class Header extends React.Component {
         </section>
       )
       : '';
+
+    const cartProductList = cart.map((product, index) => (
+      <div
+        key={index.toString()}
+        className="cart-product o-layout o-layout--flush u-d-flex u-ai--center u-pv-12">
+
+        <div
+          className="cart-counter o-layout__item u-txt-12 u-1/6 u-txt-align-center u-txt-underline">
+          {product.quantity}
+        </div>
+
+        <div
+          className="cart-product__name o-layout__item u-txt-12 u-4/6 u-txt-align-left u-txt-lineh-1">
+          <div className="o-media">
+            <img
+              className="o-media__img u-1/4"
+              src={product.imUrl}
+              alt={product.title}
+            />
+
+            <div className="o-media__body">
+              <div className="u-txt-truncate-2 u-txt--bold">
+                {product.title}
+              </div>
+              <div className="c-price [ c-price--small ] ">
+                <div className="c-price__price">
+                  <span className="c-price__currency">$</span>
+                  {product.price}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div className="cart-product__tool o-layout__item u-1/6 u-txt-align-right">
+          <button
+            data-product={product.asin}
+            type="button"
+            className="c-btn--fake"
+            onClick={this.deleteCartItem}
+          >
+            <span>
+              <FontAwesomeIcon size="1x" icon="times" />
+            </span>
+          </button>
+        </div>
+
+      </div>
+    ));
+
+    const cartView = cart.length
+      ? (
+        <aside className="cart-view u-txt-align-left u-w--100 u-cf">
+          <div className="cart-view__content">
+
+            <div className="cart-header u-d-flex u-border--m-blur">
+              <Link to="/cart" className="u-txt-underline u-txt-12">
+                Proceed to checkout
+              </Link>
+              <div className="u-txt-20 u-line u-txt-align-center u-txt--bold u-ml-auto">
+                {cart.length}
+                <div className="u-txt-10 u-txt--blur u-txt--light">
+                  items
+                </div>
+              </div>
+            </div>
+
+
+            {/* #CART PRODUCT LIST */}
+            {cartProductList}
+            {/* #CART PRODUCT LIST */}
+
+          </div>
+        </aside>
+      )
+      :
+      <aside className="cart-view u-txt-align-left u-w--100 u-cf">
+        <div className="cart-view__content">
+          <p className="u-txt-12 u-txt--blur">Your cart is empty.</p>
+        </div>
+      </aside>;
 
     return (
       <header className="c-header">
@@ -244,9 +348,9 @@ class Header extends React.Component {
                   data-border="rounded"
                 />
                 <div className="c-searchbar__button">
-                <span className="c-searchbar__button-icon">
-                  <FontAwesomeIcon icon="search" className="medium" />
-                </span>
+                  <span className="c-searchbar__button-icon">
+                    <FontAwesomeIcon icon="search" className="medium" />
+                  </span>
                   <input type="submit" defaultValue="Go" />
                 </div>
               </div>
@@ -273,114 +377,133 @@ class Header extends React.Component {
               <FontAwesomeIcon icon="user" className="large" />
               {!currentUser
                 ? (
-                  <a onClick={this.openModal}>
+                  <button
+                    type="button"
+                    className="c-btn--fake"
+                    onClick={this.openModal}
+                  >
                     <span className="c-header__nav-tool-text">Log-in</span>
-                  </a>)
+                  </button>
+                )
                 : (
-                  <React.Fragment>
+                  <>
                     <div className="c-header__nav-tool-text">{`Hello, ${currentUser}`}</div>
-                    <a
+                    <button
+                      type="button"
                       onClick={this.logout}
-                      className="c-header__nav-tool-text u-txt-underline"
+                      className="c-header__nav-tool-text u-txt-underline c-btn--fake"
                     >
                       Log-out
-                    </a>
-                  </React.Fragment>
-                )
-              }
+                    </button>
+                  </>
+                )}
             </div>
 
-            <a
-              href="/"
-              className="c-header__cart"
+            <button
+              type="button"
+              onClick={this.openCart}
+              className="c-header__cart c-btn--fake"
               data-display="inline-flex"
               data-hover="darkblue"
             >
               <FontAwesomeIcon icon="shopping-cart" className="large" />
               <span className="c-header__nav-tool-text">
                 Cart
-                <span className="u-txt--bold">
-                  {cart.length}
-                </span>
+                {' '}
+                <span className="u-txt--bold">{cart.length}</span>
+                {
+                  isCartOpen ? <span className="cart-caret" /> : ''
+                }
               </span>
-            </a>
+            </button>
+
+            {/* #CART VIEW */}
+            {isCartOpen
+              ? cartView
+              : ''}
+            {/* /CART VIEW */}
+
           </div>
 
         </div>
 
         {!currentUser
-          ? <Modal
-            style={modalStyles}
-            isOpen={isLoginModalOpen}
-            onRequestClose={this.closeModal}
-            contentLabel="Example Modal"
-          >
-            <div className="o-layout o-layout--flush">
+          ? (
+            <Modal
+              style={modalStyles}
+              isOpen={isLoginModalOpen}
+              onRequestClose={this.closeModal}
+              contentLabel="Example Modal"
+            >
+              <div className="o-layout o-layout--flush">
 
-              {/* #LOG-IN FORM */}
-              <div className="o-layout__item u-1/2">
-                <div className="modal-title u-txt-40 u-txt--hairline u-mt-12 u-mb-36">Log-in</div>
-                <form onSubmit={this.login}>
-                  <input
-                    type="text"
-                    name="usernameLogin"
-                    placeholder="username"
-                    className="u-d-block u-mb-12 u-w--60"
-                    required
-                    onChange={this.handleInputChange}
-                  />
-                  <input
-                    type="password"
-                    name="passwordLogin"
-                    placeholder="password"
-                    className="u-d-block u-mb-6 u-w--60"
-                    required
-                    onChange={this.handleInputChange}
-                  />
-                  <a>
-                    <span className="u-txt-underline u-txt-8">Forget your password?</span>
-                  </a>
-                  <input
-                    type="submit"
-                    className="c-btn c-btn--primary c-btn--rounded u-d-block u-txt-12 u-mt-36 u-1/3"
-                    value="Log-in"
-                  />
-                </form>
+                {/* #LOG-IN FORM */}
+                <div className="o-layout__item u-1/2">
+                  <div className="modal-title u-txt-40 u-txt--hairline u-mt-12 u-mb-36">Log-in</div>
+                  <form onSubmit={this.login}>
+                    <input
+                      type="text"
+                      name="usernameLogin"
+                      placeholder="username"
+                      className="u-d-block u-mb-12 u-w--60"
+                      required
+                      onChange={this.handleInputChange}
+                    />
+                    <input
+                      type="password"
+                      name="passwordLogin"
+                      placeholder="password"
+                      className="u-d-block u-mb-6 u-w--60"
+                      required
+                      onChange={this.handleInputChange}
+                    />
+                    <Link to="/forget">
+                      <span className="u-txt-underline u-txt-8">Forget your password?</span>
+                    </Link>
+                    <input
+                      type="submit"
+                      className="c-btn c-btn--primary c-btn--rounded u-d-block u-txt-12 u-mt-36 u-1/3"
+                      value="Log-in"
+                    />
+                  </form>
+                </div>
+                {/* /LOG-IN FORM */}
+
+                {/* #SIGN-UP FORM */}
+                <div className="o-layout__item u-1/2">
+                  <div className="modal-title u-txt-40 u-txt--hairline u-mt-12 u-mb-36">
+                    Sign-up
+                  </div>
+                  <form onSubmit={this.register}>
+                    <input
+                      type="text"
+                      name="usernameRegister"
+                      placeholder="username"
+                      required
+                      className="u-d-block u-mb-12 u-w--70"
+                      onChange={this.handleInputChange}
+                    />
+                    <input
+                      type="password"
+                      name="passwordRegister"
+                      placeholder="password"
+                      required
+                      className="u-d-block u-mb-6 u-w--70"
+                      onChange={this.handleInputChange}
+                    />
+                    <input
+                      type="submit"
+                      className="c-btn c-btn--primary c-btn--rounded u-d-block u-txt-12 u-mt-36 u-1/3"
+                      value="Sign-up"
+                    />
+                  </form>
+                </div>
+                {/* /SIGN-UP FORM */}
+
               </div>
-              {/* /LOG-IN FORM */}
 
-              {/* #SIGN-UP FORM */}
-              <div className="o-layout__item u-1/2">
-                <div className="modal-title u-txt-40 u-txt--hairline u-mt-12 u-mb-36">Sign-up</div>
-                <form onSubmit={this.register}>
-                  <input
-                    type="text"
-                    name="usernameRegister"
-                    placeholder="username"
-                    required
-                    className="u-d-block u-mb-12 u-w--70"
-                    onChange={this.handleInputChange}
-                  />
-                  <input
-                    type="password"
-                    name="passwordRegister"
-                    placeholder="password"
-                    required
-                    className="u-d-block u-mb-6 u-w--70"
-                    onChange={this.handleInputChange}
-                  />
-                  <input
-                    type="submit"
-                    className="c-btn c-btn--primary c-btn--rounded u-d-block u-txt-12 u-mt-36 u-1/3"
-                    value="Sign-up"
-                  />
-                </form>
-              </div>
-              {/* /SIGN-UP FORM */}
-
-            </div>
-
-          </Modal>
+            </Modal>
+          )
           : ''}
 
 
@@ -396,6 +519,7 @@ Header.propTypes = {
   logout: PropTypes.func.isRequired,
   currentUser: PropTypes.string.isRequired,
   cart: PropTypes.array.isRequired,
+  updateCart: PropTypes.func.isRequired,
 };
 
 Header.defaultProps = {

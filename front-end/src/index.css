@@ -2567,45 +2567,53 @@ progress::-moz-progress-bar {
   color: #fff;
 }
 
-/* line 82, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 81, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+.c-btn--fake {
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  padding: 0;
+}
+
+/* line 89, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--tertiary {
   background-color: white;
   color: black;
   border: 0.5px solid #dfe1e5;
 }
 
-/* line 89, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 96, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--cta {
   background: #fd6600;
 }
 
 @media (max-width: 61.24em) {
-  /* line 89, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+  /* line 96, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
   .c-btn--cta {
     -webkit-box-shadow: 0 3px 6px #b8babd, 0 3px 6px #fff;
     box-shadow: 0 3px 6px #b8babd, 0 3px 6px #fff;
   }
 }
 
-/* line 97, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 104, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--cta, .c-btn--cta:hover, .c-btn--cta:active, .c-btn--cta:focus {
   text-decoration: none;
   color: #fff;
 }
 
-/* line 106, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 113, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--attract {
   background-color: #ff424f;
   color: #fff;
 }
 
-/* line 110, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 117, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--attract, .c-btn--attract:hover, .c-btn--attract:active, .c-btn--attract:focus {
   text-decoration: none;
   background-color: #ff424f;
 }
 
-/* line 120, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 127, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--rounded {
   border-radius: 36px;
   -webkit-border-radius: 36px;
@@ -2614,7 +2622,7 @@ progress::-moz-progress-bar {
   -o-border-radius: 36px;
 }
 
-/* line 129, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 136, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--type-large {
   font-size: 20px;
   font-size: 1.25rem;
@@ -2622,7 +2630,7 @@ progress::-moz-progress-bar {
 }
 
 @media (min-width: 61.25em) {
-  /* line 129, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+  /* line 136, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
   .c-btn--type-large {
     font-size: 12px;
     font-size: 0.75rem;
@@ -2630,7 +2638,7 @@ progress::-moz-progress-bar {
   }
 }
 
-/* line 138, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 145, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--stretch {
   width: 100%;
   -webkit-box-flex: 1;
@@ -2640,12 +2648,12 @@ progress::-moz-progress-bar {
 
 /* Size variants
    ========================================================================== */
-/* line 150, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 157, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--small {
   padding: 6px 12px;
 }
 
-/* line 154, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 161, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--large {
   padding: 24px 48px;
 }
@@ -2655,53 +2663,53 @@ progress::-moz-progress-bar {
 /**
  * Ghost buttons have see-through backgrounds and are bordered.
  */
-/* line 171, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 178, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost {
   border: 2px solid currentColor;
   padding: 10px 22px;
 }
 
-/* line 175, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 182, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost, .c-btn--ghost:hover, .c-btn--ghost:active, .c-btn--ghost:focus {
   background: none;
 }
 
-/* line 182, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 189, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost.c-btn--small {
   padding: 4px 10px;
 }
 
-/* line 186, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 193, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost.c-btn--large {
   padding: 22px 46px;
 }
 
-/* line 190, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 197, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost.c-btn--primary {
   color: #4a8ec2;
 }
 
-/* line 193, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 200, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost.c-btn--primary:hover, .c-btn--ghost.c-btn--primary:focus {
   color: #3774a2;
 }
 
-/* line 200, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 207, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost.c-btn--secondary {
   color: #2f4054;
 }
 
-/* line 203, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 210, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost.c-btn--secondary:hover, .c-btn--ghost.c-btn--secondary:focus {
   color: #1d2733;
 }
 
-/* line 210, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 217, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost.c-btn--tertiary {
   color: #fff;
 }
 
-/* line 213, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
+/* line 220, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.buttons.scss */
 .c-btn--ghost.c-btn--tertiary:hover, .c-btn--ghost.c-btn--tertiary:focus {
   color: #fff;
 }
@@ -3028,7 +3036,7 @@ progress::-moz-progress-bar {
 }
 
 /* line 169, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
-.c-header__nav-tool > *:last-child {
+.c-header__nav-tool > *:nth-child(n-1) {
   margin-right: 0;
 }
 
@@ -3043,81 +3051,84 @@ progress::-moz-progress-bar {
 }
 
 /* line 183, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
-.c-header__cart-counter {
-  font-size: 8px;
-  font-size: 0.5rem;
-  line-height: 2.25;
-  color: #232f3e;
-  position: absolute;
-  top: 0;
-  right: 50%;
-  padding: 0px 8px;
-  background-color: #fff;
-  border-radius: 50%;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  -o-border-radius: 50%;
-  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16), 0 1px 2px #dfe1e5;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16), 0 1px 2px #dfe1e5;
+.c-header__cart:hover + .cart-view {
+  display: block;
 }
 
-/* line 204, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 187, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+.c-header__cart:hover .cart-caret {
+  display: block;
+}
+
+/* line 193, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .cart-caret {
   display: block;
   left: 0;
   overflow: hidden;
   position: absolute;
-  bottom: -5px;
+  bottom: -10px;
   width: 100%;
   height: 8px;
   z-index: 1;
 }
 
-/* line 214, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 203, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .cart-caret:after {
-  background-color: #fff;
-  border-color: #d2d2d7;
-  border-radius: 2px 0 0 0;
+  content: "";
+  display: block;
+  position: absolute;
+  top: -0.5px;
   left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -webkit-transform-origin: 0% 0;
+  transform-origin: 0% 0;
+  border-radius: 2px 0 0 0;
+  -webkit-border-radius: 2px 0 0 0;
+  -moz-border-radius: 2px 0 0 0;
+  -ms-border-radius: 2px 0 0 0;
+  -o-border-radius: 2px 0 0 0;
+  background-color: #fff;
   border: 1px solid;
   border-top-color: currentcolor;
   border-right-color: currentcolor;
   border-bottom-color: currentcolor;
   border-left-color: currentcolor;
-  content: "";
-  display: block;
-  position: absolute;
-  top: -0.5px;
-  width: 10px;
-  height: 10px;
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-  -webkit-transform-origin: 0% 0;
-  transform-origin: 0% 0;
-  z-index: 1;
-  -webkit-border-radius: 2px 0 0 0;
-  -moz-border-radius: 2px 0 0 0;
-  -ms-border-radius: 2px 0 0 0;
-  -o-border-radius: 2px 0 0 0;
+  border-color: #d2d2d7;
 }
 
-/* line 243, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 234, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .cart-view {
-  margin-right: -113px;
+  display: block;
   right: 0;
   position: absolute;
-  top: 48px;
+  top: 36px;
   z-index: 1;
 }
 
-/* line 251, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 242, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .cart-view__content {
-  padding: 24px;
+  padding: 6px 12px;
   background: #fff;
+  border: 0.5px solid #dfe1e5;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
 }
 
-/* line 257, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 254, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+.cart-product:not(:last-child) {
+  border-bottom: 0.5px solid #dfe1e5;
+}
+
+/* line 260, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 [data-section="Category List"][data-section="Category List"] {
   background-color: #232f3e;
   max-width: 1198px;
@@ -6062,6 +6073,11 @@ progress::-moz-progress-bar {
   -webkit-box-orient: vertical;
 }
 
+/* line 136, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/utilities/_utilities.text.scss */
+.u-txt-lineh-1 {
+  line-height: 1;
+}
+
 /* ==========================================================================
    #WIDTH
    ========================================================================== */
@@ -6098,6 +6114,11 @@ progress::-moz-progress-bar {
 /* line 19, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/tools/_tools.helper.scss */
 .u-w--60 {
   width: 60%;
+}
+
+/* line 19, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/tools/_tools.helper.scss */
+.u-w--66 {
+  width: 66.66667%;
 }
 
 /* line 19, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/tools/_tools.helper.scss */

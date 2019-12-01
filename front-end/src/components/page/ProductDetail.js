@@ -15,7 +15,6 @@ import Bundle from '../Bundle';
 import ProductSlider from '../slider/ProductSlider';
 import PrevArrow from '../slider/PrevArrow';
 import NextArrow from '../slider/NextArrow';
-import Cart from '../Cart';
 
 
 class ProductDetail extends React.Component {
@@ -60,8 +59,7 @@ class ProductDetail extends React.Component {
         throw new Error(error.message);
       });
 
-    // initialize the cart
-    this.initCartHandle();
+    this.updateCartHandle();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -90,15 +88,14 @@ class ProductDetail extends React.Component {
     }
   }
 
-  initCartHandle() {
-    const { initCart, cookies } = this.props;
+  /**
+   * Keep the `cart` state up to date.
+   *
+   * Also, handling the database updates.
+   */
+  updateCartHandle() {
+    const { updateCart, cookies, loggedIn } = this.props;
     const username = cookies.get('user');
-
-    const loggedIn = !!username;
-
-    this.setState({
-      loggedIn,
-    });
 
     // if the user is logged-in, get the cart object from server
     if (loggedIn) {
@@ -110,7 +107,7 @@ class ProductDetail extends React.Component {
           });
 
           // send cart object back to App
-          initCart(cart);
+          updateCart(cart);
         })
         .catch((error) => {
           throw new Error(error.message);
@@ -125,8 +122,8 @@ class ProductDetail extends React.Component {
   }
 
   purchaseHandle() {
-    const { product, cart, loggedIn } = this.state;
-    const { cookies } = this.props;
+    const { product, cart } = this.state;
+    const { cookies, updateCart, loggedIn} = this.props;
 
     if (loggedIn) {
       const username = cookies.get('user');
@@ -150,8 +147,13 @@ class ProductDetail extends React.Component {
         product,
       ],
     });
+
+    updateCart([...cart, product]);
   }
 
+  deleteFromCartHandle(product) {
+
+  }
 
   render() {
     const { ready } = this.state;
@@ -167,7 +169,6 @@ class ProductDetail extends React.Component {
       alsoBought,
       alsoViewed,
       sameCategory,
-      cart,
     } = this.state;
     const { categories } = product;
     const sliderSettings = {
@@ -556,12 +557,6 @@ class ProductDetail extends React.Component {
           {/* /SAME CATEGORY */}
 
         </main>
-
-        {/* #CART */}
-        <Cart
-          products={cart}
-        />
-        {/* /CART */}
       </Wrapper>
     );
   }

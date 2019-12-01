@@ -17,6 +17,7 @@ import {
   faHeadphonesAlt,
   faTv,
   faTrain,
+  faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { withCookies, Cookies } from 'react-cookie';
@@ -31,7 +32,7 @@ import ProductDetail from './components/page/ProductDetail';
 
 // Add a Font-Awesome library
 library.add(fab, faSearch, faGlobe, faUser, faShoppingCart, faAngleLeft, faAngleRight, faApple,
-  faBasketballBall, faTshirt, faCameraRetro, faLaptopCode, faHeadphonesAlt, faTv, faTrain);
+  faBasketballBall, faTshirt, faCameraRetro, faLaptopCode, faHeadphonesAlt, faTv, faTrain, faTimes);
 
 // Axios defaults
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_HOST || 'http://localhost:8081';
@@ -42,14 +43,14 @@ class App extends React.Component {
 
     const { cookies } = props;
     this.state = {
-      currentUser: cookies.get('user') || '',
+      currentUser: cookies.get('user') || null,
       cart: [],
     };
 
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
 
-    this.initCart = this.initCart.bind(this);
+    this.updateCart = this.updateCart.bind(this);
   }
 
   login(user) {
@@ -70,9 +71,9 @@ class App extends React.Component {
     cookies.set('user', '');
   }
 
-  initCart(product) {
+  updateCart(cart) {
     this.setState({
-      cart: product,
+      cart,
     });
   }
 
@@ -88,7 +89,8 @@ class App extends React.Component {
             login={this.login}
             logout={this.logout}
             cart={cart}
-            useCategoryList
+            deleteCartItem={this.deleteCartItem}
+            updateCart={this.updateCart}
           />
 
           <Switch>
@@ -100,7 +102,8 @@ class App extends React.Component {
               render={(props) => (
                 <ProductDetail
                   {...props}
-                  initCart={this.initCart}
+                  loggedIn={currentUser !== null}
+                  updateCart={this.updateCart}
                   onPurchase={this.purchase}
                 />
               )}
