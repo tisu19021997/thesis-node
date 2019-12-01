@@ -4,6 +4,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'react-modal';
 import axios from 'axios';
+import { withCookies, Cookies } from 'react-cookie';
 
 // bind modal to root, see http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root');
@@ -75,7 +76,7 @@ class Header extends React.Component {
   login(event) {
     event.preventDefault();
     const { usernameLogin, passwordLogin } = this.state;
-    const { login } = this.props;
+    const { login, updateCart } = this.props;
 
     if (usernameLogin && passwordLogin) {
       axios.post('/user/login', {
@@ -93,10 +94,16 @@ class Header extends React.Component {
 
           // login success
           const { user } = data;
-          login(user);
+          login(user.username);
 
           // close the modal
           this.closeModal();
+
+
+          // update the cart
+          if (user.products) {
+            updateCart(user.products);
+          }
 
           return true;
         })
@@ -109,8 +116,12 @@ class Header extends React.Component {
   }
 
   logout() {
-    const { logout } = this.props;
+    const { logout, updateCart } = this.props;
+
+    // call to the parent logout method
     logout();
+    // update the cart
+    updateCart([]);
   }
 
   register(event) {
@@ -153,11 +164,24 @@ class Header extends React.Component {
   }
 
   deleteCartItem(event) {
-    const { cart, updateCart } = this.props;
+    const { cart, updateCart, cookies, currentUser } = this.props;
     const productAsin = event.currentTarget.getAttribute('data-product');
     // filter the product that we need to delete from the current cart
     const newCart = cart.filter((product) => (product.asin !== productAsin));
 
+    // send request to server to update the database
+    if (currentUser) {
+      axios.put(`/user/${currentUser}/deleteCartItem`, newCart)
+        .then((res) => {
+          // TODO: implement the front-end message when successfully delete the item
+          console.log('deleted');
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    } else {
+      // TODO: implement the function to update session if custom is not logged in
+    }
 
 
     return updateCart(newCart);
@@ -517,13 +541,14 @@ Header.propTypes = {
   useCategoryList: PropTypes.bool,
   login: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
-  currentUser: PropTypes.string.isRequired,
+  currentUser: PropTypes.string,
   cart: PropTypes.array.isRequired,
   updateCart: PropTypes.func.isRequired,
 };
 
 Header.defaultProps = {
   useCategoryList: false,
+  currentUser: '',
 };
 
-export default withRouter(Header);
+export default withCookies(withRouter(Header));

@@ -6,7 +6,7 @@ import {
   TabPanel,
 } from 'react-tabs';
 import axios from 'axios';
-import { Cookies, withCookies } from 'react-cookie';
+import { withCookies } from 'react-cookie';
 import Wrapper from '../Wrapper';
 import Section from '../Section';
 import Breadcrumb from '../Breadcrumb';
@@ -107,52 +107,41 @@ class ProductDetail extends React.Component {
           });
 
           // send cart object back to App
-          updateCart(cart);
+          return updateCart(cart);
         })
         .catch((error) => {
           throw new Error(error.message);
         });
     } else {
-      const cart = cookies.get('cart', { doNotParse: false }) || [];
-
-      this.setState({
-        cart,
-      });
+      // TODO: implement cart initially update using cookies
     }
   }
 
   purchaseHandle() {
     const { product, cart } = this.state;
-    const { cookies, updateCart, loggedIn} = this.props;
+    const { cookies, updateCart, loggedIn } = this.props;
 
     if (loggedIn) {
       const username = cookies.get('user');
       // send request to update the cart in user
-      axios.put(`/user/${username}/cart`, product)
+      axios.put(`/user/${username}/addToCart`, product)
         .then((res) => {
-          console.log(res.data);
+          this.setState({
+            cart: [
+              ...cart,
+              product,
+            ],
+          });
         })
         .catch((error) => {
           throw new Error(error.message);
         });
     } else {
-      // update cookies
-      const updatedCart = [...cart, product];
-      cookies.set('cart', JSON.stringify(updatedCart), { path: '/' });
+      // TODO: implement cart update after purchasing using cookies
     }
 
-    this.setState({
-      cart: [
-        ...cart,
-        product,
-      ],
-    });
 
     updateCart([...cart, product]);
-  }
-
-  deleteFromCartHandle(product) {
-
   }
 
   render() {
@@ -389,8 +378,8 @@ class ProductDetail extends React.Component {
               >
 
                 <Bundle
-                  bundleProducts={bundleProducts.products}
-                  bundleProductIds={product.related.bought_together}
+                  bundleProducts={[product, ...bundleProducts.products]}
+                  bundleProductIds={[product.asin, ...product.related.bought_together]}
                   currentProduct={product}
                   totalPrice={bundleProducts.totalPrice}
                 />

@@ -15,18 +15,12 @@ class Bundle extends React.Component {
   }
 
   componentDidMount() {
-    const {
-      bundleProducts, bundleProductIds, currentProduct, totalPrice,
-    } = this.props;
+    const { bundleProductIds, totalPrice } = this.props;
 
     this.setState({
       totalPrice,
       selected: bundleProductIds,
     });
-
-    // Add the current item to the first position of product list
-    bundleProducts.unshift(currentProduct);
-    bundleProductIds.unshift(currentProduct.asin);
   }
 
   updateBundle(event) {
@@ -115,7 +109,7 @@ class Bundle extends React.Component {
     ));
 
     return (
-      <React.Fragment>
+      <>
 
         <div className="o-layout [ o-layout--tiny ]">
           {/* #BUNDLE IMAGES */}
@@ -171,7 +165,7 @@ class Bundle extends React.Component {
         {/* /BUNDLE NAME AND PRICE */}
 
 
-      </React.Fragment>
+      </>
     );
   }
 }

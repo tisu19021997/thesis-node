@@ -3113,6 +3113,7 @@ progress::-moz-progress-bar {
 
 /* line 242, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .cart-view__content {
+  overflow-y: auto;
   padding: 6px 12px;
   background: #fff;
   border: 0.5px solid #dfe1e5;
@@ -3121,14 +3122,15 @@ progress::-moz-progress-bar {
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
+  height: 240px;
 }
 
-/* line 254, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 256, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 .cart-product:not(:last-child) {
   border-bottom: 0.5px solid #dfe1e5;
 }
 
-/* line 260, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
+/* line 262, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.header.scss */
 [data-section="Category List"][data-section="Category List"] {
   background-color: #232f3e;
   max-width: 1198px;

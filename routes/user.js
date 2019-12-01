@@ -85,10 +85,9 @@ router.get('/:username/cart', (req, res, next) => {
     });
 });
 
-router.put('/:username/cart', (req, res, next) => {
+router.put('/:username/addToCart', (req, res, next) => {
   const { username } = req.params;
   const product = req.body;
-  console.log(product._id);
 
   User.findOne({ username })
     .populate('products')
@@ -107,9 +106,31 @@ router.put('/:username/cart', (req, res, next) => {
     });
 });
 
-router.get('/login', (req, res) => {
-  res.render('login');
+router.put('/:username/deleteCartItem', (req, res, next) => {
+  const { username } = req.params;
+  const newCart = req.body;
+
+  User.findOne({ username })
+    .populate('products')
+    .exec()
+    .then((userToUpdate) => {
+      userToUpdate.products = newCart;
+      userToUpdate.save((err) => {
+        if (err) {
+          next(err);
+        }
+      });
+
+      return res.status(200);
+    })
+    .catch((error) => {
+      next(error);
+    });
 });
+
+// router.get('/login', (req, res) => {
+//   res.render('login');
+// });
 
 router.post('/login', (req, res, next) => {
   passport.authenticate('local-login', (err, user) => {
@@ -128,10 +149,16 @@ router.post('/login', (req, res, next) => {
       if (error) {
         return next(error);
       }
+
+      const { username, products } = user;
+
       return res.status(200)
         .json({
           status: 200,
-          user: req.user.username,
+          user: {
+            username,
+            products,
+          },
           message: 'You are signed-in',
         });
     });
