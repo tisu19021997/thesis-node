@@ -23,7 +23,6 @@ class ProductDetail extends React.Component {
 
     this.state = {
       product: {},
-      cart: [],
       alsoBought: {},
       alsoViewed: {},
       bundleProducts: {},
@@ -32,6 +31,7 @@ class ProductDetail extends React.Component {
     };
 
     this.purchaseHandle = this.purchaseHandle.bind(this);
+    this.purchaseAllHandle = this.purchaseAllHandle.bind(this);
   }
 
   componentDidMount() {
@@ -58,11 +58,9 @@ class ProductDetail extends React.Component {
       .catch((error) => {
         throw new Error(error.message);
       });
-
-    this.updateCartHandle();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     const { match } = this.props;
     const { params } = match;
 
@@ -88,50 +86,15 @@ class ProductDetail extends React.Component {
     }
   }
 
-  /**
-   * Keep the `cart` state up to date.
-   *
-   * Also, handling the database updates.
-   */
-  updateCartHandle() {
-    const { updateCart, cookies, loggedIn } = this.props;
-    const username = cookies.get('user');
-
-    // if the user is logged-in, get the cart object from server
-    if (loggedIn) {
-      axios.get(`/user/${username}/cart`)
-        .then((res) => {
-          const { cart } = res.data;
-          this.setState({
-            cart,
-          });
-
-          // send cart object back to App
-          return updateCart(cart);
-        })
-        .catch((error) => {
-          throw new Error(error.message);
-        });
-    } else {
-      // TODO: implement cart initially update using cookies
-    }
-  }
-
   purchaseHandle() {
-    const { product, cart } = this.state;
-    const { cookies, updateCart, loggedIn } = this.props;
+    const { product } = this.state;
+    const { updateCart, loggedIn, currentUser, shoppingCart } = this.props;
 
     if (loggedIn) {
-      const username = cookies.get('user');
       // send request to update the cart in user
-      axios.put(`/user/${username}/addToCart`, product)
+      axios.put(`/user/${currentUser}/purchaseOne`, product)
         .then((res) => {
-          this.setState({
-            cart: [
-              ...cart,
-              product,
-            ],
-          });
+
         })
         .catch((error) => {
           throw new Error(error.message);
@@ -139,9 +102,25 @@ class ProductDetail extends React.Component {
     } else {
       // TODO: implement cart update after purchasing using cookies
     }
+    updateCart([...shoppingCart, product]);
+  }
 
+  purchaseAllHandle(products) {
+    const {
+      currentUser, loggedIn, updateCart, shoppingCart,
+    } = this.props;
 
-    updateCart([...cart, product]);
+    if (loggedIn) {
+      axios.put(`/user/${currentUser}/purchaseAll`, products)
+        .then((res) => {
+
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    } else {
+
+    }
   }
 
   render() {
@@ -159,7 +138,9 @@ class ProductDetail extends React.Component {
       alsoViewed,
       sameCategory,
     } = this.state;
+
     const { categories } = product;
+
     const sliderSettings = {
       slidesToShow: 6,
       slidesToScroll: 6,
@@ -168,6 +149,10 @@ class ProductDetail extends React.Component {
       prevArrow: <PrevArrow />,
       nextArrow: <NextArrow />,
     };
+
+    const bundleIds = bundleProducts.products.map((bundleProduct) => {
+      return bundleProduct._id;
+    });
 
     return (
       <Wrapper className="u-ph-0">
@@ -379,9 +364,10 @@ class ProductDetail extends React.Component {
 
                 <Bundle
                   bundleProducts={[product, ...bundleProducts.products]}
-                  bundleProductIds={[product.asin, ...product.related.bought_together]}
+                  bundleProductIds={[product._id, ...bundleIds]}
                   currentProduct={product}
                   totalPrice={bundleProducts.totalPrice}
+                  purchaseAll={this.purchaseAllHandle}
                 />
               </Section>
             )

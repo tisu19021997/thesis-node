@@ -89,7 +89,6 @@ class App extends React.Component {
             login={this.login}
             logout={this.logout}
             cart={cart}
-            deleteCartItem={this.deleteCartItem}
             updateCart={this.updateCart}
           />
 
@@ -103,8 +102,11 @@ class App extends React.Component {
                 <ProductDetail
                   {...props}
                   loggedIn={currentUser !== null}
+                  currentUser={currentUser}
                   updateCart={this.updateCart}
+                  deleteCartItem={this.deleteCartItem}
                   onPurchase={this.purchase}
+                  shoppingCart={cart}
                 />
               )}
             />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 class Bundle extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class Bundle extends React.Component {
     };
 
     this.updateBundle = this.updateBundle.bind(this);
+    this.purchaseAll = this.purchaseAll.bind(this);
   }
 
   componentDidMount() {
@@ -21,6 +23,17 @@ class Bundle extends React.Component {
       totalPrice,
       selected: bundleProductIds,
     });
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { bundleProductIds, totalPrice } = this.props;
+
+    if (prevProps.bundleProductIds !== bundleProductIds) {
+      this.setState({
+        totalPrice,
+        selected: bundleProductIds,
+      });
+    }
   }
 
   updateBundle(event) {
@@ -53,6 +66,15 @@ class Bundle extends React.Component {
     });
   }
 
+  purchaseAll() {
+    const { purchaseAll, bundleProducts } = this.props;
+    const { selected } = this.state;
+
+    // TODO: update header cart state when purchase all
+
+    purchaseAll(selected);
+  }
+
   render() {
     const { bundleProducts, currentProduct } = this.props;
     const { totalPrice, selected } = this.state;
@@ -60,7 +82,7 @@ class Bundle extends React.Component {
     const productImgList = bundleProducts.map((product, index) => (
       <li
         key={product.asin}
-        className={selected.includes(product.asin)
+        className={selected.includes(product._id)
           ? 'o-layout__item c-bundle__product'
           : 'o-layout__item c-bundle__product c-bundle__product--disabled'}
       >
@@ -80,7 +102,7 @@ class Bundle extends React.Component {
       >
         <input
           type="checkbox"
-          id={product.asin}
+          id={product._id}
           name="bundle"
           defaultChecked
           onChange={this.updateBundle}
@@ -93,6 +115,7 @@ class Bundle extends React.Component {
             ? (
               <span className="u-txt--bold">
               Current:
+                {' '}
               </span>
             )
             : ''}
@@ -129,6 +152,7 @@ class Bundle extends React.Component {
             {/* /#TOAL PRICE */}
             <div className="u-txt--bold u-txt-14">
               Total:
+              {' '}
               <span className="c-price [ c-price--small ]">
                 <span className="c-price__price">
                   <span className="c-price__currency">$</span>
@@ -142,8 +166,9 @@ class Bundle extends React.Component {
             {/* #CTA BUTTON */}
             <button
               type="button"
+              onClick={this.purchaseAll}
               className="c-btn [ c-btn--cta c-btn--rounded c-btn--type-large c-btn--stretch ] u-mt-12">
-              Add Both to Cart
+              Add All to Cart
             </button>
             {/* #CTA BUTTON */}
 

@@ -61,6 +61,29 @@ class Header extends React.Component {
           throw new Error(error.message);
         });
     }
+
+    this.updateCartHandle();
+  }
+
+  updateCartHandle() {
+    const { updateCart, currentUser } = this.props;
+    const loggedIn = currentUser !== null;
+
+    // if the user is logged-in, get the cart object from server
+    if (loggedIn) {
+      axios.get(`/user/${currentUser}/cart`)
+        .then((res) => {
+          const { cart } = res.data;
+
+          // send cart object back to App
+          return updateCart(cart);
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    } else {
+      // TODO: implement cart initially update using cookies
+    }
   }
 
   handleInputChange(event) {
@@ -102,6 +125,7 @@ class Header extends React.Component {
 
           // update the cart
           if (user.products) {
+            console.log(user);
             updateCart(user.products);
           }
 

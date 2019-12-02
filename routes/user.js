@@ -85,7 +85,7 @@ router.get('/:username/cart', (req, res, next) => {
     });
 });
 
-router.put('/:username/addToCart', (req, res, next) => {
+router.put('/:username/purchaseOne', (req, res, next) => {
   const { username } = req.params;
   const product = req.body;
 
@@ -100,6 +100,30 @@ router.put('/:username/addToCart', (req, res, next) => {
         }
       });
       res.json(`Added ${product.name} to your cart.`);
+    })
+    .catch((error) => {
+      next(error);
+    });
+});
+
+router.put('/:username/purchaseAll', (req, res, next) => {
+  const { username } = req.params;
+  const products = req.body;
+
+  User.findOne({ username })
+    .populate('products')
+    .exec()
+    .then((userToUpdate) => {
+      // iterate through array of product ids and save to database
+      for (const product of products) {
+        userToUpdate.products.push(product);
+      }
+      userToUpdate.save((err) => {
+        if (err) {
+          next(err);
+        }
+      });
+      res.json(`Added selected items to your cart.`);
     })
     .catch((error) => {
       next(error);
