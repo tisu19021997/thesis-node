@@ -67,7 +67,7 @@ class Header extends React.Component {
 
   updateCartHandle() {
     const { updateCart, currentUser } = this.props;
-    const loggedIn = currentUser !== null;
+    const loggedIn = currentUser !== '';
 
     // if the user is logged-in, get the cart object from server
     if (loggedIn) {
@@ -317,12 +317,13 @@ class Header extends React.Component {
           </div>
         </aside>
       )
-      :
-      <aside className="cart-view u-txt-align-left u-w--100 u-cf">
-        <div className="cart-view__content">
-          <p className="u-txt-12 u-txt--blur">Your cart is empty.</p>
-        </div>
-      </aside>;
+      : (
+        <aside className="cart-view u-txt-align-left u-w--100 u-cf">
+          <div className="cart-view__content">
+            <p className="u-txt-12 u-txt--blur">Your cart is empty.</p>
+          </div>
+        </aside>
+      );
 
     return (
       <header className="c-header">

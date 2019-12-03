@@ -10,6 +10,7 @@ class Bundle extends React.Component {
     this.state = {
       totalPrice: 0,
       selected: [],
+      selectedProducts: [],
     };
 
     this.updateBundle = this.updateBundle.bind(this);
@@ -18,17 +19,23 @@ class Bundle extends React.Component {
 
   componentDidMount() {
     const { bundleProductIds, totalPrice } = this.props;
+    const { selected } = this.state;
 
-    this.setState({
-      totalPrice,
-      selected: bundleProductIds,
-    });
+    // set the initial state for selected products
+    if (!selected.length) {
+      this.setState({
+        totalPrice,
+        selected: bundleProductIds,
+      });
+    }
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { bundleProductIds, totalPrice } = this.props;
+    const { bundleProductIds, currentProduct, totalPrice } = this.props;
 
-    if (prevProps.bundleProductIds !== bundleProductIds) {
+    // only update state when the product is changed,
+    // i.e user goes to the other product's page
+    if (prevProps.currentProduct.asin !== currentProduct.asin) {
       this.setState({
         totalPrice,
         selected: bundleProductIds,
@@ -66,13 +73,21 @@ class Bundle extends React.Component {
     });
   }
 
-  purchaseAll() {
+  async purchaseAll() {
     const { purchaseAll, bundleProducts } = this.props;
     const { selected } = this.state;
 
-    // TODO: update header cart state when purchase all
+    // filter the products from the bundle with the selected ids
+    const selectedProducts = await bundleProducts.filter((selectedProduct) => {
+      for (let id of selected) {
+        if (id === selectedProduct._id) {
+          return true;
+        }
+      }
+      return false;
+    });
 
-    purchaseAll(selected);
+    await purchaseAll(selectedProducts);
   }
 
   render() {

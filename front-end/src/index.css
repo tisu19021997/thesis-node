@@ -4183,10 +4183,16 @@ progress::-moz-progress-bar {
   color: #232f3e;
   padding: 0;
   top: 50%;
+  /* Override the default arrow text of slick */
+}
+
+/* line 55, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+.c-slider .slick-arrow:before {
+  content: '';
 }
 
 @media (min-width: 61.25em) {
-  /* line 55, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 60, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider .slick-arrow i.medium {
     font-size: 24px;
     font-size: 1.5rem;
@@ -4194,192 +4200,192 @@ progress::-moz-progress-bar {
   }
 }
 
-/* line 60, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 65, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider .slick-arrow.right {
   right: 0;
 }
 
 @media (max-width: 61.24em) {
-  /* line 60, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 65, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider .slick-arrow.right {
     margin-right: 24px;
   }
 }
 
-/* line 68, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 73, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider .slick-arrow.left {
   left: 0;
 }
 
 @media (max-width: 61.24em) {
-  /* line 68, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 73, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider .slick-arrow.left {
     margin-left: 24px;
   }
 }
 
 /* Slick slider normalization */
-/* line 89, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 94, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .slick-dots [role="presentation"] {
   margin-left: 12px;
   margin-right: 0;
 }
 
-/* line 93, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 98, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .slick-dots [role="presentation"]:first-child {
   margin-left: 0;
 }
 
-/* line 99, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 104, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .slick-slide {
   margin-left: 0;
   outline: none;
 }
 
-/* line 103, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 108, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .slick-slide:focus {
   outline: none;
 }
 
-/* line 107, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 112, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .slick-slide .slick-list {
   margin-left: 0;
 }
 
-/* line 117, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 122, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__nav {
   /*reactjs fix*/
 }
 
-/* line 119, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 124, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__nav .slick-track {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
 
-/* line 126, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 131, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__nav .c-slider__item {
   height: inherit !important;
 }
 
-/* line 129, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 134, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__nav .c-slider__item > img {
   max-height: 78px;
   width: auto;
 }
 
-/* line 136, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 141, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__nav-item {
   height: inherit !important;
 }
 
-/* line 139, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 144, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__nav-item > img {
   max-height: 78px;
   width: auto;
 }
 
-/* line 145, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 150, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__screen {
   /*reactjs fix*/
 }
 
-/* line 147, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 152, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__screen .slick-track {
   margin-bottom: 24px;
 }
 
-/* line 153, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 158, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__screen .c-slider__item img {
   height: 255px;
 }
 
-/* line 160, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 165, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider__screen-item img {
   height: 255px;
 }
 
-/* line 172, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 177, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider--tiny-gut .slick-slide {
   padding-left: 12px;
 }
 
 @media (min-width: 61.25em) {
-  /* line 172, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 177, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider--tiny-gut .slick-slide {
     padding-left: 6px;
   }
 }
 
-/* line 180, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 185, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider--tiny-gut .slick-list {
   margin-left: -12px;
 }
 
 @media (min-width: 61.25em) {
-  /* line 180, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 185, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider--tiny-gut .slick-list {
     margin-left: -6px;
   }
 }
 
-/* line 191, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 196, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider--small-gut .slick-slide {
   padding-left: 6px;
 }
 
 @media (min-width: 61.25em) {
-  /* line 191, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 196, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider--small-gut .slick-slide {
     padding-left: 12px;
   }
 }
 
-/* line 199, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 204, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider--small-gut .slick-list {
   margin-left: -6px;
 }
 
 @media (min-width: 61.25em) {
-  /* line 199, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 204, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider--small-gut .slick-list {
     margin-left: -12px;
   }
 }
 
 @media (min-width: 20em) {
-  /* line 210, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 215, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider--large-gut .slick-slide {
     margin-right: 24px;
   }
 }
 
 @media (min-width: 20em) {
-  /* line 216, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+  /* line 221, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
   .c-slider--large-gut .slick-slide .slick-list {
     margin-right: -24px;
   }
 }
 
-/* line 231, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 236, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider--same-h .slick-track {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
 
-/* line 237, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 242, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider--same-h .slick-slide {
   height: inherit;
 }
 
-/* line 241, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 246, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider--same-h img {
   height: 100%;
 }
 
-/* line 248, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
+/* line 253, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/components/_components.slider.scss */
 .c-slider--w-img img {
   margin: 0 auto;
 }

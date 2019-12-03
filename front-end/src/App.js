@@ -41,9 +41,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    const { cookies } = props;
     this.state = {
-      currentUser: cookies.get('user') || null,
+      currentUser: '',
       cart: [],
     };
 
@@ -51,24 +50,23 @@ class App extends React.Component {
     this.logout = this.logout.bind(this);
 
     this.updateCart = this.updateCart.bind(this);
+    this.bundlePurchase = this.bundlePurchase.bind(this);
+
+    this.setCookie = this.setCookie.bind(this);
   }
 
   login(user) {
-    const { cookies } = this.props;
-
     this.setState({
       currentUser: user,
     });
-    cookies.set('user', user);
+    this.setCookie('user', user);
   }
 
   logout() {
-    const { cookies } = this.props;
-
     this.setState({
       currentUser: '',
     });
-    cookies.set('user', '');
+    this.removeCookie('user');
   }
 
   updateCart(cart) {
@@ -76,6 +74,26 @@ class App extends React.Component {
       cart,
     });
   }
+
+  setCookie(key, value, options = {}) {
+    const { cookies } = this.props;
+    cookies.set(key, value, options);
+  }
+
+  removeCookie(key, options = {}) {
+    const { cookies } = this.props;
+    cookies.remove(key, options);
+  }
+
+  bundlePurchase(products) {
+    const { cart } = this.state;
+    // concatenate bundle products with current products in the cart
+    const newCart = cart.concat(products);
+
+    this.setState({
+      cart: newCart,
+    });
+  };
 
   render() {
     const { currentUser, cart } = this.state;
@@ -101,11 +119,10 @@ class App extends React.Component {
               render={(props) => (
                 <ProductDetail
                   {...props}
-                  loggedIn={currentUser !== null}
+                  loggedIn={currentUser !== ''}
                   currentUser={currentUser}
                   updateCart={this.updateCart}
-                  deleteCartItem={this.deleteCartItem}
-                  onPurchase={this.purchase}
+                  onBundlePurchase={this.bundlePurchase}
                   shoppingCart={cart}
                 />
               )}

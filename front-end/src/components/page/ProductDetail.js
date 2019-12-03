@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Tab,
   Tabs,
@@ -88,13 +89,18 @@ class ProductDetail extends React.Component {
 
   purchaseHandle() {
     const { product } = this.state;
-    const { updateCart, loggedIn, currentUser, shoppingCart } = this.props;
+    const {
+      updateCart,
+      loggedIn,
+      currentUser,
+      shoppingCart
+    } = this.props;
 
     if (loggedIn) {
       // send request to update the cart in user
       axios.put(`/user/${currentUser}/purchaseOne`, product)
         .then((res) => {
-
+          // TODO: Get the successful message and display it to UI
         })
         .catch((error) => {
           throw new Error(error.message);
@@ -107,8 +113,10 @@ class ProductDetail extends React.Component {
 
   purchaseAllHandle(products) {
     const {
-      currentUser, loggedIn, updateCart, shoppingCart,
+      currentUser, loggedIn, onBundlePurchase,
     } = this.props;
+
+    onBundlePurchase(products);
 
     if (loggedIn) {
       axios.put(`/user/${currentUser}/purchaseAll`, products)
@@ -536,5 +544,17 @@ class ProductDetail extends React.Component {
     );
   }
 }
+
+ProductDetail.propTypes = {
+  loggedIn: PropTypes.bool.isRequired,
+  currentUser: PropTypes.string.isRequired,
+  updateCart: PropTypes.func.isRequired,
+  onBundlePurchase: PropTypes.func.isRequired,
+  shoppingCart: PropTypes.array.isRequired,
+  // eslint-disable-next-line react/require-default-props
+  match: PropTypes.shape({
+    params: PropTypes.shape({}),
+  }),
+};
 
 export default withCookies(ProductDetail);
