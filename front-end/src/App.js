@@ -24,6 +24,7 @@ import { withCookies, Cookies } from 'react-cookie';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import axios from 'axios';
+import local from './helper/localStorage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/page/Home';
@@ -42,7 +43,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      currentUser: '',
+      currentUser: local.get('user') || '',
       cart: [],
     };
 
@@ -51,22 +52,20 @@ class App extends React.Component {
 
     this.updateCart = this.updateCart.bind(this);
     this.bundlePurchase = this.bundlePurchase.bind(this);
-
-    this.setCookie = this.setCookie.bind(this);
   }
 
   login(user) {
     this.setState({
       currentUser: user,
     });
-    this.setCookie('user', user);
+    local.save('user', user);
   }
 
   logout() {
     this.setState({
       currentUser: '',
     });
-    this.removeCookie('user');
+    local.remove('user');
   }
 
   updateCart(cart) {
@@ -75,25 +74,23 @@ class App extends React.Component {
     });
   }
 
-  setCookie(key, value, options = {}) {
-    const { cookies } = this.props;
-    cookies.set(key, value, options);
-  }
-
-  removeCookie(key, options = {}) {
-    const { cookies } = this.props;
-    cookies.remove(key, options);
-  }
-
   bundlePurchase(products) {
-    const { cart } = this.state;
-    // concatenate bundle products with current products in the cart
-    const newCart = cart.concat(products);
+    const { cart, currentUser } = this.state;
+
+    // if user is logged in, then concatenate bundle products with
+    // the current products in the cart
+    if (currentUser) {
+      const newCart = cart.concat(products);
+
+      this.setState({
+        cart: newCart,
+      });
+    }
 
     this.setState({
-      cart: newCart,
+      cart: products,
     });
-  };
+  }
 
   render() {
     const { currentUser, cart } = this.state;

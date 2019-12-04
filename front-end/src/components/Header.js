@@ -130,7 +130,6 @@ class Header extends React.Component {
 
           // update the cart
           if (user.products) {
-            console.log(user);
             updateCart(user.products);
           }
 
@@ -146,11 +145,16 @@ class Header extends React.Component {
 
   logout() {
     const { logout, updateCart } = this.props;
+    const cart = local.get('cart');
 
     // call to the parent logout method
     logout();
+
     // update the cart
-    updateCart([]);
+    if (cart) {
+      return updateCart(cart);
+    }
+    return updateCart([]);
   }
 
   register(event) {
@@ -196,14 +200,14 @@ class Header extends React.Component {
     const { cart, updateCart, currentUser } = this.props;
     const productAsin = event.currentTarget.getAttribute('data-product');
     // filter the product that we need to delete from the current cart
-    const newCart = cart.filter((product) => (product.asin !== productAsin));
+    const newCart = cart.filter((item) => (item.product.asin !== productAsin));
 
     // send request to server to update the database
     if (currentUser) {
       axios.put(`/user/${currentUser}/deleteCartItem`, newCart)
         .then((res) => {
           // TODO: implement the front-end message when successfully delete the item
-          console.log('deleted');
+          
         })
         .catch((error) => {
           throw new Error(error.message);
@@ -246,14 +250,14 @@ class Header extends React.Component {
       )
       : '';
 
-    const cartProductList = cart.map((product, index) => (
+    const cartProductList = cart.map((item, index) => (
       <div
         key={index.toString()}
         className="cart-product o-layout o-layout--flush u-d-flex u-ai--center u-pv-12">
 
         <div
           className="cart-counter o-layout__item u-txt-12 u-1/6 u-txt-align-center u-txt-underline">
-          {product.quantity}
+          {item.quantity}
         </div>
 
         <div
@@ -261,18 +265,18 @@ class Header extends React.Component {
           <div className="o-media">
             <img
               className="o-media__img u-1/4"
-              src={product.imUrl}
-              alt={product.title}
+              src={item.product.imUrl}
+              alt={item.product.title}
             />
 
             <div className="o-media__body">
               <div className="u-txt-truncate-2 u-txt--bold">
-                {product.title}
+                {item.product.title}
               </div>
               <div className="c-price [ c-price--small ] ">
                 <div className="c-price__price">
                   <span className="c-price__currency">$</span>
-                  {product.price}
+                  {item.product.price}
                 </div>
               </div>
             </div>
@@ -282,7 +286,7 @@ class Header extends React.Component {
 
         <div className="cart-product__tool o-layout__item u-1/6 u-txt-align-right">
           <button
-            data-product={product.asin}
+            data-product={item.product.asin}
             type="button"
             className="c-btn--fake"
             onClick={this.deleteCartItem}

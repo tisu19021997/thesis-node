@@ -18,11 +18,19 @@ const Schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Products',
   }],
-  products: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Products',
-    autopopulate: true,
-  }],
+  products: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Products',
+        autopopulate: true,
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+      },
+    },
+  ],
 });
 
 Schema.plugin(require('mongoose-autopopulate'));

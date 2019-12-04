@@ -72,7 +72,7 @@ router.get('/:username/cart', (req, res, next) => {
   const { username } = req.params;
 
   User.findOne({ username })
-    .populate('products')
+    .populate('product')
     .exec((err, user) => {
       if (err) {
         return next(err);
@@ -89,29 +89,66 @@ router.put('/:username/purchaseOne', (req, res, next) => {
   const { username } = req.params;
   const product = req.body;
 
+  // create a valid product model using the product from the request
+  const productModel = {
+    product: product._id,
+    _id: mongoose.Types.ObjectId(),
+  };
+
   User.findOne({ username })
-    .populate('products')
+    .populate('product')
     .exec()
     .then((userToUpdate) => {
-      userToUpdate.products.push(product._id);
-      userToUpdate.save((err) => {
-        if (err) {
-          next(err);
-        }
-      });
-      res.json(`Added ${product.name} to your cart.`);
+      const { products } = userToUpdate;
+
+      const notCurrentProduct = products.filter(
+        (item) => item.product._id.toString() !== product._id,
+      );
+      const noDuplicated = notCurrentProduct.length === products.length;
+
+      if (noDuplicated) {
+        User.findOneAndUpdate({ username }, { $push: { products: productModel } }, { new: true })
+          .exec()
+          .then((updatedUser) => {
+            res.send(updatedUser.products);
+          })
+          .catch((error) => {
+            next(error);
+          });
+      } else {
+        // if the product is already in cart, update the quantity only
+        User.findOneAndUpdate({
+          username,
+          'products.product': product._id,
+        }, { $inc: { 'products.$.quantity': 1 } }, { new: true })
+          .exec()
+          .then((updatedUser) => {
+            res.send(updatedUser.products);
+          })
+          .catch((error) => {
+            next(error);
+          });
+      }
+
+      // userToUpdate.products.push(product._id);
+      // userToUpdate.save((err) => {
+      //   if (err) {
+      //     next(err);
+      //   }
+      // });
     })
     .catch((error) => {
       next(error);
     });
-});
+})
+;
 
 router.put('/:username/purchaseAll', (req, res, next) => {
   const { username } = req.params;
   const products = req.body;
 
   User.findOne({ username })
-    .populate('products')
+    .populate('product')
     .exec()
     .then((userToUpdate) => {
       // iterate through array of product ids and save to database
@@ -135,7 +172,7 @@ router.put('/:username/deleteCartItem', (req, res, next) => {
   const newCart = req.body;
 
   User.findOne({ username })
-    .populate('products')
+    .populate('product')
     .exec()
     .then((userToUpdate) => {
       userToUpdate.products = newCart;

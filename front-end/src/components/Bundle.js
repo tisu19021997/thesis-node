@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { includes, pick } from 'lodash';
 
 class Bundle extends React.Component {
   constructor(props) {
@@ -77,14 +78,9 @@ class Bundle extends React.Component {
     const { selected } = this.state;
 
     // filter the products from the bundle with the selected ids
-    const selectedProducts = await bundleProducts.filter((selectedProduct) => {
-      for (let id of selected) {
-        if (id === selectedProduct._id) {
-          return true;
-        }
-      }
-      return false;
-    });
+    const selectedProducts = await bundleProducts.filter((product) => (
+      includes(selected, product._id)
+    ));
 
     await purchaseAll(selectedProducts);
   }

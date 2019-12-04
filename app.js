@@ -77,7 +77,7 @@ app.listen(app.get('port'), () => {
 });
 
 // mongodb connection
-
+mongoose.set('useFindAndModify', false);
 mongoose.connect('mongodb://localhost/thesis', {
   useNewUrlParser: true,
   useUnifiedTopology: true,

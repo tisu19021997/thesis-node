@@ -7,6 +7,7 @@ import {
   TabPanel,
 } from 'react-tabs';
 import axios from 'axios';
+import array from 'lodash/array';
 import { withCookies } from 'react-cookie';
 import local from '../../helper/localStorage';
 import Wrapper from '../Wrapper';
@@ -94,51 +95,100 @@ class ProductDetail extends React.Component {
       updateCart,
       loggedIn,
       currentUser,
-      shoppingCart,
     } = this.props;
+
+    const productModel = {
+      product,
+      quantity: 1,
+    };
 
     if (loggedIn) {
       // send request to update the cart in user
       axios.put(`/user/${currentUser}/purchaseOne`, product)
         .then((res) => {
           // TODO: Get the successful message and display it to UI
+          updateCart(res.data);
         })
         .catch((error) => {
           throw new Error(error.message);
         });
     } else {
-      const cart = local.get('cart');
+      // get the cart from localStorage
+      let localCart = local.get('cart') || [];
 
-      if (cart) {
-        local.save('cart', [...cart, product]);
+      if (localCart.length) {
+        const productIndex = array.findIndex(localCart, (o) => o.product.asin === product.asin);
+
+        // if the cart exists and the product is already in cart
+        // update the quantity only
+        if (productIndex !== -1) {
+          localCart[productIndex].quantity += 1;
+        } else {
+          localCart = [...localCart, productModel];
+        }
       } else {
-        local.save('cart', [product]);
+        localCart.push(productModel);
       }
+
+      // save the cart to localStorage and update state
+      local.save('cart', localCart);
+      updateCart(localCart);
     }
-    updateCart([...shoppingCart, product]);
   }
 
   purchaseAllHandle(products) {
     const {
       currentUser, loggedIn, onBundlePurchase,
     } = this.props;
-    const cart = local.get('cart');
 
-    onBundlePurchase(products);
+    const productModels = products.map((product) => (
+      {
+        product,
+        quantity: 1,
+      }
+    ));
 
     if (loggedIn) {
       axios.put(`/user/${currentUser}/purchaseAll`, products)
         .then((res) => {
-
+          onBundlePurchase(products);
         })
         .catch((error) => {
           throw new Error(error.message);
         });
-    } else if (cart) {
-      local.save('cart', cart.concat(products));
     } else {
-      local.save('cart', products);
+      let localCart = local.get('cart') || [];
+
+      if (localCart.length) {
+        // loop through each product of the bundle
+        products.map((product) => {
+          const productModel = {
+            product,
+            quantity: 1,
+          };
+          const productIndex = array.findIndex(localCart, (o) => o.product.asin === product.asin);
+
+          if (productIndex !== -1) {
+            localCart[productIndex].quantity += 1;
+          } else {
+            localCart = [...localCart, productModel];
+          }
+          return true;
+        });
+      } else {
+        localCart = productModels;
+        console.log(localCart);
+      }
+
+      local.save('cart', localCart);
+      onBundlePurchase(localCart);
     }
+
+    // if (cart) {
+    //   local.save('cart', cart.concat(products));
+    // } else {
+    //   local.save('cart', products);
+    // }
   }
 
   render() {
@@ -554,6 +604,7 @@ class ProductDetail extends React.Component {
     );
   }
 }
+
 
 ProductDetail.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
