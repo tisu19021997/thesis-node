@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'react-modal';
 import axios from 'axios';
 import { withCookies, Cookies } from 'react-cookie';
+import local from '../helper/localStorage';
 
 // bind modal to root, see http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root');
@@ -74,15 +75,19 @@ class Header extends React.Component {
       axios.get(`/user/${currentUser}/cart`)
         .then((res) => {
           const { cart } = res.data;
-
           // send cart object back to App
-          return updateCart(cart);
+          updateCart(cart);
         })
         .catch((error) => {
           throw new Error(error.message);
         });
     } else {
-      // TODO: implement cart initially update using cookies
+      // get the cart from local storage (if there is any)
+      const cart = local.get('cart');
+
+      if (cart) {
+        updateCart(cart);
+      }
     }
   }
 
@@ -188,7 +193,7 @@ class Header extends React.Component {
   }
 
   deleteCartItem(event) {
-    const { cart, updateCart, cookies, currentUser } = this.props;
+    const { cart, updateCart, currentUser } = this.props;
     const productAsin = event.currentTarget.getAttribute('data-product');
     // filter the product that we need to delete from the current cart
     const newCart = cart.filter((product) => (product.asin !== productAsin));
@@ -204,9 +209,8 @@ class Header extends React.Component {
           throw new Error(error.message);
         });
     } else {
-      // TODO: implement the function to update session if custom is not logged in
+      local.save('cart', newCart);
     }
-
 
     return updateCart(newCart);
   }

@@ -8,6 +8,7 @@ import {
 } from 'react-tabs';
 import axios from 'axios';
 import { withCookies } from 'react-cookie';
+import local from '../../helper/localStorage';
 import Wrapper from '../Wrapper';
 import Section from '../Section';
 import Breadcrumb from '../Breadcrumb';
@@ -93,7 +94,7 @@ class ProductDetail extends React.Component {
       updateCart,
       loggedIn,
       currentUser,
-      shoppingCart
+      shoppingCart,
     } = this.props;
 
     if (loggedIn) {
@@ -106,7 +107,13 @@ class ProductDetail extends React.Component {
           throw new Error(error.message);
         });
     } else {
-      // TODO: implement cart update after purchasing using cookies
+      const cart = local.get('cart');
+
+      if (cart) {
+        local.save('cart', [...cart, product]);
+      } else {
+        local.save('cart', [product]);
+      }
     }
     updateCart([...shoppingCart, product]);
   }
@@ -115,6 +122,7 @@ class ProductDetail extends React.Component {
     const {
       currentUser, loggedIn, onBundlePurchase,
     } = this.props;
+    const cart = local.get('cart');
 
     onBundlePurchase(products);
 
@@ -126,8 +134,10 @@ class ProductDetail extends React.Component {
         .catch((error) => {
           throw new Error(error.message);
         });
+    } else if (cart) {
+      local.save('cart', cart.concat(products));
     } else {
-
+      local.save('cart', products);
     }
   }
 
