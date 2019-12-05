@@ -1,88 +1,114 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
 import Wrapper from '../Wrapper';
 import Section from '../Section';
-import Product from '../Product';
-import SlickSlider from '../slider/SlickSlider';
 import PrevArrow from '../slider/PrevArrow';
 import NextArrow from '../slider/NextArrow';
-
-const axios = require('axios');
+import ProductSlider from '../slider/ProductSlider';
+import local from '../../helper/localStorage';
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      products: {
-        history: [],
-      },
+      history: [],
     };
+
+    this.getUserHistory = this.getUserHistory.bind(this);
   }
 
   componentDidMount() {
-    axios.get('/')
-      .then((res) => {
-        const { products } = res.data;
+    const { currentUser } = this.props;
+    this.getUserHistory(currentUser);
+  }
 
-        this.setState({
-          products: {
-            history: products,
-          },
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { currentUser } = this.props;
+    if (prevProps.currentUser !== currentUser) {
+      this.getUserHistory(currentUser);
+    }
+  }
+
+  getUserHistory(user) {
+    if (user) {
+      axios.get(`/home/${user}`)
+        .then((res) => {
+          const { history } = res.data;
+
+          this.setState({
+            history,
+            ready: true,
+          });
+        })
+        .catch((error) => {
+          throw new Error(error.message);
         });
-      })
-      .catch((error) => {
-        throw new Error(error.message);
-      });
+    } else {
+      const history = local.get('history') || [];
+
+      if (history.length) {
+        this.setState({
+          history,
+          ready: true,
+        });
+      }
+
+      // TODO: implement axios request for other products (except history products)
+    }
   }
 
   render() {
-    const { products } = this.state;
-    const { history } = products;
+    const { ready, history } = this.state;
 
-    const historyProducts = history.map((product) => (
-      <Product
-        key={product.asin}
-        product={product}
-      />
-    ));
+    if (!ready) {
+      return false;
+    }
+
+    const historyProducts = history.map((product) => (product.product));
+
+    const sliderSettings = {
+      slidesToShow: 4,
+      slidesToScroll: 4,
+      adaptiveHeight: false,
+      infinite: historyProducts.length > 100, // fix slick slider bug auto duplicate
+      dots: true,
+      dotsClass: 'c-section__dots slick-dots',
+      arrows: true,
+      prevArrow: <PrevArrow />,
+      nextArrow: <NextArrow />,
+    };
+
+    console.log(historyProducts);
 
     return (
       <Wrapper className="u-ph-0">
         <Section title="Pick up where you left off" data="History">
 
-          <SlickSlider
-            settings={
-              {
-                slidesToShow: 4,
-                slidesToScroll: 4,
-                adaptiveHeight: false,
-                dots: true,
-                dotsClass: 'c-section__dots slick-dots',
-                arrows: true,
-                prevArrow: <PrevArrow />,
-                nextArrow: <NextArrow />,
-                responsive: [
-                  {
-                    breakpoint: 980,
-                    settings: {
-                      slidesToShow: 2.5,
-                      slidesToScroll: 2.5,
-                      dots: false,
-                      arrows: false,
-                    },
-                  },
-                ],
-              }
-            }
-            className="c-slider [  c-slider--tiny-gut c-slider--right-dots ] u-ph-48"
-          >
-            {historyProducts}
-          </SlickSlider>
+          {historyProducts.length
+            ? (
+              <ProductSlider
+                products={historyProducts}
+                settings={sliderSettings}
+                className="c-slider [  c-slider--tiny-gut c-slider--right-dots ] u-ph-48"
+              />
+
+            )
+            : ''}
 
         </Section>
       </Wrapper>
     );
   }
 }
+
+Home.propTypes = {
+  currentUser: PropTypes.string,
+};
+
+Home.defaultProps = {
+  currentUser: '',
+};
 
 export default Home;

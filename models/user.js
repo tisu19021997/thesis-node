@@ -14,10 +14,19 @@ const Schema = new mongoose.Schema({
     first: String,
     last: String,
   },
-  history: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Products',
-  }],
+  history: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Products',
+        autopopulate: true,
+      },
+      time: {
+        type: Date,
+        default: Date.now(),
+      },
+    },
+  ],
   products: [
     {
       product: {

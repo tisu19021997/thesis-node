@@ -18,7 +18,6 @@ Wrapper.propTypes = {
 
 Wrapper.defaultProps = {
   className: '',
-
 };
 
 export default Wrapper;

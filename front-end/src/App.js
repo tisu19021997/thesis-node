@@ -109,7 +109,13 @@ class App extends React.Component {
 
           <Switch>
 
-            <Route exact path="/" component={Home} />
+            <Route
+              exact
+              path="/"
+              render={(props) => (
+                <Home {...props} currentUser={currentUser} />
+              )}
+            />
 
             <Route
               path="/product/:asin"

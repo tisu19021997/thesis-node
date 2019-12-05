@@ -47,8 +47,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // initialize Passport and restore authentication state, if any, from the
 // session.
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize({}));
+app.use(passport.session({}));
 
 app.use(flash());
 
@@ -87,6 +87,7 @@ db.on('err', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
   console.log('Connected to database');
 });
+
 
 
 module.exports = app;

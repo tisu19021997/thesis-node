@@ -11,7 +11,6 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const Product = require('../models/product');
 
-
 // passport configuration methods
 passport.serializeUser((user, cb) => {
   cb(null, user.username);
@@ -92,7 +91,6 @@ router.put('/:username/purchaseOne', (req, res, next) => {
   // create a valid product model using the product from the request
   const productModel = {
     product: product._id,
-    _id: mongoose.Types.ObjectId(),
   };
 
   User.findOne({ username })
@@ -129,19 +127,11 @@ router.put('/:username/purchaseOne', (req, res, next) => {
             next(error);
           });
       }
-
-      // userToUpdate.products.push(product._id);
-      // userToUpdate.save((err) => {
-      //   if (err) {
-      //     next(err);
-      //   }
-      // });
     })
     .catch((error) => {
       next(error);
     });
-})
-;
+});
 
 router.put('/:username/purchaseAll', (req, res, next) => {
   const { username } = req.params;
@@ -189,9 +179,46 @@ router.put('/:username/deleteCartItem', (req, res, next) => {
     });
 });
 
-// router.get('/login', (req, res) => {
-//   res.render('login');
-// });
+router.put('/:username/updateHistory', (req, res, next) => {
+  const { username } = req.params;
+  const product = req.body;
+
+  // create a valid product model using the product from the request
+  const productModel = {
+    product: product._id,
+    _id: mongoose.Types.ObjectId(),
+  };
+
+  User.findOne({ username })
+    .populate('product')
+    .exec()
+    .then((userToUpdate) => {
+      const { history } = userToUpdate;
+      const isDuplicated = history.filter(
+        (item) => item.product._id.toString() === product._id,
+      ).length > 0;
+
+      if (!isDuplicated) {
+        User.updateOne({ username }, {
+          $push: {
+            history: {
+              $each: [productModel],
+              $position: 0,
+            },
+          },
+        }, { new: true })
+          .exec()
+          .then((updatedUser) => {
+            return res.send(updatedUser.history);
+          })
+          .catch((error) => {
+            next(error);
+          });
+      }
+
+      return false;
+    });
+});
 
 router.post('/login', (req, res, next) => {
   passport.authenticate('local-login', (err, user) => {
@@ -211,7 +238,7 @@ router.post('/login', (req, res, next) => {
         return next(error);
       }
 
-      const { username, products } = user;
+      const { username, products, history } = user;
 
       return res.status(200)
         .json({
@@ -219,6 +246,7 @@ router.post('/login', (req, res, next) => {
           user: {
             username,
             products,
+            history,
           },
           message: 'You are signed-in',
         });
@@ -226,10 +254,6 @@ router.post('/login', (req, res, next) => {
 
     return false;
   })(req, res, next);
-});
-
-router.get('/register', (req, res) => {
-  res.render('signup');
 });
 
 router.post('/register', (req, res, next) => {

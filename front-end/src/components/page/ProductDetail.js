@@ -10,6 +10,7 @@ import axios from 'axios';
 import array from 'lodash/array';
 import { withCookies } from 'react-cookie';
 import local from '../../helper/localStorage';
+import { toProductModel } from '../../helper/data';
 import Wrapper from '../Wrapper';
 import Section from '../Section';
 import Breadcrumb from '../Breadcrumb';
@@ -18,6 +19,7 @@ import Bundle from '../Bundle';
 import ProductSlider from '../slider/ProductSlider';
 import PrevArrow from '../slider/PrevArrow';
 import NextArrow from '../slider/NextArrow';
+import { saveHistory } from '../../helper/request';
 
 
 class ProductDetail extends React.Component {
@@ -35,6 +37,8 @@ class ProductDetail extends React.Component {
 
     this.purchaseHandle = this.purchaseHandle.bind(this);
     this.purchaseAllHandle = this.purchaseAllHandle.bind(this);
+
+    this.historyTracking = this.historyTracking.bind(this);
   }
 
   componentDidMount() {
@@ -42,7 +46,6 @@ class ProductDetail extends React.Component {
     const { params } = match;
 
     // Make a call to server to get the necessary data
-
     axios.get(`/product/${params.asin}`)
       .then((res) => {
         const {
@@ -57,6 +60,8 @@ class ProductDetail extends React.Component {
           sameCategory,
           ready: true,
         });
+
+        this.historyTracking();
       })
       .catch((error) => {
         throw new Error(error.message);
@@ -82,11 +87,18 @@ class ProductDetail extends React.Component {
             sameCategory,
             ready: true,
           });
+
+          this.historyTracking();
         })
         .catch((error) => {
           throw new Error(error.message);
         });
     }
+  }
+
+  historyTracking() {
+    const { product } = this.state;
+    return saveHistory(product);
   }
 
   purchaseHandle() {
@@ -97,10 +109,7 @@ class ProductDetail extends React.Component {
       currentUser,
     } = this.props;
 
-    const productModel = {
-      product,
-      quantity: 1,
-    };
+    const productModel = toProductModel(product);
 
     if (loggedIn) {
       // send request to update the cart in user
@@ -162,10 +171,7 @@ class ProductDetail extends React.Component {
       if (localCart.length) {
         // loop through each product of the bundle
         products.map((product) => {
-          const productModel = {
-            product,
-            quantity: 1,
-          };
+          const productModel = toProductModel(product);
           const productIndex = array.findIndex(localCart, (o) => o.product.asin === product.asin);
 
           if (productIndex !== -1) {
@@ -177,18 +183,11 @@ class ProductDetail extends React.Component {
         });
       } else {
         localCart = productModels;
-        console.log(localCart);
       }
 
       local.save('cart', localCart);
       onBundlePurchase(localCart);
     }
-
-    // if (cart) {
-    //   local.save('cart', cart.concat(products));
-    // } else {
-    //   local.save('cart', products);
-    // }
   }
 
   render() {
@@ -206,6 +205,8 @@ class ProductDetail extends React.Component {
       alsoViewed,
       sameCategory,
     } = this.state;
+
+    const { currentUser } = this.props;
 
     const { categories } = product;
 
@@ -436,6 +437,7 @@ class ProductDetail extends React.Component {
                   currentProduct={product}
                   totalPrice={bundleProducts.totalPrice}
                   purchaseAll={this.purchaseAllHandle}
+                  user={currentUser}
                 />
               </Section>
             )

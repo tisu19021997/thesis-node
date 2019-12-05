@@ -9,7 +9,6 @@ const Product = (props) => {
     <Link
       to={`/product/${product.asin}`}
       className="c-product"
-      replace
     >
 
       <div className="c-product__img">
@@ -32,8 +31,12 @@ const Product = (props) => {
 };
 
 Product.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   product: PropTypes.object.isRequired,
+  user: PropTypes.string,
+};
+
+Product.defaultProps = {
+  user: '',
 };
 
 

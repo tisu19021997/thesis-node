@@ -86,7 +86,7 @@ class Bundle extends React.Component {
   }
 
   render() {
-    const { bundleProducts, currentProduct } = this.props;
+    const { bundleProducts, currentProduct, user } = this.props;
     const { totalPrice, selected } = this.state;
 
     const productImgList = bundleProducts.map((product, index) => (
@@ -96,11 +96,10 @@ class Bundle extends React.Component {
           ? 'o-layout__item c-bundle__product'
           : 'o-layout__item c-bundle__product c-bundle__product--disabled'}
       >
-        <span>
-          <Link to={`/product/${product.asin}`}>
-            <img className="c-bundle__img" src={product.imUrl} alt={product.name} />
-          </Link>
-        </span>
+        <Link to={`/product/${product.asin}`}>
+          <img className="c-bundle__img" src={product.imUrl} alt={product.name} />
+        </Link>
+
         {index < bundleProducts.length - 1 ? <span className="c-bundle__separator">+</span> : ''}
       </li>
     ));

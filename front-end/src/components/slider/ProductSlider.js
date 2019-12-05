@@ -9,6 +9,7 @@ const ProductSlider = (props) => {
     <Product key={product.asin} product={product} />
   ));
 
+
   return (
     <Slider
       {...settings}

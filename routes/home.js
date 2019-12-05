@@ -1,9 +1,9 @@
 const express = require('express');
 const Products = require('../models/product');
+const controller = require('../controllers/home');
 
 const router = express.Router();
 
-/* GET home page. */
 router.get('/', (req, res, next) => {
   Products.find({})
     .then((products) => {
@@ -15,5 +15,7 @@ router.get('/', (req, res, next) => {
       next(err);
     });
 });
+
+router.get('/home/:username', controller.getPromotion, controller.getRecommendation, controller.getHistory, controller.getDeal, controller.getRelatedItems);
 
 module.exports = router;
