@@ -207,7 +207,7 @@ class Header extends React.Component {
       axios.put(`/user/${currentUser}/deleteCartItem`, newCart)
         .then((res) => {
           // TODO: implement the front-end message when successfully delete the item
-          
+
         })
         .catch((error) => {
           throw new Error(error.message);

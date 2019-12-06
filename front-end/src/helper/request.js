@@ -32,7 +32,7 @@ export const saveHistory = (product, user = local.get('user') || '') => {
       }
       localHistory = [historyModel, ...localHistory];
     } else {
-      localHistory.push(historyModel);
+      localHistory = [historyModel, ...localHistory];
     }
 
     local.save('history', localHistory);

@@ -57,7 +57,7 @@ class Bundle extends React.Component {
 
       // get the checked product id
       const checkedProduct = bundleProductIds.filter((id) => (id === asin));
-      selected.push(checkedProduct[0]);
+      selected = [...selected, checkedProduct[0]];
     } else {
       totalPrice -= price;
       selected = selected.filter((id) => (id !== asin));

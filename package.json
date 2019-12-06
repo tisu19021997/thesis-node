@@ -22,6 +22,7 @@
     "inuitcss": "^6.0.0",
     "java": "^0.11.1",
     "jsdom": "^15.2.0",
+    "lodash": "^4.17.15",
     "mobile-detect": "^1.4.4",
     "mongoose": "^5.7.1",
     "mongoose-autopopulate": "^0.9.1",

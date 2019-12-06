@@ -136,7 +136,7 @@ class ProductDetail extends React.Component {
           localCart = [...localCart, productModel];
         }
       } else {
-        localCart.push(productModel);
+        localCart = [...localCart, productModel];
       }
 
       // save the cart to localStorage and update state

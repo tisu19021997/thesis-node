@@ -80,8 +80,6 @@ class Home extends React.Component {
       nextArrow: <NextArrow />,
     };
 
-    console.log(historyProducts);
-
     return (
       <Wrapper className="u-ph-0">
         <Section title="Pick up where you left off" data="History">

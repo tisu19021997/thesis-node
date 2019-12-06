@@ -1,6 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
+const { sortBy } = require('lodash');
 
 // authentication
 const passport = require('passport');
@@ -208,9 +209,18 @@ router.put('/:username/updateHistory', (req, res, next) => {
           },
         }, { new: true })
           .exec()
-          .then((updatedUser) => {
-            return res.send(updatedUser.history);
-          })
+          .then((updatedUser) => res.send(updatedUser.history))
+          .catch((error) => {
+            next(error);
+          });
+      } else {
+        const sortedHistory = sortBy(history, (item) => {
+          return item.product._id.toString() !== product._id;
+        });
+
+        User.updateOne({ username }, { history: sortedHistory }, { new: true })
+          .exec()
+          .then((updatedUser) => res.send(updatedUser.history))
           .catch((error) => {
             next(error);
           });
