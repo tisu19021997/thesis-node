@@ -31,6 +31,7 @@ class Header extends React.Component {
       categories: [],
       isLoginModalOpen: false,
       isCartOpen: false,
+      cartCounter: 0,
     };
 
     this.openModal = this.openModal.bind(this);
@@ -222,6 +223,7 @@ class Header extends React.Component {
   render() {
     const { categories, isLoginModalOpen, isCartOpen } = this.state;
     const { useCategoryList, currentUser, cart } = this.props;
+    let { cartCounter } = this.state;
 
     const categoriesItem = categories.map((category, index) => (
       <li
@@ -250,55 +252,59 @@ class Header extends React.Component {
       )
       : '';
 
-    const cartProductList = cart.map((item, index) => (
-      <div
-        key={index.toString()}
-        className="cart-product o-layout o-layout--flush u-d-flex u-ai--center u-pv-12">
+    const cartProductList = cart.map((item, index) => {
+      cartCounter += item.quantity;
 
+      return (
         <div
-          className="cart-counter o-layout__item u-txt-12 u-1/6 u-txt-align-center u-txt-underline">
-          {item.quantity}
-        </div>
+          key={index.toString()}
+          className="cart-product o-layout o-layout--flush u-d-flex u-ai--center u-pv-12">
 
-        <div
-          className="cart-product__name o-layout__item u-txt-12 u-4/6 u-txt-align-left u-txt-lineh-1">
-          <div className="o-media">
-            <img
-              className="o-media__img u-1/4"
-              src={item.product.imUrl}
-              alt={item.product.title}
-            />
+          <div
+            className="cart-counter o-layout__item u-txt-12 u-1/6 u-txt-align-center u-txt-underline">
+            {item.quantity}
+          </div>
 
-            <div className="o-media__body">
-              <div className="u-txt-truncate-2 u-txt--bold">
-                {item.product.title}
-              </div>
-              <div className="c-price [ c-price--small ] ">
-                <div className="c-price__price">
-                  <span className="c-price__currency">$</span>
-                  {item.product.price}
+          <div
+            className="cart-product__name o-layout__item u-txt-12 u-4/6 u-txt-align-left u-txt-lineh-1">
+            <div className="o-media">
+              <img
+                className="o-media__img u-1/4"
+                src={item.product.imUrl}
+                alt={item.product.title}
+              />
+
+              <div className="o-media__body">
+                <div className="u-txt-truncate-2 u-txt--bold">
+                  {item.product.title}
+                </div>
+                <div className="c-price [ c-price--small ] ">
+                  <div className="c-price__price">
+                    <span className="c-price__currency">$</span>
+                    {item.product.price}
+                  </div>
                 </div>
               </div>
+
             </div>
-
           </div>
-        </div>
 
-        <div className="cart-product__tool o-layout__item u-1/6 u-txt-align-right">
-          <button
-            data-product={item.product.asin}
-            type="button"
-            className="c-btn--fake"
-            onClick={this.deleteCartItem}
-          >
+          <div className="cart-product__tool o-layout__item u-1/6 u-txt-align-right">
+            <button
+              data-product={item.product.asin}
+              type="button"
+              className="c-btn--fake"
+              onClick={this.deleteCartItem}
+            >
             <span>
               <FontAwesomeIcon size="1x" icon="times" />
             </span>
-          </button>
-        </div>
+            </button>
+          </div>
 
-      </div>
-    ));
+        </div>
+      );
+    });
 
     const cartView = cart.length
       ? (
@@ -310,7 +316,7 @@ class Header extends React.Component {
                 Proceed to checkout
               </Link>
               <div className="u-txt-20 u-line u-txt-align-center u-txt--bold u-ml-auto">
-                {cart.length}
+                {cartCounter}
                 <div className="u-txt-10 u-txt--blur u-txt--light">
                   items
                 </div>
@@ -467,7 +473,7 @@ class Header extends React.Component {
               <span className="c-header__nav-tool-text">
                 Cart
                 {' '}
-                <span className="u-txt--bold">{cart.length}</span>
+                <span className="u-txt--bold">{cartCounter}</span>
                 {
                   isCartOpen ? <span className="cart-caret" /> : ''
                 }
