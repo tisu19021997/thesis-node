@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { findIndex } from 'lodash';
+import { findIndex, sortBy } from 'lodash';
 import local from './localStorage';
 
 /**
@@ -28,9 +28,13 @@ export const saveHistory = (product, user = local.get('user') || '') => {
 
     if (localHistory.length) {
       if (findIndex(localHistory, (o) => o.product.asin === product.asin) !== -1) {
-        return false;
+        // if the item is already in history, re-order it to the first position
+        localHistory = sortBy(localHistory, (item) => {
+          return item.product._id.toString() !== product._id;
+        });
+      } else {
+        localHistory = [historyModel, ...localHistory];
       }
-      localHistory = [historyModel, ...localHistory];
     } else {
       localHistory = [historyModel, ...localHistory];
     }

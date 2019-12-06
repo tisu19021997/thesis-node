@@ -2,6 +2,8 @@
 const Products = require('../models/product');
 const Categories = require('../models/category');
 
+// *========== PRODUCT DETAIL PAGE ==========* //
+
 module.exports.getCategories = (req, res, next) => {
   Categories.find({}, (err, categories) => {
     if (err) {
@@ -58,17 +60,8 @@ module.exports.getBundleProducts = (req, res, next) => {
   });
 };
 
-/**
- * Get "also" products from database (also viewed, also bought, etc)
- *
- * @param req
- * @param res
- * @param next
- * @returns {Promise<void>}
- */
-module.exports.getAlsoProducts = async (req, res, next) => {
+module.exports.getAlsoProducts = (req, res, next) => {
   const { related } = res.locals;
-  // eslint-disable-next-line camelcase
   const { also_viewed, also_bought } = related;
 
   const alsoViewedPromise = Products.find({
@@ -112,7 +105,7 @@ module.exports.getSameCatProducts = (req, res, next) => {
     });
 };
 
-module.exports.mount = (req, res) => {
+module.exports.renderProducts = (req, res) => {
   const {
     product, sameCategory, alsoViewed, alsoBought, bundleProducts, categories,
   } = res.locals;
@@ -127,4 +120,21 @@ module.exports.mount = (req, res) => {
       sameCategory,
     },
   );
+};
+
+
+// *========== SEARCH ==========* //
+
+module.exports.searchByName = (req, res, next) => {
+  const { title } = req.params;
+  console.log(title);
+
+  Products.find({ title: { $regex: title, $options: 'i' } })
+    .then((products) => {
+      res.json(products);
+    })
+    .catch((error) => {
+      next(error);
+    })
+  ;
 };

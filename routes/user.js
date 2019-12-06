@@ -6,6 +6,7 @@ const { sortBy } = require('lodash');
 // authentication
 const passport = require('passport');
 const { Strategy } = require('passport-local');
+const bcrypt = require('bcrypt');
 
 // users model
 const mongoose = require('mongoose');
@@ -40,11 +41,14 @@ passport.use('local-login', new Strategy(
         return cb(null, false);
       }
 
-      if (user.password !== password) {
-        return cb(null, false);
-      }
-
-      return cb(null, user);
+      bcrypt.compare(password, user.password, (error, res) => {
+        if (error) {
+          cb(error);
+        }
+        if (res === true) {
+          return cb(null, user);
+        }
+      });
     });
   }),
 ));
@@ -60,7 +64,14 @@ passport.use('local-signup', new Strategy(
         return cb(null, username);
       }
 
-      return cb(null, username, password);
+      // using bcrypt to hash the password
+      bcrypt.hash(password, 10, (error, hash) => {
+        if (error) {
+          return cb(err);
+        }
+
+        return cb(null, username, hash);
+      });
     });
   }),
 ));
@@ -214,6 +225,7 @@ router.put('/:username/updateHistory', (req, res, next) => {
             next(error);
           });
       } else {
+        // if the item is already in history, re-order it to the first position
         const sortedHistory = sortBy(history, (item) => {
           return item.product._id.toString() !== product._id;
         });
