@@ -1,5 +1,3 @@
-const express = require('express');
-const Products = require('../models/product');
 const Users = require('../models/user');
 
 module.exports.getPromotion = (req, res, next) => {

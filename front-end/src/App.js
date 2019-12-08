@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import './App.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab, faApple } from '@fortawesome/free-brands-svg-icons';
@@ -20,7 +19,6 @@ import {
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { withCookies, Cookies } from 'react-cookie';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import axios from 'axios';
@@ -31,11 +29,11 @@ import Home from './components/page/Home';
 import ProductDetail from './components/page/ProductDetail';
 
 
-// Add a Font-Awesome library
+// create font-awesome icons library
 library.add(fab, faSearch, faGlobe, faUser, faShoppingCart, faAngleLeft, faAngleRight, faApple,
   faBasketballBall, faTshirt, faCameraRetro, faLaptopCode, faHeadphonesAlt, faTv, faTrain, faTimes);
 
-// Axios defaults
+// axios default configurations
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_HOST || 'http://localhost:8081';
 
 class App extends React.Component {
@@ -75,18 +73,6 @@ class App extends React.Component {
   }
 
   bundlePurchase(products) {
-    const { cart, currentUser } = this.state;
-
-    // if user is logged in, then concatenate bundle products with
-    // the current products in the cart
-    if (currentUser) {
-      const newCart = cart.concat(products);
-
-      this.setState({
-        cart: newCart,
-      });
-    }
-
     this.setState({
       cart: products,
     });
@@ -142,8 +128,4 @@ class App extends React.Component {
   }
 }
 
-App.propTypes = {
-  cookies: PropTypes.instanceOf(Cookies).isRequired,
-};
-
-export default withCookies(App);
+export default App;

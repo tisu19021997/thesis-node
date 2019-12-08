@@ -8,7 +8,6 @@ import {
 } from 'react-tabs';
 import axios from 'axios';
 import array from 'lodash/array';
-import { withCookies } from 'react-cookie';
 import local from '../../helper/localStorage';
 import { toProductModel } from '../../helper/data';
 import Wrapper from '../Wrapper';
@@ -39,19 +38,40 @@ class ProductDetail extends React.Component {
     this.purchaseAllHandle = this.purchaseAllHandle.bind(this);
 
     this.historyTracking = this.historyTracking.bind(this);
+    this.pageInit = this.pageInit.bind(this);
   }
 
   componentDidMount() {
+    this.pageInit();
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
     const { match } = this.props;
     const { params } = match;
 
-    // Make a call to server to get the necessary data
+    if (prevProps.match.params !== params) {
+      this.pageInit();
+    }
+  }
+
+  /**
+   * Initialize Product Page:
+   * == 1. Send request to server to fetch data
+   * == 2. Set the initial state
+   * == 3. Update user browsing product's history
+   */
+  pageInit() {
+    const { match } = this.props;
+    const { params } = match;
+
+    // send GET request to server to get necessary data
     axios.get(`/product/${params.asin}`)
       .then((res) => {
         const {
           product, alsoBought, alsoViewed, bundleProducts, sameCategory,
         } = res.data;
 
+        // set initial state
         this.setState({
           product,
           alsoBought,
@@ -61,6 +81,7 @@ class ProductDetail extends React.Component {
           ready: true,
         });
 
+        // update the user history
         this.historyTracking();
       })
       .catch((error) => {
@@ -68,47 +89,22 @@ class ProductDetail extends React.Component {
       });
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const { match } = this.props;
-    const { params } = match;
-
-    if (prevProps.match.params !== params) {
-      axios.get(`/product/${params.asin}`)
-        .then((res) => {
-          const {
-            product, alsoBought, alsoViewed, bundleProducts, sameCategory,
-          } = res.data;
-
-          this.setState({
-            product,
-            alsoBought,
-            alsoViewed,
-            bundleProducts,
-            sameCategory,
-            ready: true,
-          });
-
-          this.historyTracking();
-        })
-        .catch((error) => {
-          throw new Error(error.message);
-        });
-    }
-  }
-
   historyTracking() {
     const { product } = this.state;
     return saveHistory(product);
   }
 
+  /**
+   * Handle purchase event:
+   * == 1. Check user log-in status
+   * == 2.
+   * ==== a. Logged-in: Send PUT request to update database
+   * ==== b. Guess user: Update the cart in localStorage
+   * == 3. Update state of parent component
+   */
   purchaseHandle() {
     const { product } = this.state;
-    const {
-      updateCart,
-      loggedIn,
-      currentUser,
-    } = this.props;
-
+    const { updateCart, loggedIn, currentUser } = this.props;
     const productModel = toProductModel(product);
 
     if (loggedIn) {
@@ -124,17 +120,12 @@ class ProductDetail extends React.Component {
     } else {
       // get the cart from localStorage
       let localCart = local.get('cart') || [];
+      const productIndex = array.findIndex(localCart, (o) => o.product.asin === product.asin);
 
-      if (localCart.length) {
-        const productIndex = array.findIndex(localCart, (o) => o.product.asin === product.asin);
-
-        // if the cart exists and the product is already in cart
-        // update the quantity only
-        if (productIndex !== -1) {
-          localCart[productIndex].quantity += 1;
-        } else {
-          localCart = [...localCart, productModel];
-        }
+      // if the cart exists and the product is already in cart
+      // update the quantity only
+      if (productIndex !== -1) {
+        localCart[productIndex].quantity += 1;
       } else {
         localCart = [...localCart, productModel];
       }
@@ -145,22 +136,22 @@ class ProductDetail extends React.Component {
     }
   }
 
-  purchaseAllHandle(products) {
-    const {
-      currentUser, loggedIn, onBundlePurchase,
-    } = this.props;
 
-    const productModels = products.map((product) => (
-      {
-        product,
-        quantity: 1,
-      }
-    ));
+  /**
+   * Handle bundle purchase event:
+   * == 1. Check user log-in status
+   * == 2.
+   * ==== a. Logged-in: Send PUT request to update database
+   * ==== b. Guess user: Update the cart in localStorage
+   * == 3. Update state of parent component
+   */
+  purchaseAllHandle(products) {
+    const { currentUser, loggedIn, onBundlePurchase } = this.props;
 
     if (loggedIn) {
       axios.put(`/user/${currentUser}/purchaseAll`, products)
         .then((res) => {
-          onBundlePurchase(products);
+          onBundlePurchase(res.data);
         })
         .catch((error) => {
           throw new Error(error.message);
@@ -168,22 +159,18 @@ class ProductDetail extends React.Component {
     } else {
       let localCart = local.get('cart') || [];
 
-      if (localCart.length) {
-        // loop through each product of the bundle
-        products.map((product) => {
-          const productModel = toProductModel(product);
-          const productIndex = array.findIndex(localCart, (o) => o.product.asin === product.asin);
+      // loop through each product of the bundle
+      products.map((product) => {
+        const productModel = toProductModel(product);
+        const productIndex = array.findIndex(localCart, (o) => o.product.asin === product.asin);
 
-          if (productIndex !== -1) {
-            localCart[productIndex].quantity += 1;
-          } else {
-            localCart = [...localCart, productModel];
-          }
-          return true;
-        });
-      } else {
-        localCart = productModels;
-      }
+        if (productIndex !== -1) {
+          localCart[productIndex].quantity += 1;
+        } else {
+          localCart = [...localCart, productModel];
+        }
+        return true;
+      });
 
       local.save('cart', localCart);
       onBundlePurchase(localCart);
@@ -193,7 +180,7 @@ class ProductDetail extends React.Component {
   render() {
     const { ready } = this.state;
 
-    // stop the rendering if data is not fetched
+    // stop the rendering if data has not been fetched yet
     if (!ready) {
       return false;
     }
@@ -620,4 +607,4 @@ ProductDetail.propTypes = {
   }),
 };
 
-export default withCookies(ProductDetail);
+export default ProductDetail;

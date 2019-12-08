@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { includes, pick } from 'lodash';
+import { includes } from 'lodash';
 
 class Bundle extends React.Component {
   constructor(props) {
@@ -10,7 +10,6 @@ class Bundle extends React.Component {
     this.state = {
       totalPrice: 0,
       selected: [],
-      selectedProducts: [],
     };
 
     this.updateBundle = this.updateBundle.bind(this);
@@ -43,6 +42,12 @@ class Bundle extends React.Component {
     }
   }
 
+  /**
+   * Handle bundle pick/un-pick event:
+   * == 1. Check for checked checkboxes
+   * == 2. Update the total price of the bundle
+   * == 3. Update state
+   */
   updateBundle(event) {
     const checkbox = event.target;
     const price = parseFloat(checkbox.value);
@@ -73,6 +78,11 @@ class Bundle extends React.Component {
     });
   }
 
+  /**
+   * Handle bundle purchase event:
+   * == 1. Filter the selected products from the initial bundle products
+   * == 2. Call the parent component's handle function
+   */
   async purchaseAll() {
     const { purchaseAll, bundleProducts } = this.props;
     const { selected } = this.state;
@@ -86,7 +96,7 @@ class Bundle extends React.Component {
   }
 
   render() {
-    const { bundleProducts, currentProduct, user } = this.props;
+    const { bundleProducts, currentProduct } = this.props;
     const { totalPrice, selected } = this.state;
 
     const productImgList = bundleProducts.map((product, index) => (

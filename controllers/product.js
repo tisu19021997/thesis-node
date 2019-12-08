@@ -1,4 +1,3 @@
-// const MobileDetect = require('mobile-detect');
 const Products = require('../models/product');
 const Categories = require('../models/category');
 
@@ -41,7 +40,7 @@ module.exports.getBundleProducts = (req, res, next) => {
       next(err);
     }
 
-    // Calculate initial total price of the bundle
+    // calculate initial total price of the bundle
     let totalPrice = 0;
 
     if (products.length) {
@@ -50,7 +49,6 @@ module.exports.getBundleProducts = (req, res, next) => {
       ));
     }
 
-    // Store bundle object in `res.locals`
     res.locals.bundleProducts = {
       products,
       totalPrice: totalPrice + parseFloat(res.locals.product.price),
@@ -62,6 +60,7 @@ module.exports.getBundleProducts = (req, res, next) => {
 
 module.exports.getAlsoProducts = (req, res, next) => {
   const { related } = res.locals;
+  // eslint-disable-next-line camelcase
   const { also_viewed, also_bought } = related;
 
   const alsoViewedPromise = Products.find({
@@ -127,9 +126,13 @@ module.exports.renderProducts = (req, res) => {
 
 module.exports.searchByName = (req, res, next) => {
   const { title } = req.params;
-  console.log(title);
 
-  Products.find({ title: { $regex: title, $options: 'i' } })
+  Products.find({
+    title: {
+      $regex: title,
+      $options: 'i',
+    },
+  })
     .then((products) => {
       res.json(products);
     })

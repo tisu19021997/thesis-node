@@ -4,7 +4,6 @@ import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Modal from 'react-modal';
 import axios from 'axios';
-import { withCookies, Cookies } from 'react-cookie';
 import local from '../helper/localStorage';
 
 // bind modal to root, see http://reactcommunity.org/react-modal/accessibility/
@@ -67,6 +66,14 @@ class Header extends React.Component {
     this.updateCartHandle();
   }
 
+  /**
+   * Update the cart every time changes happen:
+   * == 1. Check user log-in status
+   * == 2.
+   * ==== a. Logged-in: send GET request to server to get the up-to-date cart
+   * ==== b. Guess user: get the cart from the localStorage
+   * == 3. Update state
+   */
   updateCartHandle() {
     const { updateCart, currentUser } = this.props;
     const loggedIn = currentUser !== '';
@@ -92,6 +99,43 @@ class Header extends React.Component {
     }
   }
 
+  /**
+   * Handle remove a product in cart:
+   * == 1. Create a new cart that doesn't include item that need to be deleted
+   * == 2. Check user log-in status
+   * ==== a. Logged-in: Make a PUT request to server to replace old cart with new one
+   * ==== b. Guess user: Replace old cart in localStorage with new one
+   * == 3. Update the cart state using updateCart method
+   *
+   * @param event
+   */
+  deleteCartItem(event) {
+    const { cart, updateCart, currentUser } = this.props;
+    const productAsin = event.currentTarget.getAttribute('data-product');
+    // filter the product that we need to delete from the current cart
+    const newCart = cart.filter((item) => (item.product.asin !== productAsin));
+
+    // send request to server to update the database
+    if (currentUser) {
+      axios.put(`/user/${currentUser}/deleteCartItem`, newCart)
+        .then((res) => {
+          // TODO: implement the front-end message when successfully delete the item
+        })
+        .catch((error) => {
+          throw new Error(error.message);
+        });
+    } else {
+      local.save('cart', newCart);
+    }
+
+    return updateCart(newCart);
+  }
+
+  /**
+   * As its name, handle input changes:
+   * == 1. Get the value from the input field
+   * == 2. Set state with the format [input's name] = input's value
+   */
   handleInputChange(event) {
     const { target } = event;
     const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -102,8 +146,18 @@ class Header extends React.Component {
     });
   }
 
+  /**
+   * Handle user log-in form submit event:
+   * == 1. Check if both password and username is not empty
+   * == 2. Send POST request to server to authenticate
+   * == 3. Call parent handler to update state
+   *
+   * @param event
+   * @returns {boolean}
+   */
   login(event) {
     event.preventDefault();
+
     const { usernameLogin, passwordLogin } = this.state;
     const { login, updateCart } = this.props;
 
@@ -144,22 +198,32 @@ class Header extends React.Component {
     return false;
   }
 
+  /**
+   * Handle user log-out event:
+   * == 1. Check if there is a cart in localStorage
+   * == 2.
+   * ==== a. Yes: update the cart using localStorage
+   * ==== b. No: create empty cart
+   * == 3. Call parent handler to update cart
+   */
   logout() {
     const { logout, updateCart } = this.props;
-    const cart = local.get('cart');
+    const cart = local.get('cart') || [];
 
     // call to the parent logout method
     logout();
 
-    // update the cart
-    if (cart) {
-      return updateCart(cart);
-    }
-    return updateCart([]);
+    return updateCart(cart);
   }
 
+  /**
+   * Handle user register event:
+   * == 1. Check if the username and the password is empty
+   * == 2. Send POST request to server to create new user
+   */
   register(event) {
     event.preventDefault();
+
     const { usernameRegister, passwordRegister } = this.state;
 
     if (usernameRegister && passwordRegister) {
@@ -176,6 +240,9 @@ class Header extends React.Component {
     return false;
   }
 
+  /**
+   * Modal handler(s)
+   */
   openModal(e) {
     e.preventDefault();
     this.setState({
@@ -195,29 +262,6 @@ class Header extends React.Component {
     this.setState({
       isCartOpen: !isCartOpen,
     });
-  }
-
-  deleteCartItem(event) {
-    const { cart, updateCart, currentUser } = this.props;
-    const productAsin = event.currentTarget.getAttribute('data-product');
-    // filter the product that we need to delete from the current cart
-    const newCart = cart.filter((item) => (item.product.asin !== productAsin));
-
-    // send request to server to update the database
-    if (currentUser) {
-      axios.put(`/user/${currentUser}/deleteCartItem`, newCart)
-        .then((res) => {
-          // TODO: implement the front-end message when successfully delete the item
-
-        })
-        .catch((error) => {
-          throw new Error(error.message);
-        });
-    } else {
-      local.save('cart', newCart);
-    }
-
-    return updateCart(newCart);
   }
 
   render() {
@@ -590,4 +634,4 @@ Header.defaultProps = {
   currentUser: '',
 };
 
-export default withCookies(withRouter(Header));
+export default withRouter(Header);

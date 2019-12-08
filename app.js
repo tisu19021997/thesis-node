@@ -10,7 +10,6 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const session = require('express-session');
 const mongoose = require('mongoose');
-const flash = require('connect-flash');
 
 // authentication
 const passport = require('passport');
@@ -34,7 +33,12 @@ app.set('port', process.env.PORT || 8081);
 // use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
 app.use(logger('dev'));
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+}));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -50,7 +54,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize({}));
 app.use(passport.session({}));
 
-app.use(flash());
 
 app.use('/', homeRouter);
 app.use('/product', productRouter);
@@ -87,7 +90,6 @@ db.on('err', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
   console.log('Connected to database');
 });
-
 
 
 module.exports = app;
