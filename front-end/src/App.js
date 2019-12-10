@@ -22,6 +22,8 @@ import {
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import axios from 'axios';
+import jwtDecode from 'jwt-decode';
+import { UserContext } from './context/user';
 import local from './helper/localStorage';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -36,12 +38,14 @@ library.add(fab, faSearch, faGlobe, faUser, faShoppingCart, faAngleLeft, faAngle
 // axios default configurations
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_HOST || 'http://localhost:8081';
 
-class App extends React.Component {
+
+export default class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       currentUser: local.get('user') || '',
+      token: local.get('token') || '',
       cart: [],
     };
 
@@ -52,18 +56,22 @@ class App extends React.Component {
     this.bundlePurchase = this.bundlePurchase.bind(this);
   }
 
-  login(user) {
+  login(user, token) {
     this.setState({
       currentUser: user,
+      token,
     });
     local.save('user', user);
+    local.save('token', token);
   }
 
   logout() {
     this.setState({
       currentUser: '',
+      token: '',
     });
     local.remove('user');
+    local.remove('token');
   }
 
   updateCart(cart) {
@@ -79,53 +87,60 @@ class App extends React.Component {
   }
 
   render() {
-    const { currentUser, cart } = this.state;
+    const { currentUser, token, cart } = this.state;
+
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    }
 
     return (
-      <Router>
-        <div className="App">
+      <UserContext.Provider value={{
+        currentUser,
+        token,
+      }}>
+        <Router>
+          <div className="App">
 
-          <Header
-            currentUser={currentUser}
-            login={this.login}
-            logout={this.logout}
-            cart={cart}
-            updateCart={this.updateCart}
-          />
-
-          <Switch>
-
-            <Route
-              exact
-              path="/"
-              render={(props) => (
-                <Home {...props} currentUser={currentUser} />
-              )}
+            <Header
+              currentUser={currentUser}
+              login={this.login}
+              logout={this.logout}
+              cart={cart}
+              updateCart={this.updateCart}
             />
 
-            <Route
-              path="/product/:asin"
-              render={(props) => (
-                <ProductDetail
-                  {...props}
-                  loggedIn={currentUser !== ''}
-                  currentUser={currentUser}
-                  updateCart={this.updateCart}
-                  onBundlePurchase={this.bundlePurchase}
-                  shoppingCart={cart}
-                />
-              )}
-            />
+            <Switch>
 
-          </Switch>
+              <Route
+                exact
+                path="/"
+                render={(props) => (
+                  <Home {...props} currentUser={currentUser} />
+                )}
+              />
 
-          <Footer />
+              <Route
+                path="/product/:asin"
+                render={(props) => (
+                  <ProductDetail
+                    {...props}
+                    loggedIn={currentUser !== ''}
+                    currentUser={currentUser}
+                    updateCart={this.updateCart}
+                    onBundlePurchase={this.bundlePurchase}
+                    shoppingCart={cart}
+                  />
+                )}
+              />
+
+            </Switch>
+
+            <Footer />
 
 
-        </div>
-      </Router>
+          </div>
+        </Router>
+      </UserContext.Provider>
     );
   }
 }
-
-export default App;

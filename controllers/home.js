@@ -1,4 +1,78 @@
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
+
+module.exports.loginAuthenticate = (req, res, next) => {
+  passport.authenticate('local-login', (err, user) => {
+    if (err) {
+      return next(err);
+    }
+
+    if (!user) {
+      return res.status(404)
+        .json({
+          message: 'We are not able to find your account. Are you new?',
+        });
+    }
+
+    req.logIn(user, { session: false }, (error) => {
+      if (error) {
+        return next(error);
+      }
+
+      const { username, products, history } = user;
+
+      const token = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 30 });
+
+      return res.status(200)
+        .json({
+          status: 200,
+          user: {
+            username,
+            products,
+            history,
+          },
+          token,
+          message: 'You are signed-in',
+        });
+    });
+
+    return false;
+  })(req, res, next);
+};
+
+module.exports.registerAuthenticate = (req, res, next) => {
+  passport.authenticate('local-signup', (err, username, password) => {
+    if (err) {
+      return next(err);
+    }
+
+    if (username && !password) {
+      return res.json({
+        status: 200,
+        message: `The username '${username}' you registered is already taken`,
+        user: username,
+      });
+    }
+
+    User.create({
+      username,
+      password,
+    }, (error, user) => {
+      if (error) {
+        return next(error);
+      }
+
+      return res.status(201)
+        .json({
+          message: 'Your account has been created.',
+          username: user.username,
+        });
+    });
+
+    return true;
+  })(req, res, next);
+};
 
 module.exports.getPromotion = (req, res, next) => {
   next();

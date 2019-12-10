@@ -1,6 +1,4 @@
-const save = (key, value) => {
-  return localStorage.setItem(key.toString(), JSON.stringify(value));
-};
+const save = (key, value) => localStorage.setItem(key.toString(), JSON.stringify(value));
 
 const get = (key, parsed = true) => {
   if (parsed) {
@@ -9,9 +7,7 @@ const get = (key, parsed = true) => {
   return localStorage.getItem(key.toString());
 };
 
-const remove = (key) => {
-  return localStorage.removeItem(key.toString());
-};
+const remove = (key) => localStorage.removeItem(key.toString());
 
 export default {
   save,

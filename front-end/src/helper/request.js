@@ -10,14 +10,13 @@ import local from './localStorage';
  *
  * @param {object} product
  * @param  {string} user
+ * @param {string} token
  * @returns {boolean}
  */
-export const saveHistory = (product, user = local.get('user') || '') => {
+export const saveHistory = (token, product, user = local.get('user') || '') => {
   if (user !== '') {
     axios.put(`/user/${user}/updateHistory`, product)
-      .then(() => {
-        return true;
-      })
+      .then(() => true)
       .catch((error) => {
         throw new Error(error.message);
       });

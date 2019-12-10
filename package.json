@@ -22,6 +22,7 @@
     "inuitcss": "^6.0.0",
     "java": "^0.11.1",
     "jsdom": "^15.2.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "mobile-detect": "^1.4.4",
     "mongoose": "^5.7.1",
@@ -29,6 +30,7 @@
     "morgan": "^1.9.1",
     "node-sass": "^4.12.0",
     "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pug": "^2.0.4"
   },

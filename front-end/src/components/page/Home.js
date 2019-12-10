@@ -7,6 +7,7 @@ import PrevArrow from '../slider/PrevArrow';
 import NextArrow from '../slider/NextArrow';
 import ProductSlider from '../slider/ProductSlider';
 import local from '../../helper/localStorage';
+import { UserContext } from '../../context/user';
 
 class Home extends React.Component {
   constructor(props) {
@@ -32,6 +33,8 @@ class Home extends React.Component {
   }
 
   getUserHistory(user) {
+    const { token } = this.context;
+
     if (user) {
       axios.get(`/home/${user}`)
         .then((res) => {
@@ -81,25 +84,30 @@ class Home extends React.Component {
     };
 
     return (
-      <Wrapper className="u-ph-0">
-        <Section title="Pick up where you left off" data="History">
+      <UserContext.Consumer>
+        {({ }) => (
+          <Wrapper className="u-ph-0">
+            <Section title="Pick up where you left off" data="History">
 
-          {historyProducts.length
-            ? (
-              <ProductSlider
-                products={historyProducts}
-                settings={sliderSettings}
-                className="c-slider [  c-slider--tiny-gut c-slider--right-dots ] u-ph-48"
-              />
+              {historyProducts.length
+                ? (
+                  <ProductSlider
+                    products={historyProducts}
+                    settings={sliderSettings}
+                    className="c-slider [  c-slider--tiny-gut c-slider--right-dots ] u-ph-48"
+                  />
 
-            )
-            : ''}
-
-        </Section>
-      </Wrapper>
+                )
+                : ''}
+            </Section>
+          </Wrapper>
+        )}
+      </UserContext.Consumer>
     );
   }
 }
+
+Home.contextType = UserContext;
 
 Home.propTypes = {
   currentUser: PropTypes.string,

@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-require('dotenv')
-  .config();
+require('dotenv/config');
+require('./helper/passport');
 const createError = require('http-errors');
 const cors = require('cors');
 const express = require('express');
@@ -34,7 +34,8 @@ app.set('port', process.env.PORT || 8081);
 // logging, parsing, and session handling.
 app.use(logger('dev'));
 app.use(cors({
-  origin: '*',
+  origin: 'http://localhost:3000',
+  credentials: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   preflightContinue: false,
   optionsSuccessStatus: 204,
@@ -58,7 +59,7 @@ app.use(passport.session({}));
 app.use('/', homeRouter);
 app.use('/product', productRouter);
 app.use('/categories', categoryRouter);
-app.use('/user', userRouter);
+app.use('/user', passport.authenticate('jwt-login', { session: false }), userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
