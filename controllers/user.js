@@ -19,115 +19,121 @@ module.exports.getCart = (req, res, next) => {
     });
 };
 
-module.exports.purchase = (req, res, next) => {
+module.exports.updateCart = (req, res, next) => {
   const { username } = req.params;
-  const product = req.body;
+  const { action } = req.body;
 
-  // create a valid product model using the product from the request
-  const productModel = {
-    product: product._id,
-  };
-
-  User.findOne({ username })
-    .populate('product')
-    .exec()
-    .then((userToUpdate) => {
-      const { products } = userToUpdate;
-
-      // get the sub-array that doesn't include the current product
-      // if the length of that array equals to the original array
-      // then the product wasn't in the cart (i.e it's a new product)
-      const notCurrentProduct = products.filter(
-        (item) => item.product._id.toString() !== product._id,
-      );
-      const noDuplicated = notCurrentProduct.length === products.length;
-
-      if (noDuplicated) {
-        User.findOneAndUpdate({ username }, { $push: { products: productModel } }, { new: true })
+  switch (action) {
+    case 'purchase': {
+      const { single, cartProducts } = req.body;
+      if (single) {
+        User.findOne({ username })
+          .populate('product')
           .exec()
-          .then((updatedUser) => {
-            res.send(updatedUser.products);
+          .then((userToUpdate) => {
+            cartProducts.map((product) => {
+              const productModel = {
+                product,
+                quantity: 1,
+              };
+
+              const productIndex = findIndex(userToUpdate.products,
+                (o) => o.product.asin === product.asin);
+
+              if (productIndex !== -1) {
+                userToUpdate.products[productIndex].quantity += 1;
+              } else {
+                userToUpdate.products = [...userToUpdate.products, productModel];
+              }
+
+              return true;
+            });
+            userToUpdate.save((err) => {
+              if (err) {
+                next(err);
+              }
+            });
+            res.send(userToUpdate.products);
           })
           .catch((error) => {
             next(error);
           });
       } else {
-        // if the product is already in cart, update the quantity only
-        User.findOneAndUpdate({
-          username,
-          'products.product': product._id,
-        }, { $inc: { 'products.$.quantity': 1 } }, { new: true })
+        const product = cartProducts;
+        // create a valid product model using the product from the request
+        const productModel = { product: product._id };
+
+        User.findOne({ username })
+          .populate('product')
           .exec()
-          .then((updatedUser) => {
-            res.send(updatedUser.products);
+          .then((userToUpdate) => {
+            const { products } = userToUpdate;
+
+            // get the sub-array that doesn't include the current product
+            // if the length of that array equals to the original array
+            // then the product wasn't in the cart (i.e it's a new product)
+            const notCurrentProduct = products.filter(
+              (item) => item.product._id.toString() !== product._id,
+            );
+            const noDuplicated = notCurrentProduct.length === products.length;
+
+            if (noDuplicated) {
+              User.findOneAndUpdate({ username }, { $push: { products: productModel } }, { new: true })
+                .exec()
+                .then((updatedUser) => {
+                  res.send(updatedUser.products);
+                })
+                .catch((error) => {
+                  next(error);
+                });
+            } else {
+              // if the product is already in cart, update the quantity only
+              User.findOneAndUpdate({
+                username,
+                'products.product': product._id,
+              }, { $inc: { 'products.$.quantity': 1 } }, { new: true })
+                .exec()
+                .then((updatedUser) => {
+                  res.send(updatedUser.products);
+                })
+                .catch((error) => {
+                  next(error);
+                });
+            }
           })
           .catch((error) => {
             next(error);
           });
       }
-    })
-    .catch((error) => {
-      next(error);
-    });
-};
+      break;
+    }
 
-module.exports.purchaseAll = (req, res, next) => {
-  const { username } = req.params;
-  const products = req.body;
+    case 'delete': {
+      const newCart = req.body.cart;
 
-  User.findOne({ username })
-    .populate('product')
-    .exec()
-    .then((userToUpdate) => {
-      products.map((product) => {
-        const productModel = {
-          product,
-          quantity: 1,
-        };
+      User.findOne({ username })
+        .populate('product')
+        .exec()
+        .then((userToUpdate) => {
+          userToUpdate.products = newCart;
+          userToUpdate.save((err) => {
+            if (err) {
+              next(err);
+            }
+          });
 
-        const productIndex = findIndex(userToUpdate.products,
-          (o) => o.product.asin === product.asin);
+          return res.status(200);
+        })
+        .catch((error) => {
+          next(error);
+        });
+      break;
+    }
 
-        if (productIndex !== -1) {
-          userToUpdate.products[productIndex].quantity += 1;
-        } else {
-          userToUpdate.products = [...userToUpdate.products, productModel];
-        }
-
-        return true;
-      });
-      userToUpdate.save((err) => {
-        if (err) {
-          next(err);
-        }
-      });
-      res.send(userToUpdate.products);
-    })
-    .catch((error) => {
-      next(error);
-    });
-};
-
-module.exports.deleteCartItem = (req, res, next) => {
-  const { username } = req.params;
-  const newCart = req.body;
-
-  User.findOne({ username })
-    .populate('product')
-    .exec()
-    .then((userToUpdate) => {
-      userToUpdate.products = newCart;
-      userToUpdate.save((err) => {
-        if (err) {
-          next(err);
-        }
-      });
-
-      return res.status(200);
-    })
-    .catch((error) => {
-      next(error);
-    });
+    default:
+      return res.status(400)
+        .send('Action\'s type is not valid');
+  }
 };
 
 module.exports.updateHistory = (req, res, next) => {

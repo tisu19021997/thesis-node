@@ -82,7 +82,7 @@ class Header extends React.Component {
 
     // if the user is logged-in, get the cart object from server
     if (currentUser) {
-      axios.get(`/user/${currentUser}/cart`)
+      axios.get(`/users/${currentUser}/cart`)
         .then((res) => {
           const { cart } = res.data;
           // send cart object back to App
@@ -119,7 +119,10 @@ class Header extends React.Component {
 
     // send request to server to update the database
     if (currentUser) {
-      axios.put(`/user/${currentUser}/deleteCartItem`, newCart)
+      axios.patch(`/users/${currentUser}/cart`, {
+        action: 'delete',
+        cart: newCart,
+      })
         .then((res) => {
           // TODO: implement the front-end message when successfully delete the item
         })
@@ -229,7 +232,7 @@ class Header extends React.Component {
     const { usernameRegister, passwordRegister } = this.state;
 
     if (usernameRegister && passwordRegister) {
-      axios.post('/user/register', {
+      axios.post('/users/register', {
         username: usernameRegister,
         password: passwordRegister,
       })

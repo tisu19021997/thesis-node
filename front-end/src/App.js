@@ -120,7 +120,7 @@ export default class App extends React.Component {
               />
 
               <Route
-                path="/product/:asin"
+                path="/products/:asin"
                 render={(props) => (
                   <ProductDetail
                     {...props}

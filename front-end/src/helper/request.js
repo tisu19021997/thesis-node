@@ -14,15 +14,14 @@ import local from './localStorage';
  * @returns {boolean}
  */
 export const saveHistory = (token, product, user = local.get('user') || '') => {
-  if (user !== '') {
-    axios.put(`/user/${user}/updateHistory`, product)
+  if (user) {
+    axios.patch(`/users/${user}/history`, product)
       .then(() => true)
       .catch((error) => {
         throw new Error(error.message);
       });
   } else {
     let localHistory = local.get('history') || [];
-
     const historyModel = {
       product,
       time: Date.now(),

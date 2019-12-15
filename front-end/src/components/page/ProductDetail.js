@@ -66,7 +66,7 @@ class ProductDetail extends React.Component {
     const { params } = match;
 
     // send GET request to server to get necessary data
-    axios.get(`/product/${params.asin}`)
+    axios.get(`/products/${params.asin}`)
       .then((res) => {
         const {
           product, alsoBought, alsoViewed, bundleProducts, sameCategory,
@@ -106,13 +106,16 @@ class ProductDetail extends React.Component {
    */
   purchaseHandle() {
     const { product } = this.state;
-    const { currentUser, token } = this.context;
+    const { currentUser } = this.context;
     const { updateCart, loggedIn } = this.props;
     const productModel = toProductModel(product);
 
     if (loggedIn) {
-      // send request to update the cart in user
-      axios.put(`/user/${currentUser}/purchaseOne`, product)
+      axios.patch(`/users/${currentUser}/cart`, {
+        action: 'purchase',
+        cartProducts: product,
+        single: false,
+      })
         .then((res) => {
           // TODO: Get the successful message and display it to UI
           updateCart(res.data);
@@ -149,11 +152,15 @@ class ProductDetail extends React.Component {
    * == 3. Update state of parent component
    */
   purchaseAllHandle(products) {
-    const { currentUser, token } = this.context;
+    const { currentUser } = this.context;
     const { loggedIn, onBundlePurchase } = this.props;
 
     if (loggedIn) {
-      axios.put(`/user/${currentUser}/purchaseAll`, products)
+      axios.patch(`/users/${currentUser}/cart`, {
+        action: 'purchase',
+        cartProducts: products,
+        single: true,
+      })
         .then((res) => {
           onBundlePurchase(res.data);
         })

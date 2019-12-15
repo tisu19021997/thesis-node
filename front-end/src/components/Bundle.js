@@ -106,7 +106,7 @@ class Bundle extends React.Component {
           ? 'o-layout__item c-bundle__product'
           : 'o-layout__item c-bundle__product c-bundle__product--disabled'}
       >
-        <Link to={`/product/${product.asin}`}>
+        <Link to={`/products/${product.asin}`}>
           <img className="c-bundle__img" src={product.imUrl} alt={product.name} />
         </Link>
 

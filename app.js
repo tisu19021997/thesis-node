@@ -24,7 +24,6 @@ const app = express();
 // database
 const db = mongoose.connection;
 
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -57,9 +56,9 @@ app.use(passport.session({}));
 
 
 app.use('/', homeRouter);
-app.use('/product', productRouter);
+app.use('/products', productRouter);
 app.use('/categories', categoryRouter);
-app.use('/user', passport.authenticate('jwt-login', { session: false }), userRouter);
+app.use('/users', passport.authenticate('jwt-login', { session: false }), userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
