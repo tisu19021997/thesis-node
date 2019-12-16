@@ -79,7 +79,11 @@ module.exports.updateCart = (req, res, next) => {
             const noDuplicated = notCurrentProduct.length === products.length;
 
             if (noDuplicated) {
-              User.findOneAndUpdate({ username }, { $push: { products: productModel } }, { new: true })
+              User.findOneAndUpdate(
+                { username },
+                { $push: { products: productModel } },
+                { new: true },
+              )
                 .exec()
                 .then((updatedUser) => {
                   res.send(updatedUser.products);
