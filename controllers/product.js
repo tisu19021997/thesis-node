@@ -150,12 +150,18 @@ module.exports.searchByName = (req, res, next) => {
       options.sort = {};
   }
 
-  Products.paginate({
-    title: {
-      $regex: s,
-      $options: 'i',
+  // escape search string
+  const searchRegex = s.replace(new RegExp('\\\\', 'g'), '\\\\');
+
+  Products.paginate(
+    {
+      title: {
+        $regex: searchRegex,
+        $options: 'i',
+      },
     },
-  }, options)
+    options,
+  )
     .then((data) => {
       const {
         docs, totalDocs, hasPrevPage, hasNextPage, nextPage, prevPage, totalPages,
