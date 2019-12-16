@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,6 +41,8 @@ class Header extends React.Component {
     this.openCart = this.openCart.bind(this);
     this.deleteCartItem = this.deleteCartItem.bind(this);
 
+    this.searchProduct = this.searchProduct.bind(this);
+
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.register = this.register.bind(this);
@@ -48,22 +50,17 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    // get request from server if the categories list is used
-    const { useCategoryList } = this.props;
+    axios.get('/categories')
+      .then((res) => {
+        const { categories } = res.data;
 
-    if (useCategoryList) {
-      axios.get('/categories')
-        .then((res) => {
-          const { categories } = res.data;
-
-          this.setState({
-            categories,
-          });
-        })
-        .catch((error) => {
-          throw new Error(error.message);
+        this.setState({
+          categories,
         });
-    }
+      })
+      .catch((error) => {
+        throw new Error(error.message);
+      });
 
     this.updateCartHandle();
   }
@@ -77,7 +74,7 @@ class Header extends React.Component {
    * == 3. Update state
    */
   updateCartHandle() {
-    const { currentUser, token } = this.context;
+    const { currentUser } = this.context;
     const { updateCart } = this.props;
 
     // if the user is logged-in, get the cart object from server
@@ -248,8 +245,8 @@ class Header extends React.Component {
   /**
    * Modal handler(s)
    */
-  openModal(e) {
-    e.preventDefault();
+  openModal(event) {
+    event.preventDefault();
     this.setState({
       isLoginModalOpen: true,
     });
@@ -269,9 +266,18 @@ class Header extends React.Component {
     });
   }
 
+  searchProduct(event) {
+    event.preventDefault();
+
+    const { keyword } = this.state;
+    const { history } = this.props;
+
+    return history.push(`/products/search?s=${keyword}`);
+  }
+
   render() {
     const { categories, isLoginModalOpen, isCartOpen } = this.state;
-    const { useCategoryList, cart } = this.props;
+    const { cart } = this.props;
     let { cartCounter } = this.state;
 
     const categoriesItem = categories.map((category, index) => (
@@ -289,17 +295,14 @@ class Header extends React.Component {
       </li>
     ));
 
-    const categoryList = useCategoryList
-      ? (
-        <section className="c-section" data-section="Category List">
-          <div className="c-cat-list c-cat-list--horizontal c-cat-list--dark">
-            <ul className="o-carousel o-carousel--8col o-carousel--small u-mb-0">
-              {categoriesItem}
-            </ul>
-          </div>
-        </section>
-      )
-      : '';
+    const categoryList = (<section className="c-section" data-section="Category List">
+      <div className="c-cat-list c-cat-list--horizontal c-cat-list--dark">
+        <ul className="o-carousel o-carousel--8col o-carousel--small u-mb-0">
+          {categoriesItem}
+        </ul>
+      </div>
+    </section>);
+
 
     const cartProductList = cart.map((item, index) => {
       cartCounter += item.quantity;
@@ -390,7 +393,7 @@ class Header extends React.Component {
 
     return (
       <UserContext.Consumer>
-        {({ currentUser, token }) => (
+        {({ currentUser }) => (
           <header className="c-header">
 
             <nav className="c-header__topnav">
@@ -453,18 +456,21 @@ class Header extends React.Component {
 
 
               <div className="o-layout__item c-header__nav-search u-6/10">
-                <form className="c-searchbar" method="get" role="search" acceptCharset="utf-8">
+                <form className="c-searchbar" method="get" onSubmit={this.searchProduct}
+                      role="search" acceptCharset="utf-8">
                   <div className="c-searchbar__box">
                     <input
                       type="search"
+                      name="keyword"
+                      onChange={this.handleInputChange}
                       placeholder="Search anything..."
                       aria-label="Search"
                       data-border="rounded"
                     />
                     <div className="c-searchbar__button">
-                  <span className="c-searchbar__button-icon">
-                    <FontAwesomeIcon icon="search" className="medium" />
-                  </span>
+                      <button onClick={this.searchProduct} className="c-searchbar__button-icon">
+                        <FontAwesomeIcon icon="search" className="medium" />
+                      </button>
                       <input type="submit" defaultValue="Go" />
                     </div>
                   </div>
@@ -633,7 +639,6 @@ class Header extends React.Component {
 Header.contextType = UserContext;
 
 Header.propTypes = {
-  useCategoryList: PropTypes.bool,
   login: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
   currentUser: PropTypes.string,
@@ -642,7 +647,6 @@ Header.propTypes = {
 };
 
 Header.defaultProps = {
-  useCategoryList: false,
   currentUser: '',
 };
 

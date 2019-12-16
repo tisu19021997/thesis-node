@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const Schema = new mongoose.Schema({
   asin: String,
@@ -15,6 +16,8 @@ const Schema = new mongoose.Schema({
     bought_together: [String],
   },
 });
+
+Schema.plugin(mongoosePaginate);
 
 const Products = mongoose.model('Products', Schema);
 

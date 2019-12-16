@@ -17,23 +17,24 @@ import {
   faTv,
   faTrain,
   faTimes,
+  faChevronLeft,
+  faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
-
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-
 import axios from 'axios';
-import jwtDecode from 'jwt-decode';
 import { UserContext } from './context/user';
 import local from './helper/localStorage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/page/Home';
 import ProductDetail from './components/page/ProductDetail';
+import ProductSearch from './components/page/ProductSearch';
 
 
 // create font-awesome icons library
 library.add(fab, faSearch, faGlobe, faUser, faShoppingCart, faAngleLeft, faAngleRight, faApple,
-  faBasketballBall, faTshirt, faCameraRetro, faLaptopCode, faHeadphonesAlt, faTv, faTrain, faTimes);
+  faBasketballBall, faTshirt, faCameraRetro, faLaptopCode, faHeadphonesAlt, faTv, faTrain, faTimes,
+  faChevronRight, faChevronLeft);
 
 // axios default configurations
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_HOST || 'http://localhost:8081';
@@ -120,6 +121,16 @@ export default class App extends React.Component {
               />
 
               <Route
+                path="/products/search"
+                exact
+                render={(props) => (
+                  <ProductSearch
+                    {...props}
+                  />
+                )}
+              />
+
+              <Route
                 path="/products/:asin"
                 render={(props) => (
                   <ProductDetail
@@ -132,7 +143,6 @@ export default class App extends React.Component {
                   />
                 )}
               />
-
             </Switch>
 
             <Footer />

@@ -1,3 +1,4 @@
+const { isEmpty } = require('lodash');
 const Products = require('../models/product');
 const Categories = require('../models/category');
 
@@ -125,19 +126,51 @@ module.exports.renderProducts = (req, res) => {
 // *========== SEARCH ==========* //
 
 module.exports.searchByName = (req, res, next) => {
-  const { title } = req.params;
+  if (isEmpty(req.query)) {
+    return res.status(404);
+  }
 
-  Products.find({
+  const { s, page, sort } = req.query;
+
+  const options = {
+    page,
+    limit: 4,
+  };
+
+  switch (sort) {
+    case 'price-desc':
+      options.sort = { price: -1 };
+      break;
+
+    case 'price-asc':
+      options.sort = { price: 1 };
+      break;
+
+    default:
+      options.sort = {};
+  }
+
+  Products.paginate({
     title: {
-      $regex: title,
+      $regex: s,
       $options: 'i',
     },
-  })
-    .then((products) => {
-      res.json(products);
+  }, options)
+    .then((data) => {
+      const {
+        docs, totalDocs, hasPrevPage, hasNextPage, nextPage, prevPage, totalPages,
+      } = data;
+      res.json({
+        products: docs,
+        totalDocs,
+        hasPrevPage,
+        hasNextPage,
+        nextPage,
+        prevPage,
+        totalPages,
+      });
     })
     .catch((error) => {
       next(error);
-    })
-  ;
+    });
 };

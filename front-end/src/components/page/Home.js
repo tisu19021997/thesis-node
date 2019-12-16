@@ -33,8 +33,6 @@ class Home extends React.Component {
   }
 
   getUserHistory(user) {
-    const { token } = this.context;
-
     if (user) {
       axios.get(`/home/${user}`)
         .then((res) => {
@@ -85,7 +83,7 @@ class Home extends React.Component {
 
     return (
       <UserContext.Consumer>
-        {({ }) => (
+        {() => (
           <Wrapper className="u-ph-0">
             <Section title="Pick up where you left off" data="History">
 

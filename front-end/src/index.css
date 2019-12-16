@@ -1030,37 +1030,42 @@ textarea {
 }
 
 /* line 85, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+[type="radio"] + label {
+  margin-left: 6px;
+}
+
+/* line 90, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 textarea {
   resize: none;
 }
 
 /* Pseudo elements */
-/* line 91, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 96, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::placeholder {
   color: #999;
   opacity: 1;
   /* Firefox */
 }
 
-/* line 96, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 101, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
   color: #999;
 }
 
-/* line 99, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 104, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 ::-moz-placeholder {
   /* Firefox 19+ */
   color: #999;
 }
 
-/* line 102, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 107, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 :-ms-input-placeholder {
   /* IE 10+ */
   color: #999;
 }
 
-/* line 105, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
+/* line 110, ../../../../../Users/minhquang/Desktop/projects/thesis/html/asset/css/elements/_elements.input.scss */
 :-moz-placeholder {
   /* Firefox 18- */
   color: #999;

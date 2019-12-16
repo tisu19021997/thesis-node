@@ -26,6 +26,7 @@ module.exports.updateCart = (req, res, next) => {
   switch (action) {
     case 'purchase': {
       const { single, cartProducts } = req.body;
+
       if (single) {
         User.findOne({ username })
           .populate('product')
