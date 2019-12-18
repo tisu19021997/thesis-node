@@ -7,6 +7,8 @@ router.get('/:username/cart', controller.getCart);
 
 router.patch('/:username/cart', controller.updateCart);
 
+router.patch('/:username/cart/products/:productId/quantity', controller.updateProductQuantity);
+
 router.patch('/:username/history', controller.updateHistory);
 
 module.exports = router;

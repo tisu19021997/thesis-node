@@ -25,9 +25,10 @@ module.exports.updateCart = (req, res, next) => {
 
   switch (action) {
     case 'purchase': {
-      const { single, cartProducts } = req.body;
+      const { single, cartProducts, quantity } = req.body;
 
-      if (single) {
+      // bundle product purchase
+      if (!single) {
         User.findOne({ username })
           .populate('product')
           .exec()
@@ -62,7 +63,7 @@ module.exports.updateCart = (req, res, next) => {
       } else {
         const product = cartProducts;
         // create a valid product model using the product from the request
-        const productModel = { product: product._id };
+        const productModel = { product: product._id, quantity };
 
         User.findOne({ username })
           .populate('product')
@@ -96,7 +97,7 @@ module.exports.updateCart = (req, res, next) => {
               User.findOneAndUpdate({
                 username,
                 'products.product': product._id,
-              }, { $inc: { 'products.$.quantity': 1 } }, { new: true })
+              }, { $inc: { 'products.$.quantity': quantity } }, { new: true })
                 .exec()
                 .then((updatedUser) => {
                   res.send(updatedUser.products);
@@ -139,6 +140,24 @@ module.exports.updateCart = (req, res, next) => {
       return res.status(400)
         .send('Action\'s type is not valid');
   }
+};
+
+module.exports.updateProductQuantity = (req, res, next) => {
+  const { username, productId } = req.params;
+  const { quantity } = req.body;
+
+  User.findOneAndUpdate({
+    username,
+    'products._id': productId,
+  }, { $set: { 'products.$.quantity': quantity } }, { new: true })
+    .populate('product')
+    .exec()
+    .then((updatedUser) => {
+      res.send(updatedUser.products);
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 
 module.exports.updateHistory = (req, res, next) => {
