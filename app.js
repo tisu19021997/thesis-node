@@ -54,11 +54,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize({}));
 app.use(passport.session({}));
 
-
+// routes set up
 app.use('/', homeRouter);
 app.use('/products', productRouter);
 app.use('/categories', categoryRouter);
 app.use('/users', passport.authenticate('jwt-login', { session: false }), userRouter);
+// app.use('/store-management', );
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

@@ -20,7 +20,9 @@ module.exports.loginAuthenticate = (req, res, next) => {
         return next(error);
       }
 
-      const { username, products, history } = user;
+      const {
+        username, products, history, role,
+      } = user;
 
       const token = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
 
@@ -28,6 +30,7 @@ module.exports.loginAuthenticate = (req, res, next) => {
         .json({
           status: 200,
           user: {
+            role,
             username,
             products,
             history,
@@ -55,7 +58,7 @@ module.exports.registerAuthenticate = (req, res, next) => {
       });
     }
 
-    User.create({
+    Users.create({
       username,
       password,
     }, (error, user) => {
