@@ -5,7 +5,7 @@ const Schema = new mongoose.Schema({
   asin: String,
   imUrl: String,
   description: String,
-  price: String,
+  price: Number,
   title: String,
   brand: String,
   categories: [[String]],

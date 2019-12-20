@@ -18,6 +18,7 @@ const homeRouter = require('./routes/home');
 const productRouter = require('./routes/product');
 const categoryRouter = require('./routes/category');
 const userRouter = require('./routes/user');
+const manageRouter = require('./routes/manage');
 
 const app = express();
 
@@ -58,8 +59,10 @@ app.use(passport.session({}));
 app.use('/', homeRouter);
 app.use('/products', productRouter);
 app.use('/categories', categoryRouter);
-app.use('/users', passport.authenticate('jwt-login', { session: false }), userRouter);
-// app.use('/store-management', );
+app.use('/users', passport.authenticate('jwt-user', { session: false }),
+  userRouter);
+app.use('/store-management', passport.authenticate('jwt-admin', { session: false }),
+  manageRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

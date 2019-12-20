@@ -27,7 +27,7 @@ const jwtOptions = {
   secretOrKey: process.env.ACCESS_TOKEN_SECRET,
 };
 
-passport.use('jwt-login', new JwtStrategy(jwtOptions, (jwtPayload, done) => {
+passport.use('jwt-user', new JwtStrategy(jwtOptions, (jwtPayload, done) => {
   User.findOne({ username: jwtPayload.username }, (err, user) => {
     if (err) {
       return done(err, false);
@@ -35,6 +35,20 @@ passport.use('jwt-login', new JwtStrategy(jwtOptions, (jwtPayload, done) => {
     if (user) {
       return done(null, user);
     }
+    return done(null, false);
+  });
+}));
+
+passport.use('jwt-admin', new JwtStrategy(jwtOptions, (jwtPayload, done) => {
+  User.findOne({ username: jwtPayload.username }, (err, user) => {
+    if (err) {
+      return done(err, false);
+    }
+
+    if (user.role === 'admin') {
+      return done(null, user);
+    }
+
     return done(null, false);
   });
 }));
