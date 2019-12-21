@@ -6,6 +6,6 @@ const router = express.Router();
 // product management
 router.get('/products', controller.getProducts);
 
-router.post('/products', controller.newProduct);
+router.post('/products', controller.validate, controller.createProduct);
 
 module.exports = router;

@@ -24,7 +24,7 @@ module.exports.loginAuthenticate = (req, res, next) => {
         username, products, history, role,
       } = user;
 
-      const token = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
+      const token = jwt.sign({ username, role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
 
       return res.status(200)
         .json({
