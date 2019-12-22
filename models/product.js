@@ -8,7 +8,10 @@ const Schema = new mongoose.Schema({
   price: Number,
   title: String,
   brand: String,
-  categories: [[String]],
+  categories: {
+    type: [[String]],
+    // autopopulate: true,
+  },
   related: {
     also_viewed: [String],
     also_bought: [String],
@@ -18,6 +21,7 @@ const Schema = new mongoose.Schema({
 });
 
 Schema.plugin(mongoosePaginate);
+Schema.plugin(require('mongoose-autopopulate'));
 
 const Products = mongoose.model('Products', Schema);
 

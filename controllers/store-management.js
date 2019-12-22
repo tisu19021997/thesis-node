@@ -6,18 +6,20 @@ module.exports.getProducts = (req, res, next) => {
 
   const options = {
     page,
-    limit: 50,
+    limit: 4,
   };
 
   Products.paginate({}, options)
     .then((data) => {
       const {
-        docs, totalDocs,
+        docs, totalDocs, totalPages, page: paging,
       } = data;
 
       res.json({
         docs,
         totalDocs,
+        totalPages,
+        page: paging,
       });
     });
 };
@@ -76,6 +78,25 @@ module.exports.createProduct = (req, res, next) => {
         .send({
           product,
           message: 'Successfully create new product.',
+        });
+    });
+};
+
+module.exports.deleteProduct = (req, res) => {
+  const { id } = req.params;
+
+  Products.findByIdAndDelete(id, {})
+    .then((product) => {
+      res.status(202)
+        .json({
+          id,
+          message: `Deleted ${product.title}`,
+        });
+    })
+    .catch((error) => {
+      res.status(400)
+        .json({
+          message: error.message,
         });
     });
 };
