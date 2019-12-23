@@ -130,11 +130,11 @@ module.exports.searchByName = (req, res, next) => {
     return res.status(404);
   }
 
-  const { s, page, sort } = req.query;
+  const { s, page, sort, limit } = req.query;
 
   const options = {
     page,
-    limit: 4,
+    limit: limit || 4,
   };
 
   switch (sort) {
@@ -174,6 +174,7 @@ module.exports.searchByName = (req, res, next) => {
         nextPage,
         prevPage,
         totalPages,
+        page,
       });
     })
     .catch((error) => {

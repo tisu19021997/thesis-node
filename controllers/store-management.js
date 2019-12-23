@@ -1,29 +1,6 @@
 const Products = require('../models/product');
 const { isNumber } = require('../helper/boolean');
 
-module.exports.getProducts = (req, res, next) => {
-  const { page, sort } = req.query;
-
-  const options = {
-    page,
-    limit: 4,
-  };
-
-  Products.paginate({}, options)
-    .then((data) => {
-      const {
-        docs, totalDocs, totalPages, page: paging,
-      } = data;
-
-      res.json({
-        docs,
-        totalDocs,
-        totalPages,
-        page: paging,
-      });
-    });
-};
-
 module.exports.validate = (req, res, next) => {
   const {
     asin, title, imUrl, price, description,
@@ -98,5 +75,21 @@ module.exports.deleteProduct = (req, res) => {
         .json({
           message: error.message,
         });
+    });
+};
+
+module.exports.editProduct = (req, res, next) => {
+  const { id } = req.params;
+
+  Products.findByIdAndUpdate(id, req.body, { new: true })
+    .then((updatedProduct) => {
+      res.status(200)
+        .json({
+          message: 'Successfully updated the product.',
+          product: updatedProduct,
+        });
+    })
+    .catch((error) => {
+      next(error);
     });
 };
