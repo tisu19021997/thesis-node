@@ -59,6 +59,21 @@ module.exports.createProduct = (req, res, next) => {
     });
 };
 
+module.exports.importProducts = (req, res, next) => {
+  const productBatch = req.body;
+
+  Products.insertMany(productBatch)
+    .then(() => {
+      res.status(200)
+        .json({
+          message: 'Successfully imported products.',
+        });
+    })
+    .catch((error) => {
+      throw new Error(error);
+    });
+};
+
 module.exports.deleteProduct = (req, res) => {
   const { id } = req.params;
 
