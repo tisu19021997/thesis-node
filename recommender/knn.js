@@ -36,7 +36,7 @@ const euclideanDistance = (user1, user2, products) => {
       const ratingValue = rating1 || rating2;
 
       // if one of the values is missing, the difference equals the greater of
-      // | 1 - value | and | 0 - value|
+      // | 1 - value | and | 0 - value |
       difference = Math.abs(1 - ratingValue) > Math.abs(0 - ratingValue)
         ? Math.abs(1 - ratingValue) : Math.abs(0 - ratingValue);
     } else {
@@ -79,8 +79,8 @@ const findKNN = (user, data, k = 5) => {
 
 const predictRating = async (user, data, k = 5) => {
   const knn = findKNN(user, data, k);
-  const { products, users } = data;
-  let prettyUser = user;
+  const { products } = data;
+  const userWithPredictions = user;
 
   for (let i = 0; i < products.length; i += 1) {
     const product = products[i];
@@ -91,22 +91,29 @@ const predictRating = async (user, data, k = 5) => {
 
       knn.map((neighbor) => {
         const { distance, ratings } = neighbor;
-        const neighborRating = ratings[products];
-        if (neighborRating !== null) {
-          weightedSum += neighborRating;
-          distSum += distance;
+        const neighborRating = ratings[product];
+
+        if (!neighborRating) {
+          return false;
         }
+
+        weightedSum += neighborRating * distance;
+        distSum += distance;
+
+        return true;
       });
 
-      const predictedRating = (weightedSum / distSum);
-      // return the result
+      userWithPredictions.ratings[product] = weightedSum !== 0 && distSum !== 0
+        ? weightedSum / distSum
+        : 0;
     }
   }
 
-
+  return userWithPredictions;
 };
 
 module.exports = {
   findKNN,
   normalizeData,
+  predictRating,
 };

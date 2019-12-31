@@ -4,7 +4,7 @@ const { findIndex } = require('lodash');
 const User = require('../models/user');
 const Products = require('../models/product');
 const Users = require('../models/user');
-const { normalizeData, findKNN } = require('../recommender/knn');
+const { normalizeData, predictRating } = require('../recommender/knn');
 
 
 const router = express.Router();
@@ -97,6 +97,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/ml', async (req, res, next) => {
   const getProducts = await Products.find({})
+    .limit(2000)
     .select('asin -_id') // select only asin field, also exclude id
     .then((products) => products.map((product) => product.asin))
     .catch((error) => {
@@ -104,7 +105,6 @@ router.get('/ml', async (req, res, next) => {
     });
 
   const getUsers = await Users.find({})
-    .limit(300)
     .then((users) => {
       let ratingList = [];
       users.map((user) => {
@@ -141,18 +141,24 @@ router.get('/ml', async (req, res, next) => {
         users,
       };
 
-      const sim = findKNN({
+      const ratings = predictRating({
         username: 'tisu666',
         ratings: {
           B000001OL3: 1,
           B000001OL6: 1,
           B000001OL2: 1,
           '0972683275': 0,
-          B000001OM4: 0.5,
         },
       }, data);
 
-
+      Promise.resolve(ratings)
+        .then((response) => {
+          res.status(200)
+            .send(response);
+        })
+        .catch((error) => {
+          next(error);
+        });
     })
     .catch((error) => {
       next(error);
