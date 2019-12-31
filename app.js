@@ -19,6 +19,7 @@ const productRouter = require('./routes/product');
 const categoryRouter = require('./routes/category');
 const userRouter = require('./routes/user');
 const manageRouter = require('./routes/manage');
+const testRouter = require('./routes/test');
 
 const app = express();
 
@@ -41,8 +42,14 @@ app.use(cors({
   optionsSuccessStatus: 204,
 }));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true,
+  limit: '50mb',
+}));
+app.use(bodyParser.json({ limit: '50mb' }));
+
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
@@ -63,6 +70,7 @@ app.use('/users', passport.authenticate('jwt-user', { session: false }),
   userRouter);
 app.use('/store-management', passport.authenticate('jwt-admin', { session: false }),
   manageRouter);
+app.use('/test', testRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

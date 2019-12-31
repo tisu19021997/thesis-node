@@ -44,6 +44,12 @@ const Schema = new mongoose.Schema({
       },
     },
   ],
+  ratings: [
+    {
+      asin: String,
+      overall: Number,
+    },
+  ],
 });
 
 Schema.plugin(require('mongoose-autopopulate'));
