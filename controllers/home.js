@@ -1,6 +1,7 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
+const Products = require('../models/product');
 
 module.exports.loginAuthenticate = (req, res, next) => {
   passport.authenticate('local-login', (err, user) => {
@@ -24,7 +25,10 @@ module.exports.loginAuthenticate = (req, res, next) => {
         username, products, history, role,
       } = user;
 
-      const token = jwt.sign({ username, role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
+      const token = jwt.sign({
+        username,
+        role,
+      }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
 
       return res.status(200)
         .json({
@@ -81,8 +85,28 @@ module.exports.getPromotion = (req, res, next) => {
   next();
 };
 
-module.exports.getRecommendation = (req, res, next) => {
-  next();
+module.exports.getRecommendation = async (req, res, next) => {
+  const { username } = req.params;
+
+  const user = await Users.findOne({ username })
+    .exec();
+
+  try {
+    const { knn } = user.recommendation;
+
+    // aggregate to keep the order
+    const recomProducts = await Products.aggregate([
+      { $match: { asin: { $in: knn } } },
+      { $addFields: { __order: { $indexOfArray: [knn, '$asin'] } } },
+      { $sort: { __order: 1 } },
+      { $limit: 20 },
+    ]);
+
+    res.locals.knn = recomProducts || [];
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports.getHistory = (req, res, next) => {
@@ -110,9 +134,10 @@ module.exports.getDeal = (req, res, next) => {
 };
 
 module.exports.getRelatedItems = (req, res) => {
-  const { history } = res.locals;
+  const { history, knn } = res.locals;
 
   res.json({
     history,
+    knn,
   });
 };

@@ -31,6 +31,9 @@ const Schema = new mongoose.Schema({
       },
     },
   ],
+  recommendation: {
+    knn: [String],
+  },
   products: [
     {
       product: {

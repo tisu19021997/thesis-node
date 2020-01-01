@@ -1,7 +1,6 @@
 const express = require('express');
 const fs = require('fs');
 const { findIndex } = require('lodash');
-const User = require('../models/user');
 const Products = require('../models/product');
 const Users = require('../models/user');
 const { normalizeData, predictRating } = require('../recommender/knn');
@@ -25,7 +24,7 @@ router.get('/', async (req, res, next) => {
         overall,
       };
 
-      User.findOne({ username: reviwerID })
+      Users.findOne({ username: reviwerID })
         .exec()
         .then((reviewer) => {
           if (reviewer) {
@@ -95,18 +94,26 @@ router.get('/', async (req, res, next) => {
 //     });
 // });
 
-router.get('/ml', async (req, res, next) => {
-  const getProducts = await Products.find({})
-    .limit(2000)
-    .select('asin -_id') // select only asin field, also exclude id
-    .then((products) => products.map((product) => product.asin))
-    .catch((error) => {
-      next(error);
-    });
+router.get('/ml/:username', async (req, res, next) => {
+  const { username: name } = req.params;
 
-  const getUsers = await Users.find({})
-    .then((users) => {
+  Users.findOne({ username: name })
+    .then(async (currentUser) => {
+      const { ratings: userRatings } = currentUser;
+      const formattedUser = {
+        username: name,
+        ratings: {},
+      };
+      userRatings.map((rating) => {
+        formattedUser.ratings[rating.asin] = rating.overall;
+        return true;
+      });
+
+      const users = await Users.find({});
       let ratingList = [];
+      let ratedProducts = [];
+
+      // form the data object to perform prediction on
       users.map((user) => {
         const { ratings, username } = user;
         const ratingObject = {};
@@ -114,6 +121,12 @@ router.get('/ml', async (req, res, next) => {
         ratings.map((rating) => {
           const { asin, overall } = rating;
           ratingObject[asin] = normalizeData(overall, 1, 5);
+
+          // only get the rated products to minimize run time
+          // this may cause the problem of not yet rated products would never be recommended`
+          if (ratedProducts.indexOf(asin) === -1) {
+            ratedProducts = [...ratedProducts, asin];
+          }
 
           return true;
         });
@@ -126,39 +139,23 @@ router.get('/ml', async (req, res, next) => {
         return true;
       });
 
-      return ratingList;
-    })
-    .catch((error) => {
-      next(error);
-    });
+      const prediction = await predictRating(formattedUser, {
+        users: ratingList,
+        products: ratedProducts,
+      });
 
-  Promise.all([getProducts, getUsers])
-    .then((result) => {
-      const [products, users] = result;
+      const { ratings: predictedRatings } = await prediction;
 
-      const data = {
-        products,
-        users,
-      };
+      // save recommendations to database
+      currentUser.recommendation.knn = Object.keys(predictedRatings)
+        .sort((a, b) => predictedRatings[b] - predictedRatings[a]);
+      currentUser.save((err) => {
+        if (err) {
+          next(err);
+        }
+      });
 
-      const ratings = predictRating({
-        username: 'tisu666',
-        ratings: {
-          B000001OL3: 1,
-          B000001OL6: 1,
-          B000001OL2: 1,
-          '0972683275': 0,
-        },
-      }, data);
-
-      Promise.resolve(ratings)
-        .then((response) => {
-          res.status(200)
-            .send(response);
-        })
-        .catch((error) => {
-          next(error);
-        });
+      res.send(currentUser);
     })
     .catch((error) => {
       next(error);

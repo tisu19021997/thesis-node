@@ -16,7 +16,7 @@ const compareDistance = (user1, user2) => user1.distance - user2.distance;
  * @param user1 {object}
  * @param user2 {object}
  * @param products {array} Array of all products
- * @returns {number} Distance between two usersr
+ * @returns {number} Distance between two user
  */
 const euclideanDistance = (user1, user2, products) => {
   const { ratings: ratingsList1 } = user1;
@@ -78,38 +78,43 @@ const findKNN = (user, data, k = 5) => {
 };
 
 const predictRating = async (user, data, k = 5) => {
-  const knn = findKNN(user, data, k);
-  const { products } = data;
-  const userWithPredictions = user;
+  try {
+    const knn = findKNN(user, data, k);
+    const { products } = data;
+    const userWithPredictions = user;
 
-  for (let i = 0; i < products.length; i += 1) {
-    const product = products[i];
+    for (let i = 0; i < products.length; i += 1) {
+      const product = products[i];
 
-    if (!user.ratings[product]) {
-      let weightedSum = 0;
-      let distSum = 0;
+      // if the product hasn't been rated by the current user
+      if (!user.ratings[product]) {
+        let weightedSum = 0;
+        let distSum = 0;
 
-      knn.map((neighbor) => {
-        const { distance, ratings } = neighbor;
-        const neighborRating = ratings[product];
+        knn.map((neighbor) => {
+          const { distance, ratings } = neighbor;
+          const neighborRating = ratings[product];
 
-        if (!neighborRating) {
-          return false;
-        }
+          if (!neighborRating) {
+            return false;
+          }
 
-        weightedSum += neighborRating * distance;
-        distSum += distance;
+          weightedSum += neighborRating * distance;
+          distSum += distance;
 
-        return true;
-      });
+          return true;
+        });
 
-      userWithPredictions.ratings[product] = weightedSum !== 0 && distSum !== 0
-        ? weightedSum / distSum
-        : 0;
+        userWithPredictions.ratings[product] = weightedSum !== 0 && distSum !== 0
+          ? weightedSum / distSum
+          : 0;
+      }
     }
-  }
 
-  return userWithPredictions;
+    return userWithPredictions;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 module.exports = {
