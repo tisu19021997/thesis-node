@@ -62,7 +62,7 @@ module.exports.getBundleProducts = (req, res, next) => {
 module.exports.getAlsoProducts = (req, res, next) => {
   const { related } = res.locals;
   // eslint-disable-next-line camelcase
-  const { also_viewed, also_bought } = related;
+  const { also_viewed, also_bought, also_rated } = related;
 
   const alsoViewedPromise = Products.find({
     asin: {
@@ -76,11 +76,25 @@ module.exports.getAlsoProducts = (req, res, next) => {
     },
   });
 
-  Promise.all([alsoViewedPromise, alsoBoughtPromise])
+  const alsoRatedPromise = Products.aggregate([
+    { $match: { asin: { $in: also_rated } } },
+    { $addFields: { __order: { $indexOfArray: [also_rated, '$asin'] } } },
+    { $sort: { __order: 1 } },
+    { $limit: 20 },
+  ]);
+
+  // const alsoRatedPromise = Products.find({
+  //   asin: {
+  //     $in: also_rated,
+  //   },
+  // }).limit(20);
+
+  Promise.all([alsoViewedPromise, alsoBoughtPromise, alsoRatedPromise])
     .then((products) => {
-      const [alsoViewed, alsoBought] = products;
+      const [alsoViewed, alsoBought, alsoRated] = products;
       res.locals.alsoViewed = alsoViewed;
       res.locals.alsoBought = alsoBought;
+      res.locals.alsoRated = alsoRated;
       next();
     })
     .catch((error) => {
@@ -107,7 +121,7 @@ module.exports.getSameCatProducts = (req, res, next) => {
 
 module.exports.renderProducts = (req, res) => {
   const {
-    product, sameCategory, alsoViewed, alsoBought, bundleProducts, categories,
+    product, sameCategory, alsoViewed, alsoBought, alsoRated, bundleProducts, categories,
   } = res.locals;
 
   res.json(
@@ -117,6 +131,7 @@ module.exports.renderProducts = (req, res) => {
       bundleProducts,
       alsoViewed,
       alsoBought,
+      alsoRated,
       sameCategory,
     },
   );

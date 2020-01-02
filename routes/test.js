@@ -1,9 +1,9 @@
 const express = require('express');
 const fs = require('fs');
 const { findIndex } = require('lodash');
-const Products = require('../models/product');
 const Users = require('../models/user');
-const { normalizeData, predictRating } = require('../recommender/knn');
+const Products = require('../models/product');
+const { normalizeData, predictRating, cosineSimilarity } = require('../helper/recommender');
 
 
 const router = express.Router();
@@ -99,6 +99,10 @@ router.get('/ml/:username', async (req, res, next) => {
 
   Users.findOne({ username: name })
     .then(async (currentUser) => {
+      if (!currentUser) {
+        res.status(404)
+          .send('User not found');
+      }
       const { ratings: userRatings } = currentUser;
       const formattedUser = {
         username: name,
@@ -149,6 +153,7 @@ router.get('/ml/:username', async (req, res, next) => {
       // save recommendations to database
       currentUser.recommendation.knn = Object.keys(predictedRatings)
         .sort((a, b) => predictedRatings[b] - predictedRatings[a]);
+
       currentUser.save((err) => {
         if (err) {
           next(err);
@@ -160,6 +165,122 @@ router.get('/ml/:username', async (req, res, next) => {
     .catch((error) => {
       next(error);
     });
+});
+
+router.get('/cf', async (req, res, next) => {
+  const productCatalog = await Products.find({})
+    .limit(5000);
+
+  try {
+    const similarTable = {};
+    // for each item in product catalog I1
+    const mapping = await productCatalog.map(async (product, index) => {
+      // for each customer who rated product I1
+      const customers = await Users.find({
+        'ratings.asin': product.asin,
+      });
+
+      customers.map((customer) => {
+        const { ratings } = customer;
+
+        // for each item I2 rated by customer, record that
+        // a customer purchased both I1 and I2
+        return ratings.map((rating) => {
+          if (product.asin === rating.asin) {
+            return false;
+          }
+          if (!Object.prototype.hasOwnProperty.call(similarTable, product.asin)) {
+            similarTable[product.asin] = {};
+          }
+
+          if (!similarTable[product.asin][rating.asin]) {
+            similarTable[product.asin][rating.asin] = 1;
+          } else {
+            similarTable[product.asin][rating.asin] += 1;
+          }
+
+          return true;
+        });
+      });
+
+      console.log(`Writing ${(index * 100) / productCatalog.length}%...`);
+    });
+
+    Promise.all(mapping)
+      .then(() => {
+        fs.writeFile('simTable.json', JSON.stringify(similarTable), 'utf8', (err, string) => {
+          console.log('Done Writing');
+
+
+          // });
+        });
+        res.send(similarTable);
+      })
+      .catch((error) => {
+        next(error);
+      });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/cf/do/:asin', async (req, res, next) => {
+  const { asin } = req.params;
+
+  fs.readFile('./data-dev/simTable.json', 'utf8', async (err, stringData) => {
+    if (err) {
+      next(err);
+    }
+
+    const data = await JSON.parse(stringData);
+    const curItem = data[asin];
+    let simScore = {};
+
+    if (!curItem) {
+      await res.status(404)
+        .send('Product not found.');
+      return false;
+    }
+
+    const constructSimScore = Object.keys(data)
+      .map(async (otherKey) => {
+        const other = data[otherKey];
+
+        if (otherKey === asin) {
+          return false;
+        }
+
+        // compute cosine similarity between current product and the other,
+        // then push the similarity to database
+        simScore = {
+          ...simScore,
+          [otherKey]: cosineSimilarity(curItem, other),
+        };
+
+        return true;
+      });
+
+    Promise.all(constructSimScore)
+      .then(async () => {
+        // sort the similarity score table
+        simScore = await Object.keys(simScore)
+          .sort((a, b) => simScore[b] - simScore[a]);
+
+        // save generated recommendations to database
+        Products.findOneAndUpdate(
+          { asin }, { $set: { 'related.also_rated': simScore } }, { new: true },
+        )
+          .then((product) => {
+            res.json(product);
+          })
+          .catch((e) => {
+            next(e);
+          });
+      })
+      .catch((error) => {
+        next(error);
+      });
+  });
 });
 
 module.exports = router;

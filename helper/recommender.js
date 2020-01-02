@@ -11,6 +11,16 @@ const normalizeData = (v, minA, maxA) => ((v - minA) / (maxA - minA));
 const compareDistance = (user1, user2) => user1.distance - user2.distance;
 
 /**
+ * Calculate magnitude of a vector
+ *
+ * @param vector {array}
+ * @returns {number}
+ */
+const magnitude = (vector) => Math.sqrt(
+  vector.reduce((acc, current) => acc + current ** 2, 0),
+);
+
+/**
  * Calculate the Euclidean Distance between two users
  *
  * @param user1 {object}
@@ -117,7 +127,33 @@ const predictRating = async (user, data, k = 5) => {
   }
 };
 
+/**
+ * Calculate the Cosine Similarity between two items
+ *
+ * @param item1
+ * @param item2
+ * @returns {number}
+ */
+const cosineSimilarity = (item1, item2) => {
+  const rating1 = Object.keys(item1)
+    .map((key) => item1[key]);
+  const rating2 = Object.keys(item2)
+    .map((key) => item2[key]);
+
+  const dotProduct = rating1.reduce((acc, current, index) => {
+    const currentValue = current || 0;
+    const otherRatingValue = rating2[index] || 0;
+    return acc + currentValue * otherRatingValue;
+  }, 0);
+
+  // magnitude multiplication
+  const magMul = magnitude(rating1) * magnitude(rating2);
+
+  return dotProduct / magMul;
+};
+
 module.exports = {
+  cosineSimilarity,
   findKNN,
   normalizeData,
   predictRating,

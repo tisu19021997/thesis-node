@@ -109,3 +109,6 @@ nodemon.json
 
 # scss map
 *.map
+
+# dev data folder
+/data-dev

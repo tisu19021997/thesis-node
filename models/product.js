@@ -18,6 +18,7 @@ const Schema = new mongoose.Schema({
     also_bought: [String],
     buy_after_viewing: [String],
     bought_together: [String],
+    also_rated: [String], // using item-to-item collaborative filtering
   },
 });
 
