@@ -37,7 +37,7 @@ router.get('/', async (req, res, next) => {
               return false;
             }
 
-            return User.updateOne({ username }, {
+            return Users.updateOne({ username }, {
               $push: {
                 ratings: {
                   $each: [ratingObject],
@@ -52,7 +52,7 @@ router.get('/', async (req, res, next) => {
           }
 
           // new user
-          return User.create({
+          return Users.create({
             username: reviwerID,
             password: '123',
           })
@@ -97,6 +97,17 @@ router.get('/', async (req, res, next) => {
 router.get('/ml/:username', async (req, res, next) => {
   const { username: name } = req.params;
 
+  /*
+  const a = {
+    username: 'tisu1902',
+    ratings: {
+      1234567: 1,
+      2345678: 0.2,
+    },
+  };
+   */
+
+
   Users.findOne({ username: name })
     .then(async (currentUser) => {
       if (!currentUser) {
@@ -108,8 +119,9 @@ router.get('/ml/:username', async (req, res, next) => {
         username: name,
         ratings: {},
       };
+
       userRatings.map((rating) => {
-        formattedUser.ratings[rating.asin] = rating.overall;
+        formattedUser.ratings[rating.asin] = normalizeData(rating.overall, 1, 5);
         return true;
       });
 
@@ -127,7 +139,7 @@ router.get('/ml/:username', async (req, res, next) => {
           ratingObject[asin] = normalizeData(overall, 1, 5);
 
           // only get the rated products to minimize run time
-          // this may cause the problem of not yet rated products would never be recommended`
+          // this may cause the problem of not yet rated products would never be recommended
           if (ratedProducts.indexOf(asin) === -1) {
             ratedProducts = [...ratedProducts, asin];
           }
@@ -148,9 +160,18 @@ router.get('/ml/:username', async (req, res, next) => {
         products: ratedProducts,
       });
 
+      // un-comment these lines to write ratingList to a file
+      //
+      // fs.writeFile('knnTable.json', JSON.stringify(ratingList), 'utf8', (err, string) => {
+      //   if (err) {
+      //     next(err);
+      //   }
+      //   console.log('Done Writing');
+      // });
+
       const { ratings: predictedRatings } = await prediction;
 
-      // save recommendations to database
+      // save recommendations to database, sorted by rating score
       currentUser.recommendation.knn = Object.keys(predictedRatings)
         .sort((a, b) => predictedRatings[b] - predictedRatings[a]);
 
@@ -160,7 +181,7 @@ router.get('/ml/:username', async (req, res, next) => {
         }
       });
 
-      res.send(currentUser);
+      await res.send(currentUser);
     })
     .catch((error) => {
       next(error);
@@ -180,7 +201,7 @@ router.get('/cf', async (req, res, next) => {
         'ratings.asin': product.asin,
       });
 
-      customers.map((customer) => {
+      await customers.map((customer) => {
         const { ratings } = customer;
 
         // for each item I2 rated by customer, record that
@@ -189,6 +210,8 @@ router.get('/cf', async (req, res, next) => {
           if (product.asin === rating.asin) {
             return false;
           }
+
+          // init an empty object for the product if that product is not in the similar table yet
           if (!Object.prototype.hasOwnProperty.call(similarTable, product.asin)) {
             similarTable[product.asin] = {};
           }
@@ -203,7 +226,7 @@ router.get('/cf', async (req, res, next) => {
         });
       });
 
-      console.log(`Writing ${(index * 100) / productCatalog.length}%...`);
+      await console.log(`Writing ${(index * 100) / productCatalog.length}%...`);
     });
 
     Promise.all(mapping)
@@ -262,9 +285,11 @@ router.get('/cf/do/:asin', async (req, res, next) => {
 
     Promise.all(constructSimScore)
       .then(async () => {
-        // sort the similarity score table
+        // sort the similarity score table and also exclude the current item
+        // from the recommendation list
         simScore = await Object.keys(simScore)
-          .sort((a, b) => simScore[b] - simScore[a]);
+          .sort((a, b) => simScore[b] - simScore[a])
+          .filter((item) => item !== asin);
 
         // save generated recommendations to database
         Products.findOneAndUpdate(

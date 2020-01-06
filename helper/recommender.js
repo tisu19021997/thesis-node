@@ -115,9 +115,7 @@ const predictRating = async (user, data, k = 5) => {
           return true;
         });
 
-        userWithPredictions.ratings[product] = weightedSum !== 0 && distSum !== 0
-          ? weightedSum / distSum
-          : 0;
+        userWithPredictions.ratings[product] = weightedSum / (1 + distSum);
       }
     }
 

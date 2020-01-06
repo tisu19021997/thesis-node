@@ -22,7 +22,7 @@ module.exports.loginAuthenticate = (req, res, next) => {
       }
 
       const {
-        username, products, history, role,
+        username, products, history, role, ratings,
       } = user;
 
       const token = jwt.sign({
@@ -38,6 +38,7 @@ module.exports.loginAuthenticate = (req, res, next) => {
             username,
             products,
             history,
+            ratings,
           },
           token,
           message: 'You are signed-in',
@@ -95,12 +96,17 @@ module.exports.getRecommendation = async (req, res, next) => {
     const { knn } = user.recommendation;
 
     // aggregate to keep the order
-    const recomProducts = await Products.aggregate([
+    let recomProducts = await Products.aggregate([
       { $match: { asin: { $in: knn } } },
       { $addFields: { __order: { $indexOfArray: [knn, '$asin'] } } },
       { $sort: { __order: 1 } },
-      { $limit: 20 },
+      { $limit: 25 },
     ]);
+
+    const rated = user.ratings.map((item) => item.asin);
+
+    // exclude the rated products
+    recomProducts = recomProducts.filter((product) => rated.indexOf(product.asin) === -1);
 
     res.locals.knn = recomProducts || [];
     next();
