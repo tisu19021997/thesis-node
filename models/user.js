@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const Schema = new mongoose.Schema({
   username: {
@@ -53,8 +54,13 @@ const Schema = new mongoose.Schema({
       overall: Number,
     },
   ],
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
+Schema.plugin(mongoosePaginate);
 Schema.plugin(require('mongoose-autopopulate'));
 
 const User = mongoose.model('User', Schema);

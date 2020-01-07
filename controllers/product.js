@@ -1,4 +1,5 @@
 const { isEmpty } = require('lodash');
+const { escapeString } = require('../helper/string');
 const Products = require('../models/product');
 const Categories = require('../models/category');
 
@@ -145,7 +146,9 @@ module.exports.searchByName = (req, res, next) => {
     return res.status(404);
   }
 
-  const { s, page, sort, limit } = req.query;
+  const {
+    s, page, sort, limit,
+  } = req.query;
 
   const options = {
     page,
@@ -166,7 +169,7 @@ module.exports.searchByName = (req, res, next) => {
   }
 
   // escape search string
-  const searchRegex = s.replace(new RegExp('\\\\', 'g'), '\\\\');
+  const searchRegex = escapeString(s);
 
   Products.paginate(
     {

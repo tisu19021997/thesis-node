@@ -1,7 +1,12 @@
+const { isEmpty } = require('lodash');
 const Products = require('../models/product');
+const Users = require('../models/user');
+const Cats = require('../models/category');
 const { isNumber } = require('../helper/boolean');
+const { escapeString } = require('../helper/string');
 
-module.exports.validate = (req, res, next) => {
+// products
+module.exports.validateProduct = (req, res, next) => {
   const {
     asin, title, imUrl, price, description,
   } = req.body;
@@ -102,6 +107,233 @@ module.exports.editProduct = (req, res, next) => {
         .json({
           message: 'Successfully updated the product.',
           product: updatedProduct,
+        });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+
+// users
+module.exports.validateUser = async (req, res, next) => {
+  const { username, email } = req.body;
+
+  const user = await Users.find({
+    $or: [
+      { username },
+      { email },
+    ],
+  });
+
+  if (user.length > 0) {
+    return res.status(409)
+      .send({
+        message: 'User already existed.',
+      });
+  }
+
+  return next();
+};
+
+module.exports.getUsers = async (req, res, next) => {
+  if (isEmpty(req.query)) {
+    return res.status(404)
+      .send('Not Found');
+  }
+
+  const {
+    s, page, sort, limit,
+  } = req.query;
+
+  const options = {
+    page,
+    limit: limit || 4,
+  };
+
+  switch (sort) {
+    case 'oldest':
+      options.sort = { createAt: 1 };
+      break;
+
+    case 'role':
+      options.sort = { role: 1 };
+      break;
+
+    default:
+      options.sort = { createdAt: -1 };
+  }
+
+  const searchRegex = escapeString(s);
+
+  try {
+    const data = await Users.paginate({
+      username: {
+        $regex: searchRegex,
+        $options: 'i',
+      },
+    }, options);
+
+    const {
+      docs, totalDocs, hasPrevPage, hasNextPage, nextPage, prevPage, totalPages,
+    } = await data;
+
+    await res.json({
+      docs,
+      totalDocs,
+      hasPrevPage,
+      hasNextPage,
+      nextPage,
+      prevPage,
+      totalPages,
+      page,
+    });
+  } catch (error) {
+    next(error);
+  }
+
+  return false;
+};
+
+module.exports.deleteUser = (req, res) => {
+  const { id } = req.params;
+
+  Users.findByIdAndDelete(id, {})
+    .then((user) => {
+      res.status(202)
+        .json({
+          id,
+          message: `Deleted ${user.name}`,
+        });
+    })
+    .catch((error) => {
+      res.status(400)
+        .json({
+          message: error.message,
+        });
+    });
+};
+
+module.exports.editUser = (req, res, next) => {
+  const { id } = req.params;
+
+  Users.findByIdAndUpdate(id, req.body, { new: true })
+    .then((updatedUser) => {
+      res.status(200)
+        .json({
+          message: 'Successfully updated the product.',
+          product: updatedUser,
+        });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+module.exports.createUser = (req, res, next) => {
+  Users.create(req.body)
+    .then((product) => res.status(201)
+      .send({
+        product,
+        message: 'Successfully create new product.',
+      }))
+    .catch((error) => {
+      next(error);
+    });
+};
+
+
+// categories
+module.exports.getCats = async (req, res, next) => {
+  if (isEmpty(req.query)) {
+    return res.status(404)
+      .send('Not Found');
+  }
+
+  const {
+    s, page, limit,
+  } = req.query;
+
+  const options = {
+    page,
+    limit: limit || 4,
+  };
+
+  const searchRegex = escapeString(s);
+
+  try {
+    const data = await Cats.paginate({
+      name: {
+        $regex: searchRegex,
+        $options: 'i',
+      },
+    }, options);
+
+    const {
+      docs, totalDocs, hasPrevPage, hasNextPage, nextPage, prevPage, totalPages,
+    } = await data;
+
+    await res.json({
+      docs,
+      totalDocs,
+      hasPrevPage,
+      hasNextPage,
+      nextPage,
+      prevPage,
+      totalPages,
+      page,
+    });
+  } catch (error) {
+    next(error);
+  }
+
+  return false;
+};
+
+module.exports.addCat = (req, res, next) => {
+  Cats.create(req.body)
+    .then((cat) => res.status(201)
+      .send({
+        cat,
+        message: 'Successfully create new category.',
+      }))
+    .catch((error) => {
+      next(error);
+    });
+};
+
+module.exports.deleteCat = (req, res, next) => {
+  const { id } = req.params;
+
+  Cats.findByIdAndDelete(id, {})
+    .then((cat) => {
+      res.status(202)
+        .json({
+          id,
+          message: `Deleted ${cat.name}`,
+        });
+    })
+    .catch((error) => {
+      res.status(400)
+        .json({
+          message: error.message,
+        });
+    });
+};
+
+module.exports.importCat = (req, res, next) => {
+
+};
+
+module.exports.editCat = (req, res, next) => {
+  const { id } = req.params;
+
+  Cats.findByIdAndUpdate(id, req.body, { new: true })
+    .then((updatedCat) => {
+      res.status(200)
+        .json({
+          message: 'Successfully updated the category.',
+          product: updatedCat,
         });
     })
     .catch((error) => {
