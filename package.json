@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon --verbose app.js",
+    "start": "nodemon --verbose --ignore '*.json' app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

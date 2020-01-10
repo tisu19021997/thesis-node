@@ -152,7 +152,7 @@ module.exports.searchByName = (req, res, next) => {
 
   const options = {
     page,
-    limit: limit || 4,
+    limit: limit || 20,
   };
 
   switch (sort) {
@@ -184,6 +184,7 @@ module.exports.searchByName = (req, res, next) => {
       const {
         docs, totalDocs, hasPrevPage, hasNextPage, nextPage, prevPage, totalPages,
       } = data;
+
       res.json({
         products: docs,
         totalDocs,

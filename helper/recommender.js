@@ -21,6 +21,31 @@ const magnitude = (vector) => Math.sqrt(
 );
 
 /**
+ * Calculate the Cosine Similarity between two items
+ *
+ * @param item1
+ * @param item2
+ * @returns {number}
+ */
+const cosineSimilarity = (item1, item2) => {
+  const rating1 = Object.keys(item1)
+    .map((key) => item1[key]);
+  const rating2 = Object.keys(item2)
+    .map((key) => item2[key]);
+
+  const dotProduct = rating1.reduce((acc, current, index) => {
+    const currentValue = current || 0;
+    const otherRatingValue = rating2[index] || 0;
+    return acc + currentValue * otherRatingValue;
+  }, 0);
+
+  // magnitude multiplication
+  const magMul = magnitude(rating1) * magnitude(rating2);
+
+  return dotProduct / magMul;
+};
+
+/**
  * Calculate the Euclidean Distance between two users
  *
  * @param user1 {object}
@@ -123,31 +148,6 @@ const predictRating = async (user, data, k = 5) => {
   } catch (error) {
     throw new Error(error.message);
   }
-};
-
-/**
- * Calculate the Cosine Similarity between two items
- *
- * @param item1
- * @param item2
- * @returns {number}
- */
-const cosineSimilarity = (item1, item2) => {
-  const rating1 = Object.keys(item1)
-    .map((key) => item1[key]);
-  const rating2 = Object.keys(item2)
-    .map((key) => item2[key]);
-
-  const dotProduct = rating1.reduce((acc, current, index) => {
-    const currentValue = current || 0;
-    const otherRatingValue = rating2[index] || 0;
-    return acc + currentValue * otherRatingValue;
-  }, 0);
-
-  // magnitude multiplication
-  const magMul = magnitude(rating1) * magnitude(rating2);
-
-  return dotProduct / magMul;
 };
 
 module.exports = {

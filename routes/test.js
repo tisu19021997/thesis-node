@@ -4,10 +4,11 @@ const { findIndex } = require('lodash');
 const Users = require('../models/user');
 const Products = require('../models/product');
 const { normalizeData, predictRating, cosineSimilarity } = require('../helper/recommender');
-
+const knnTrainSet = fs.existsSync('../data-dev/knnTable.json') ? require('../data-dev/knnTable') : [];
 
 const router = express.Router();
 
+// generate user from ratings JSON file
 router.get('/', async (req, res, next) => {
   fs.readFile('./data-dev/ratings-small.json', 'utf8', async (err, stringData) => {
     if (err) {
@@ -94,19 +95,9 @@ router.get('/', async (req, res, next) => {
 //     });
 // });
 
-router.get('/ml/:username', async (req, res, next) => {
+// knn
+router.get('/knn/:username', async (req, res, next) => {
   const { username: name } = req.params;
-
-  /*
-  const a = {
-    username: 'tisu1902',
-    ratings: {
-      1234567: 1,
-      2345678: 0.2,
-    },
-  };
-   */
-
 
   Users.findOne({ username: name })
     .then(async (currentUser) => {
@@ -129,36 +120,50 @@ router.get('/ml/:username', async (req, res, next) => {
       let ratingList = [];
       let ratedProducts = [];
 
-      // form the data object to perform prediction on
-      users.map((user) => {
-        const { ratings, username } = user;
-        const ratingObject = {};
+      // if the training set is already generated, use it
+      if (knnTrainSet.length > 0) {
+        ratingList = knnTrainSet;
 
-        ratings.map((rating) => {
-          const { asin, overall } = rating;
-          ratingObject[asin] = normalizeData(overall, 1, 5);
+        knnTrainSet.map((user) => {
+          const { ratings } = user;
 
-          // only get the rated products to minimize run time
-          // this may cause the problem of not yet rated products would never be recommended
-          if (ratedProducts.indexOf(asin) === -1) {
-            ratedProducts = [...ratedProducts, asin];
-          }
+          return Object.keys(ratings)
+            .map((key) => {
+              if (ratedProducts.indexOf(key) === -1) {
+                ratedProducts = [...ratedProducts, key];
+              }
+
+              return true;
+            });
+        });
+      } else {
+        // generate the data needed to do prediction on by iterate through
+        // each user, map the ratings extracted from the JSON file to each user
+        users.map((user) => {
+          const { ratings, username } = user;
+          const ratingObject = {};
+
+          ratings.map((rating) => {
+            const { asin, overall } = rating;
+            ratingObject[asin] = normalizeData(overall, 1, 5);
+
+            // only get the rated products to minimize run time
+            // this may cause the problem of not yet rated products would never be recommended
+            if (ratedProducts.indexOf(asin) === -1) {
+              ratedProducts = [...ratedProducts, asin];
+            }
+
+            return true;
+          });
+
+          ratingList = [...ratingList, {
+            username,
+            ratings: ratingObject,
+          }];
 
           return true;
         });
-
-        ratingList = [...ratingList, {
-          username,
-          ratings: ratingObject,
-        }];
-
-        return true;
-      });
-
-      const prediction = await predictRating(formattedUser, {
-        users: ratingList,
-        products: ratedProducts,
-      });
+      }
 
       // un-comment these lines to write ratingList to a file
       //
@@ -169,6 +174,10 @@ router.get('/ml/:username', async (req, res, next) => {
       //   console.log('Done Writing');
       // });
 
+      const prediction = await predictRating(formattedUser, {
+        users: ratingList,
+        products: ratedProducts,
+      });
       const { ratings: predictedRatings } = await prediction;
 
       // save recommendations to database, sorted by rating score
@@ -188,9 +197,10 @@ router.get('/ml/:username', async (req, res, next) => {
     });
 });
 
+// item-based collaborative filtering
 router.get('/cf', async (req, res, next) => {
   const productCatalog = await Products.find({})
-    .limit(5000);
+    .limit(6000);
 
   try {
     const similarTable = {};
@@ -274,7 +284,7 @@ router.get('/cf/do/:asin', async (req, res, next) => {
         }
 
         // compute cosine similarity between current product and the other,
-        // then push the similarity to database
+        // then push the similarity to origin data
         simScore = {
           ...simScore,
           [otherKey]: cosineSimilarity(curItem, other),

@@ -11,7 +11,6 @@ const Schema = new mongoose.Schema({
   brand: String,
   categories: {
     type: [[String]],
-    // autopopulate: true,
   },
   related: {
     also_viewed: [String],
