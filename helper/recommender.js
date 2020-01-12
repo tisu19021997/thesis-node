@@ -112,7 +112,15 @@ const findKNN = (user, data, k = 5) => {
     .slice(0, k);
 };
 
-const predictRating = async (user, data, k = 5) => {
+/**
+ * Predict the rating of a user on a product using KNN
+ *
+ * @param user
+ * @param data
+ * @param k
+ * @returns {Promise<*>}
+ */
+const knnPredict = async (user, data, k = 5) => {
   try {
     const knn = findKNN(user, data, k);
     const { products } = data;
@@ -150,9 +158,14 @@ const predictRating = async (user, data, k = 5) => {
   }
 };
 
+const meanSquaredError = (actual, predict) => {
+
+};
+
 module.exports = {
   cosineSimilarity,
   findKNN,
   normalizeData,
-  predictRating,
+  knnPredict,
+  meanSquaredError,
 };
