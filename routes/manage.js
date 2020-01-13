@@ -4,6 +4,7 @@ const controller = require('../controllers/store-management');
 const router = express.Router();
 
 // product management
+
 router.patch('/products/:id', controller.editProduct);
 
 router.post('/products', controller.validateProduct, controller.createProduct);

@@ -15,5 +15,4 @@ router.get('/:asin',
   controller.getSameCatProducts,
   controller.renderProducts);
 
-
 module.exports = router;

@@ -3,7 +3,7 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 
 const Schema = new mongoose.Schema({
   name: {
-    type: String,
+    type: [String],
     required: true,
   },
   iconClass: String,

@@ -49,6 +49,87 @@ module.exports.validateProduct = (req, res, next) => {
   return false;
 };
 
+module.exports.getProducts = (req, res, next) => {
+  if (isEmpty(req.query)) {
+    return res.status(404);
+  }
+
+  const {
+    s, page, sort, limit,
+  } = req.query;
+
+  const data = req.body;
+  let { cat } = data;
+
+  const options = {
+    page,
+    limit: limit || 20,
+  };
+
+  switch (sort) {
+    case 'price-desc':
+      options.sort = { price: -1 };
+      break;
+
+    case 'price-asc':
+      options.sort = { price: 1 };
+      break;
+
+    default:
+      options.sort = {};
+  }
+
+  // escape search string
+  const searchRegex = escapeString(s);
+
+  const query = {
+    title: {
+      $regex: searchRegex,
+      $options: 'i',
+    },
+  };
+
+  if (cat) {
+    cat = JSON.parse(cat).cat;
+    query.$or = [];
+
+    // hard code the maximum length of categories array
+    // will fix when a better solution
+    for (let i = 0; i < 8; i += 1) {
+      const object = {};
+      object[`categories.${i}`] = cat;
+
+      query.$or = [...query.$or, object];
+    }
+  }
+
+  Products.paginate(
+    query,
+    options,
+  )
+    .then((products) => {
+      const {
+        totalDocs, hasPrevPage, hasNextPage, nextPage, prevPage, totalPages,
+      } = products;
+
+      const { docs } = products;
+
+      res.json({
+        products: docs,
+        totalDocs,
+        hasPrevPage,
+        hasNextPage,
+        nextPage,
+        prevPage,
+        totalPages,
+        page,
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
+}
+
 module.exports.createProduct = (req, res, next) => {
   Products.create(req.body)
     .then((error, product) => {
