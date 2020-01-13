@@ -58,8 +58,7 @@ module.exports.getProducts = (req, res, next) => {
     s, page, sort, limit,
   } = req.query;
 
-  const data = req.body;
-  let { cat } = data;
+  const { cat } = req.query;
 
   const options = {
     page,
@@ -83,27 +82,48 @@ module.exports.getProducts = (req, res, next) => {
   const searchRegex = escapeString(s);
 
   const query = {
-    title: {
-      $regex: searchRegex,
-      $options: 'i',
-    },
+    $and: [
+      {
+        $or: [
+          // query by name
+          {
+            title: {
+              $regex: searchRegex,
+              $options: 'i',
+            },
+          },
+          // or by asin
+          {
+            asin: {
+              $regex: searchRegex,
+              $options: 'i',
+            },
+          },
+        ],
+      },
+    ],
   };
 
   if (cat) {
-    cat = JSON.parse(cat).cat;
-    query.$or = [];
+    const catList = JSON.parse(cat).cat;
+
+    // create empty array for OR query
+    let catQuery = [];
 
     // hard code the maximum length of categories array
     // will fix when a better solution
-    for (let i = 0; i < 8; i += 1) {
+    for (let i = 0; i < 10; i += 1) {
       const object = {};
-      object[`categories.${i}`] = cat;
+      object[`categories.${i}`] = catList;
 
-      query.$or = [...query.$or, object];
+      catQuery = [...catQuery, object];
     }
+
+    // push new $or query to current query
+    query.$and = [...query.$and, { $or: catQuery }];
   }
 
-  Products.paginate(
+  return Products.paginate(
     query,
     options,
   )
@@ -128,7 +148,7 @@ module.exports.getProducts = (req, res, next) => {
     .catch((error) => {
       next(error);
     });
-}
+};
 
 module.exports.createProduct = (req, res, next) => {
   Products.create(req.body)
@@ -145,7 +165,7 @@ module.exports.createProduct = (req, res, next) => {
     });
 };
 
-module.exports.importProducts = (req, res, next) => {
+module.exports.importProducts = (req, res) => {
   const productBatch = req.body;
 
   Products.insertMany(productBatch)
@@ -249,10 +269,22 @@ module.exports.getUsers = async (req, res, next) => {
 
   try {
     const data = await Users.paginate({
-      username: {
-        $regex: searchRegex,
-        $options: 'i',
-      },
+      $or: [
+        // query by username
+        {
+          username: {
+            $regex: searchRegex,
+            $options: 'i',
+          },
+        },
+        // or by email
+        {
+          email: {
+            $regex: searchRegex,
+            $options: 'i',
+          },
+        },
+      ],
     }, options);
 
     const {

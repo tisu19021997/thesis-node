@@ -1,9 +1,7 @@
-const { isEmpty, difference } = require('lodash');
+const { isEmpty } = require('lodash');
 const { escapeString } = require('../helper/string');
 const Products = require('../models/product');
 const Categories = require('../models/category');
-const fs = require('fs');
-const queryString = require('query-string');
 
 // *========== PRODUCT DETAIL PAGE ==========* //
 
