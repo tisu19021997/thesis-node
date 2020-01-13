@@ -7,9 +7,15 @@ const Schema = new mongoose.Schema({
   reviewerName: String,
   reviewText: String,
   summary: String,
-  helpful: [Number],
+  helpful: {
+    type: [Number],
+    default: [0, 0],
+  },
   overall: Number,
-  unixReviewTime: Number,
+  unixReviewTime: {
+    type: Number,
+    default: Date.now(),
+  },
   reviewTime: String,
 });
 

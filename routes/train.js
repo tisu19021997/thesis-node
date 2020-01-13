@@ -74,7 +74,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // knn
-router.get('/knn/:username', controller.knnPrediction, controller.knnEvaluate);
+router.post('/knn', controller.knnPrediction, controller.knnEvaluate);
 
 // item-based collaborative filtering
 router.get('/cf', async (req, res, next) => {

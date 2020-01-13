@@ -4,20 +4,30 @@ const Users = require('../models/user');
 
 module.exports.getRatings = (req, res, next) => {
   const { asin } = req.params;
+  const { page } = req.query;
 
   Ratings.paginate({
     asin,
   }, {
     limit: 10,
+    page,
+    sort: {
+      unixReviewTime: -1,
+    },
   })
     .then((data) => {
       const {
-        docs, totalDocs, hasPrevPage, hasNextPage, nextPage, prevPage, totalPages,
+        docs, totalDocs, totalPages,
       } = data;
       // res.locals.ratings = ratings;
       // return next();
       res.status(200)
-        .json({ ratings: docs });
+        .json({
+          ratings: docs,
+          totalDocs,
+          totalPages,
+          page,
+        });
     })
     .catch((e) => {
       next(e);
@@ -44,8 +54,47 @@ module.exports.getRaters = async (req, res) => {
     });
 };
 
-module.exports.createRatings = (req, res, next) => {
+module.exports.createRating = (req, res, next) => {
+  const data = req.body;
+  const { rating, user } = data;
 
+  // parse rating score to integer
+  rating.overall = parseInt(rating.overall, 10);
+
+  return Ratings.create(rating)
+    .then((newRating) => {
+      res.locals.rating = newRating;
+      res.locals.username = user;
+
+      next();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+module.exports.updateUserRating = (req, res, next) => {
+  const { rating, username } = res.locals;
+
+  Users.findOneAndUpdate(
+    { username },
+    {
+      $push: {
+        ratings: {
+          asin: rating.asin,
+          overall: rating.overall,
+        },
+      },
+    },
+    { new: true },
+  )
+    .then((user) => {
+      res.status(200)
+        .json({
+          rating,
+          user,
+        });
+    });
 };
 
 module.exports.createBatch = (req, res, next) => {

@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/batch', controller.createBatch);
 
-router.post('/', controller.createRatings);
+router.post('/', controller.createRating, controller.updateUserRating);
 
 router.get('/:asin', controller.getRatings);
 

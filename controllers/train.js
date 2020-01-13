@@ -66,7 +66,7 @@ module.exports.cfPrediction = async (req, res, next) => {
 };
 
 module.exports.knnPrediction = async (req, res, next) => {
-  const { username: name } = req.params;
+  const { username: name } = req.body;
 
   Users.findOne({ username: name })
     .then(async (currentUser) => {
@@ -170,10 +170,10 @@ module.exports.knnPrediction = async (req, res, next) => {
     });
 };
 
-module.exports.knnEvaluate = async (req, res, next) => {
+module.exports.knnEvaluate = async (req, res) => {
   const { prediction, actual } = await res.locals;
 
-  await res.json({
+  await res.status(200).json({
     prediction,
     actual,
   });
