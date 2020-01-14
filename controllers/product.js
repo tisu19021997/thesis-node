@@ -2,6 +2,7 @@ const { isEmpty } = require('lodash');
 const { escapeString } = require('../helper/string');
 const Products = require('../models/product');
 const Categories = require('../models/category');
+const { categoryQuery } = require('../helper/query');
 
 // *========== PRODUCT DETAIL PAGE ==========* //
 
@@ -23,13 +24,24 @@ module.exports.getProductInfo = (req, res, next) => {
       next(err);
     }
 
+    if (!product) {
+      return res.status(404)
+        .send({
+          product: {},
+        });
+    }
+
     res.locals.product = product;
     res.locals.related = product.related;
+
     next();
   });
 };
 
 module.exports.getBundleProducts = (req, res, next) => {
+  if (!res.locals.related) {
+    return next();
+  }
   // eslint-disable-next-line camelcase
   const { bought_together } = res.locals.related;
 
@@ -46,14 +58,16 @@ module.exports.getBundleProducts = (req, res, next) => {
     let totalPrice = 0;
 
     if (products.length) {
-      totalPrice = products.reduce((acc, current) => (
-        parseFloat(acc.price) + parseFloat(current.price)
-      ));
+      products.map((product) => {
+        totalPrice += parseFloat(product.price);
+
+        return true;
+      });
     }
 
     res.locals.bundleProducts = {
       products,
-      totalPrice: totalPrice + parseFloat(res.locals.product.price),
+      totalPrice: (totalPrice + parseFloat(res.locals.product.price)).toFixed(2),
     };
 
     next();
@@ -62,6 +76,11 @@ module.exports.getBundleProducts = (req, res, next) => {
 
 module.exports.getAlsoProducts = (req, res, next) => {
   const { related } = res.locals;
+
+  if (!related) {
+    return next();
+  }
+
   // eslint-disable-next-line camelcase
   const { also_viewed, also_bought, also_rated } = related;
 
@@ -106,11 +125,15 @@ module.exports.getAlsoProducts = (req, res, next) => {
 module.exports.getSameCatProducts = (req, res, next) => {
   const { product } = res.locals;
 
-  Products.find({
-    categories: {
-      $in: product.categories[0],
-    },
-  })
+  if (!product) {
+    next();
+    return false;
+  }
+
+  const catQuery = categoryQuery(product.categories[0]);
+
+  Products.find(catQuery)
+    .limit(50)
     .then((products) => {
       res.locals.sameCategory = products;
       next();

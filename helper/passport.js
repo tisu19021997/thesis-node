@@ -71,6 +71,8 @@ passport.use('local-login', new Strategy(
       if (res === true) {
         return cb(null, user);
       }
+
+      return cb(null, false);
     });
 
     return false;

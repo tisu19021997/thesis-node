@@ -10,15 +10,16 @@ module.exports.loginAuthenticate = (req, res, next) => {
     }
 
     if (!user) {
-      return res.status(404)
+      return res
         .json({
-          message: 'We are not able to find your account. Are you new?',
+          status: 401,
+          message: 'Incorrect password or username. Please try again!',
         });
     }
 
     req.logIn(user, { session: false }, (error) => {
       if (error) {
-        return next(error);
+        next(error);
       }
 
       const {
@@ -82,8 +83,17 @@ module.exports.registerAuthenticate = (req, res, next) => {
   })(req, res, next);
 };
 
-module.exports.getPromotion = (req, res, next) => {
-  next();
+module.exports.getPromotion = async (req, res, next) => {
+  // find all the products - for demo only
+  await Products.find({})
+    .limit(20)
+    .then((products) => {
+      res.locals.promotion = products;
+      next();
+    })
+    .catch((e) => {
+      next(e);
+    });
 };
 
 module.exports.getRecommendation = async (req, res, next) => {
@@ -140,10 +150,19 @@ module.exports.getDeal = (req, res, next) => {
 };
 
 module.exports.getRelatedItems = (req, res) => {
-  const { history, knn } = res.locals;
+  const { history, knn, promotion } = res.locals;
 
   res.json({
     history,
     knn,
+    promotion,
+  });
+};
+
+module.exports.guessRender = (req, res) => {
+  const { promotion } = res.locals;
+
+  res.json({
+    promotion,
   });
 };

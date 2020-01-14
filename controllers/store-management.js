@@ -4,6 +4,7 @@ const Users = require('../models/user');
 const Cats = require('../models/category');
 const { isNumber } = require('../helper/boolean');
 const { escapeString } = require('../helper/string');
+const { categoryQuery } = require('../helper/query');
 
 // products
 module.exports.validateProduct = (req, res, next) => {
@@ -107,20 +108,10 @@ module.exports.getProducts = (req, res, next) => {
   if (cat) {
     const catList = JSON.parse(cat).cat;
 
-    // create empty array for OR query
-    let catQuery = [];
-
-    // hard code the maximum length of categories array
-    // will fix when a better solution
-    for (let i = 0; i < 10; i += 1) {
-      const object = {};
-      object[`categories.${i}`] = catList;
-
-      catQuery = [...catQuery, object];
-    }
+    const catQuery = categoryQuery(catList);
 
     // push new $or query to current query
-    query.$and = [...query.$and, { $or: catQuery }];
+    query.$and = [...query.$and, catQuery];
   }
 
   return Products.paginate(

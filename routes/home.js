@@ -4,8 +4,11 @@ const controller = require('../controllers/home');
 
 const router = express.Router();
 
-// home page
-router.get('/home/:username',
+// home page guess
+router.get('/home', controller.getPromotion, controller.guessRender);
+
+// home page user
+router.get('/home/users/:username',
   passport.authenticate('jwt-user', { session: false }),
   controller.getPromotion,
   controller.getRecommendation,
