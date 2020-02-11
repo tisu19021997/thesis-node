@@ -8,6 +8,8 @@
  */
 const normalizeData = (v, minA, maxA) => ((v - minA) / (maxA - minA));
 
+const denormalizeData = (normalizedV, minA, maxA) => ((normalizedV * (maxA - minA) + minA));
+
 const compareDistance = (user1, user2) => user1.distance - user2.distance;
 
 /**
@@ -115,9 +117,9 @@ const findKNN = (user, data, k = 5) => {
 /**
  * Predict the rating of a user on a product using KNN
  *
- * @param user
- * @param data
- * @param k
+ * @param {object} user - User to perform KNN algorithm on
+ * @param {object} data - Includes information about all the users and products
+ * @param {number} k - Number of nearest neighbor, default is 5
  * @returns {Promise<*>}
  */
 const knnPredict = async (user, data, k = 5) => {
@@ -128,44 +130,59 @@ const knnPredict = async (user, data, k = 5) => {
 
     for (let i = 0; i < products.length; i += 1) {
       const product = products[i];
+      let weightedSum = 0;
+      let distSum = 0;
 
-      // if the product hasn't been rated by the current user
-      if (!user.ratings[product]) {
-        let weightedSum = 0;
-        let distSum = 0;
+      knn.map((neighbor) => {
+        const { distance, ratings } = neighbor;
+        let neighborRating = ratings[product];
 
-        knn.map((neighbor) => {
-          const { distance, ratings } = neighbor;
-          const neighborRating = ratings[product];
+        if (!neighborRating || neighborRating === 0) {
+          return false;
+        }
 
-          if (!neighborRating) {
-            return false;
-          }
+        neighborRating = denormalizeData(neighborRating, 5, 0);
+        weightedSum += neighborRating * distance;
+        distSum += distance;
 
-          weightedSum += neighborRating * distance;
-          distSum += distance;
+        return true;
+      });
 
-          return true;
-        });
-
-        userWithPredictions.ratings[product] = weightedSum / (1 + distSum);
+      if (weightedSum !== 0 && distSum !== 0) {
+        userWithPredictions.ratings[product] = weightedSum / distSum;
       }
     }
-
     return userWithPredictions;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-const meanSquaredError = (actual, predict) => {
+/**
+ * Compute the Mean Squared Error
+ *
+ * @param  {object} actual - Actual data
+ * @param  {object} prediction - Prediction data
+ * @returns {number}
+ */
+const meanSquaredError = (actual, prediction) => {
+  let squaredDiff = 0;
+  const productKeys = Object.keys(actual);
+  const numExamples = productKeys.length;
 
+  for (let i = 0; i < numExamples; i += 1) {
+    const productId = productKeys[i];
+    squaredDiff += (actual[productId] - prediction[productId]) ** 2;
+  }
+
+  return (1 / numExamples) * squaredDiff;
 };
 
 module.exports = {
   cosineSimilarity,
   findKNN,
   normalizeData,
+  denormalizeData,
   knnPredict,
   meanSquaredError,
 };

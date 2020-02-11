@@ -73,90 +73,21 @@ router.get('/', async (req, res, next) => {
     .send('Done');
 });
 
-// knn
-router.post('/knn', controller.knnPrediction, controller.knnEvaluate);
+// generate recommendation for a user using KNN
+router.post('/knn',
+  controller.getUserData,
+  controller.normalizeRating,
+  controller.getLocalTrainingData,
+  controller.generateTrainingData,
+  controller.getKnnPredictionAndSave,
+  controller.knnEvaluate);
+
+// generate the training set for KNN
+router.post('/knn/trainingSet', controller.generateTrainingData, controller.writeTrainingData);
 
 // item-based collaborative filtering
-router.get('/cf', async (req, res, next) => {
-  const productCatalog = await Products.find({})
-    .limit(6000);
-
-  try {
-    const similarTable = {};
-    // for each item in product catalog I1
-    const mapping = await productCatalog.map(async (product, index) => {
-      // for each customer who rated product I1
-      const customers = await Users.find({
-        'ratings.asin': product.asin,
-      });
-
-      await customers.map((customer) => {
-        const { ratings } = customer;
-
-        // for each item I2 rated by customer, record that
-        // a customer purchased both I1 and I2
-        return ratings.map((rating) => {
-          if (product.asin === rating.asin) {
-            return false;
-          }
-
-          // init an empty object for the product if that product is not in the similar table yet
-          if (!Object.prototype.hasOwnProperty.call(similarTable, product.asin)) {
-            similarTable[product.asin] = {};
-          }
-
-          if (!similarTable[product.asin][rating.asin]) {
-            similarTable[product.asin][rating.asin] = 1;
-          } else {
-            similarTable[product.asin][rating.asin] += 1;
-          }
-
-          return true;
-        });
-      });
-
-      await console.log(`Writing ${(index * 100) / productCatalog.length}%...`);
-    });
-
-    Promise.all(mapping)
-      .then(() => {
-        fs.writeFile('simTable.json', JSON.stringify(similarTable), 'utf8', (err, string) => {
-          console.log('Done Writing');
-
-
-          // });
-        });
-        res.send(similarTable);
-      })
-      .catch((error) => {
-        next(error);
-      });
-  } catch (error) {
-    next(error);
-  }
-});
+router.post('/cf/trainingSet', controller.generateSimilarityTable);
 
 router.get('/cf/:asin', controller.cfPrediction);
-
-// router.get('/products', async (req, res, next) => {
-//   let productList = [];
-//
-//   Products.find({})
-//     .exec()
-//     .then(async (products) => {
-//       const productLists = await products.map((item) => item.asin);
-//
-//       Promise.all(productLists)
-//         .then((data) => {
-//           res.send(data);
-//
-//           fs.writeFile('productsAsin.json', JSON.stringify(productLists), 'utf8', (err, string) => {
-//             if (err) {
-//               return next(err);
-//             }
-//           });
-//         });
-//     });
-// });
 
 module.exports = router;

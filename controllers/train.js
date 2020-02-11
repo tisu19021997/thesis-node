@@ -1,8 +1,66 @@
 const fs = require('fs');
-const { cosineSimilarity, normalizeData, knnPredict } = require('../helper/recommender');
+const path = require('path');
+const {
+  cosineSimilarity, normalizeData, knnPredict, meanSquaredError,
+} = require('../helper/recommender');
 const Users = require('../models/user');
 const Products = require('../models/product');
-const knnTrainSet = fs.existsSync('../data-dev/knnTable.json') ? require('../data-dev/knnTable') : [];
+
+// Collaborative Filtering
+module.exports.generateSimilarityTable = async (req, res, next) => {
+  const productCatalog = await Products.find({});
+
+  try {
+    const similarTable = {};
+    // for each item in product catalog I1
+    const mapping = await productCatalog.map(async (product, index) => {
+      // for each customer who rated product I1
+      const customers = await Users.find({
+        'ratings.asin': product.asin,
+      });
+
+      await customers.map((customer) => {
+        const { ratings } = customer;
+
+        // for each item I2 rated by customer, record that
+        // a customer purchased both I1 and I2
+        return ratings.map((rating) => {
+          if (product.asin === rating.asin) {
+            return false;
+          }
+
+          // init an empty object for the product if that product is not in the similar table yet
+          if (!Object.prototype.hasOwnProperty.call(similarTable, product.asin)) {
+            similarTable[product.asin] = {};
+          }
+
+          if (!similarTable[product.asin][rating.asin]) {
+            similarTable[product.asin][rating.asin] = 1;
+          } else {
+            similarTable[product.asin][rating.asin] += 1;
+          }
+
+          return true;
+        });
+      });
+
+      await console.log(`Writing ${(index * 100) / productCatalog.length}%...`);
+    });
+
+    Promise.all(mapping)
+      .then(() => {
+        fs.writeFile('simTable.json', JSON.stringify(similarTable), 'utf8', (err, string) => {
+          console.log('Done Writing');
+        });
+        res.send(similarTable);
+      })
+      .catch((error) => {
+        next(error);
+      });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports.cfPrediction = async (req, res, next) => {
   const { asin } = req.params;
@@ -36,7 +94,6 @@ module.exports.cfPrediction = async (req, res, next) => {
           ...simScore,
           [otherKey]: cosineSimilarity(curItem, other),
         };
-
         return true;
       });
 
@@ -65,116 +122,189 @@ module.exports.cfPrediction = async (req, res, next) => {
   });
 };
 
-module.exports.knnPrediction = async (req, res, next) => {
+// K-Nearest Neighbors
+module.exports.getUserData = async (req, res, next) => {
   const { username: name } = req.body;
 
   Users.findOne({ username: name })
-    .then(async (currentUser) => {
-      if (!currentUser) {
+    .then(async (userModel) => {
+      if (!userModel) {
         res.status(404)
           .send('User not found');
       }
-      const { ratings: userRatings } = currentUser;
-      const formattedUser = {
-        username: name,
-        ratings: {},
-      };
 
-      userRatings.map((rating) => {
-        formattedUser.ratings[rating.asin] = normalizeData(rating.overall, 1, 5);
-        return true;
-      });
+      res.locals.userModel = await userModel;
+      await next();
+    });
+};
 
-      res.locals.actual = await userRatings;
+module.exports.normalizeRating = async (req, res, next) => {
+  const { userModel } = res.locals;
+  const { username, ratings } = userModel;
+  const user = {
+    username,
+    ratings: {},
+  };
 
-      const users = await Users.find({});
-      let ratingList = [];
-      let ratedProducts = [];
+  const mapping = await ratings.map((rating) => {
+    user.ratings[rating.asin] = normalizeData(rating.overall, 1, 5);
 
-      // if the training set is already generated, use it
-      if (knnTrainSet.length > 0) {
-        ratingList = knnTrainSet;
+    res.locals.actual = {
+      ...res.locals.actual,
+      [rating.asin]: rating.overall,
+    };
 
-        knnTrainSet.map((user) => {
-          const { ratings } = user;
+    return true;
+  });
 
-          return Object.keys(ratings)
-            .map((key) => {
-              if (ratedProducts.indexOf(key) === -1) {
-                ratedProducts = [...ratedProducts, key];
-              }
+  Promise.all(mapping)
+    .then(() => {
+      res.locals.user = user;
+      next();
+    })
+    .catch((e) => {
+      next(e);
+    });
+};
 
-              return true;
-            });
-        });
-      } else {
-        // generate the data needed to do prediction on by iterate through
-        // each user, map the ratings extracted from the JSON file to each user
-        users.map((user) => {
-          const { ratings, username } = user;
-          const ratingObject = {};
+module.exports.getLocalTrainingData = async (req, res, next) => {
+  fs.readFile(path.resolve(__dirname, '../data-dev/knnTable.json'), async (err, data) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        return next();
+      }
+    }
 
-          ratings.map((rating) => {
-            const { asin, overall } = rating;
-            ratingObject[asin] = normalizeData(overall, 1, 5);
+    const users = JSON.parse(data);
 
-            // only get the rated products to minimize run time
-            // this may cause the problem of not yet rated products would never be recommended
-            if (ratedProducts.indexOf(asin) === -1) {
-              ratedProducts = [...ratedProducts, asin];
-            }
+    // store the rated product
+    let products = [];
 
-            return true;
-          });
+    const mapping = users.map((user) => {
+      const { ratings } = user;
 
-          ratingList = [...ratingList, {
-            username,
-            ratings: ratingObject,
-          }];
+      return Object.keys(ratings)
+        .map((key) => {
+          if (products.indexOf(key) === -1) {
+            products = [...products, key];
+          }
 
           return true;
         });
+    });
+
+    Promise.all(mapping)
+      .then(() => {
+        res.locals.data = {
+          users,
+          products,
+        };
+
+        return next();
+      })
+      .catch((e) => {
+        next(e);
+      });
+  });
+};
+
+module.exports.generateTrainingData = async (req, res, next) => {
+  // if the local training data exists, skip this middleware
+  if (res.locals.data) {
+    return next();
+  }
+
+  // store the rated product
+  let products = [];
+  let userList = [];
+
+  // query for all users in database
+  const users = await Users.find({});
+
+  // generate the data needed to do prediction on by iterating through
+  // each user, map the ratings extracted from the JSON file to that user
+  const mapping = users.map((user) => {
+    const { ratings, username } = user;
+    const ratingObject = {};
+
+    ratings.map((rating) => {
+      const { asin, overall } = rating;
+      ratingObject[asin] = normalizeData(overall, 1, 5);
+
+      // only get the rated products to minimize run time
+      // this may cause the problem of not yet rated products would never be recommended
+      if (products.indexOf(asin) === -1) {
+        products = [...products, asin];
       }
 
-      // un-comment these lines to write ratingList to a file
-      //
-      // fs.writeFile('knnTable.json', JSON.stringify(ratingList), 'utf8', (err, string) => {
-      //   if (err) {
-      //     next(err);
-      //   }
-      //   console.log('Done Writing');
-      // });
+      return true;
+    });
 
-      const prediction = await knnPredict(formattedUser, {
-        users: ratingList,
-        products: ratedProducts,
-      });
-      const { ratings: predictedRatings } = await prediction;
+    userList = [...userList, {
+      username,
+      ratings: ratingObject,
+    }];
 
-      // save recommendations to database, sorted by rating score
-      currentUser.recommendation.knn = Object.keys(predictedRatings)
-        .sort((a, b) => predictedRatings[b] - predictedRatings[a]);
+    return true;
+  });
 
-      currentUser.save((err) => {
-        if (err) {
-          next(err);
-        }
-      });
-
-      res.locals.prediction = await predictedRatings;
-
-      await next();
+  Promise.all(mapping)
+    .then(() => {
+      res.locals.data = {
+        users: userList,
+        products,
+      };
+      return next();
     })
     .catch((error) => {
       next(error);
     });
 };
 
+module.exports.getKnnPredictionAndSave = async (req, res, next) => {
+  const { user, data } = res.locals;
+  const prediction = await knnPredict(user, data);
+  const { ratings: predictedRatings } = await prediction;
+
+  // save recommendations to database
+  Users.findOne({ username: user.username })
+    .then((currentUser) => {
+      // sorted by rating score
+      currentUser.recommendation.knn = Object.keys(predictedRatings)
+        .sort((a, b) => predictedRatings[b] - predictedRatings[a]);
+      currentUser.save((error) => {
+        if (error) {
+          next(error);
+        }
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
+
+  res.locals.prediction = await predictedRatings;
+  await next();
+};
+
+module.exports.writeTrainingData = async (req, res, next) => {
+  const { data } = res.locals;
+  const { users } = data;
+
+  await fs.writeFile('./data-dev/knnTable.json', JSON.stringify(users), 'utf8', (err) => {
+    if (err) {
+      next(err);
+    }
+    res.status(200).json(data);
+  });
+};
+
 module.exports.knnEvaluate = async (req, res) => {
   const { prediction, actual } = await res.locals;
 
-  await res.status(200).json({
-    prediction,
-    actual,
-  });
+  await res.status(200)
+    .json({
+      mse: meanSquaredError(actual, prediction),
+      prediction,
+      actual,
+    });
 };

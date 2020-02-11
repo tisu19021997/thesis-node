@@ -100,7 +100,7 @@ module.exports.getAlsoProducts = (req, res, next) => {
     { $match: { asin: { $in: also_rated } } },
     { $addFields: { __order: { $indexOfArray: [also_rated, '$asin'] } } },
     { $sort: { __order: 1 } },
-    { $limit: 20 },
+    { $limit: 100 },
   ]);
 
   // const alsoRatedPromise = Products.find({
