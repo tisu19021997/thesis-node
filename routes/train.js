@@ -86,8 +86,11 @@ router.post('/knn',
 router.post('/knn/trainingSet', controller.generateTrainingData, controller.writeTrainingData);
 
 // item-based collaborative filtering
-router.post('/cf/trainingSet', controller.generateSimilarityTable);
+router.get('/cf/:asin',
+  controller.getLocalSimilarityTable,
+  controller.generateSimilarityTable,
+  controller.getCfPredictionAndSave);
 
-router.get('/cf/:asin', controller.cfPrediction);
+router.post('/cf/trainingSet', controller.generateSimilarityTable, controller.writeSimilarTable);
 
 module.exports = router;

@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 const {
   cosineSimilarity, normalizeData, knnPredict, meanSquaredError,
 } = require('../helper/recommender');
@@ -7,7 +6,25 @@ const Users = require('../models/user');
 const Products = require('../models/product');
 
 // Collaborative Filtering
+module.exports.getLocalSimilarityTable = async (req, res, next) => {
+  fs.readFile('./data-dev/simTable.json', 'utf8', async (err, stringData) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        return next();
+      }
+    }
+
+    res.locals.similarTable = await JSON.parse(stringData);
+    return next();
+  });
+};
+
 module.exports.generateSimilarityTable = async (req, res, next) => {
+  // if the local similarity table existed, skip this step
+  if (res.locals.similarTable) {
+    return next();
+  }
+
   const productCatalog = await Products.find({});
 
   try {
@@ -44,15 +61,13 @@ module.exports.generateSimilarityTable = async (req, res, next) => {
         });
       });
 
-      await console.log(`Writing ${(index * 100) / productCatalog.length}%...`);
+      console.log(`Build similarity table ${(index * 100) / productCatalog.length}%...`);
     });
 
     Promise.all(mapping)
       .then(() => {
-        fs.writeFile('simTable.json', JSON.stringify(similarTable), 'utf8', (err, string) => {
-          console.log('Done Writing');
-        });
-        res.send(similarTable);
+        res.locals.similarTable = similarTable;
+        return next();
       })
       .catch((error) => {
         next(error);
@@ -62,65 +77,73 @@ module.exports.generateSimilarityTable = async (req, res, next) => {
   }
 };
 
-module.exports.cfPrediction = async (req, res, next) => {
-  const { asin } = req.params;
+module.exports.writeSimilarTable = async (req, res, next) => {
+  const { similarTable } = res.local;
 
-  fs.readFile('./data-dev/simTable.json', 'utf8', async (err, stringData) => {
+  fs.writeFile('simTable.json', JSON.stringify(similarTable), 'utf8', (err, string) => {
     if (err) {
-      next(err);
+      return next(err);
     }
-
-    const data = await JSON.parse(stringData);
-    const curItem = data[asin];
-    let simScore = {};
-
-    if (!curItem) {
-      await res.status(404)
-        .send('Product not found.');
-      return false;
-    }
-
-    const constructSimScore = Object.keys(data)
-      .map(async (otherKey) => {
-        const other = data[otherKey];
-
-        if (otherKey === asin) {
-          return false;
-        }
-
-        // compute cosine similarity between current product and the other,
-        // then push the similarity to origin data
-        simScore = {
-          ...simScore,
-          [otherKey]: cosineSimilarity(curItem, other),
-        };
-        return true;
-      });
-
-    Promise.all(constructSimScore)
-      .then(async () => {
-        // sort the similarity score table and also exclude the current item
-        // from the recommendation list
-        simScore = await Object.keys(simScore)
-          .sort((a, b) => simScore[b] - simScore[a])
-          .filter((item) => item !== asin);
-
-        // save generated recommendations to database
-        Products.findOneAndUpdate(
-          { asin }, { $set: { 'related.also_rated': simScore } }, { new: true },
-        )
-          .then((product) => {
-            res.json(product);
-          })
-          .catch((e) => {
-            next(e);
-          });
-      })
-      .catch((error) => {
-        next(error);
-      });
+    console.log('Similarity Table has been written as a JSON file.');
+    return res.send(similarTable);
   });
 };
+
+module.exports.getCfPredictionAndSave = async (req, res, next) => {
+  const { asin } = req.params;
+  const { similarTable } = res.locals;
+  const curItem = similarTable[asin];
+
+  let simScore = {};
+
+  if (!curItem) {
+    await res.status(404)
+      .send('Product not found.');
+    return false;
+  }
+
+  const constructSimScore = Object.keys(similarTable)
+    .map(async (otherKey) => {
+      const other = similarTable[otherKey];
+
+      if (otherKey === asin) {
+        return false;
+      }
+
+      // compute cosine similarity between current product and the other,
+      // then push the similarity to origin data
+      simScore = {
+        ...simScore,
+        [otherKey]: cosineSimilarity(curItem, other),
+      };
+      return true;
+    });
+
+  Promise.all(constructSimScore)
+    .then(async () => {
+      // sort the similarity score table and also exclude the current item
+      // from the recommendation list
+      const recommendations = await Object.keys(simScore)
+        .sort((a, b) => simScore[b] - simScore[a])
+        .filter((item) => item !== asin);
+
+      // save generated recommendations to database
+      Products.findOneAndUpdate(
+        { asin }, { $set: { 'related.also_rated': recommendations } }, { new: true },
+      )
+        .then((product) => {
+          return res.json(product);
+        })
+        .catch((e) => {
+          next(e);
+        });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+/* ///////////////////////////////////////////////////////////////////////////// */
 
 // K-Nearest Neighbors
 module.exports.getUserData = async (req, res, next) => {
@@ -168,7 +191,7 @@ module.exports.normalizeRating = async (req, res, next) => {
 };
 
 module.exports.getLocalTrainingData = async (req, res, next) => {
-  fs.readFile(path.resolve(__dirname, '../data-dev/knnTable.json'), async (err, data) => {
+  fs.readFile('./data-dev/knnTable.json', 'utf8', async (err, data) => {
     if (err) {
       if (err.code === 'ENOENT') {
         return next();
@@ -214,7 +237,6 @@ module.exports.generateTrainingData = async (req, res, next) => {
     return next();
   }
 
-  // store the rated product
   let products = [];
   let userList = [];
 
@@ -294,7 +316,8 @@ module.exports.writeTrainingData = async (req, res, next) => {
     if (err) {
       next(err);
     }
-    res.status(200).json(data);
+    res.status(200)
+      .json(data);
   });
 };
 
