@@ -1,16 +1,22 @@
 /**
  * Min-Max Normalization
  *
- * @param v {number} Instance value of attribute A
+ * @param v {number} Instant value of attribute A
  * @param minA {number} Maximum value of attribute A
  * @param maxA {number} Minimum value of attribute A
  * @returns {number}
  */
 const normalizeData = (v, minA, maxA) => ((v - minA) / (maxA - minA));
 
-const denormalizeData = (normalizedV, minA, maxA) => ((normalizedV * (maxA - minA) + minA));
-
-const compareDistance = (user1, user2) => user1.distance - user2.distance;
+/**
+ * Min-Max De-normalization
+ *
+ * @param normalizedV {number}
+ * @param minA {number}
+ * @param maxA {number}
+ * @returns {number}
+ */
+const denormalizeData = (normalizedV, minA, maxA) => (normalizedV * (maxA - minA) + minA);
 
 /**
  * Calculate magnitude of a vector
@@ -110,7 +116,7 @@ const findKNN = (user, data, k = 5) => {
       ...otherUser,
       distance: euclideanDistance(user, otherUser, products),
     }))
-    .sort(compareDistance)
+    .sort((user1, user2) => user1.distance - user2.distance)
     .slice(0, k);
 };
 
@@ -141,7 +147,7 @@ const knnPredict = async (user, data, k = 5) => {
           return false;
         }
 
-        neighborRating = denormalizeData(neighborRating, 5, 0);
+        neighborRating = denormalizeData(neighborRating, 1, 5);
         weightedSum += neighborRating * distance;
         distSum += distance;
 

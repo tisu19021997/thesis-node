@@ -2,7 +2,6 @@ const express = require('express');
 const fs = require('fs');
 const { findIndex } = require('lodash');
 const Users = require('../models/user');
-const Products = require('../models/product');
 const controller = require('../controllers/train');
 
 const router = express.Router();
@@ -82,15 +81,16 @@ router.post('/knn',
   controller.getKnnPredictionAndSave,
   controller.knnEvaluate);
 
-// generate the training set for KNN
+// generate training set for KNN
 router.post('/knn/trainingSet', controller.generateTrainingData, controller.writeTrainingData);
 
-// item-based collaborative filtering
+// item-based collaborative filtering (CF)
 router.get('/cf/:asin',
   controller.getLocalSimilarityTable,
   controller.generateSimilarityTable,
   controller.getCfPredictionAndSave);
 
+// generate training set for CF
 router.post('/cf/trainingSet', controller.generateSimilarityTable, controller.writeSimilarTable);
 
 module.exports = router;
