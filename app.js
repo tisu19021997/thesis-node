@@ -20,7 +20,8 @@ const categoryRouter = require('./routes/category');
 const userRouter = require('./routes/user');
 const manageRouter = require('./routes/manage');
 const ratingRouter = require('./routes/rating');
-const testRouter = require('./routes/train');
+const trainRouter = require('./routes/train');
+const testRouter = require('./routes/test');
 
 const app = express();
 
@@ -72,7 +73,9 @@ app.use('/users', passport.authenticate('jwt-user', { session: false }),
   userRouter);
 app.use('/store-management', passport.authenticate('jwt-admin', { session: false }),
   manageRouter);
-app.use('/recommendation', testRouter);
+app.use('/recommendation', trainRouter);
+
+app.use('/test', testRouter)
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

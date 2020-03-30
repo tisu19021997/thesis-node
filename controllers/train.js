@@ -203,11 +203,14 @@ module.exports.getLocalTrainingData = async (req, res, next) => {
     // store the rated product
     let products = [];
 
+    // take only the rated products
+    // O(u * r) with `u` is users and `r` is users' ratings
     const mapping = users.map((user) => {
       const { ratings } = user;
 
       return Object.keys(ratings)
         .map((key) => {
+          // prevent duplication
           if (products.indexOf(key) === -1) {
             products = [...products, key];
           }
@@ -245,6 +248,7 @@ module.exports.generateTrainingData = async (req, res, next) => {
 
   // generate the data needed to do prediction on by iterating through
   // each user, map the ratings extracted from the JSON file to that user
+  // O(u * r)
   const mapping = users.map((user) => {
     const { ratings, username } = user;
     const ratingObject = {};

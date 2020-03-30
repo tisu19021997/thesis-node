@@ -98,6 +98,7 @@ const euclideanDistance = (user1, user2, products) => {
 
 /**
  * Find the K-th Nearest Neighbors of a given user
+ * Time Complexity: O(u*log(u))
  *
  * @param user {object}
  * @param data {object}
@@ -134,8 +135,8 @@ const knnPredict = async (user, data, k = 5) => {
     const { products } = data;
     const userWithPredictions = user;
 
-    for (let i = 0; i < products.length; i += 1) {
-      const product = products[i];
+    // O(p * n) with `p` is products and `n` is user's neighbors
+    products.map((product) => {
       let weightedSum = 0;
       let distSum = 0;
 
@@ -157,7 +158,10 @@ const knnPredict = async (user, data, k = 5) => {
       if (weightedSum !== 0 && distSum !== 0) {
         userWithPredictions.ratings[product] = weightedSum / distSum;
       }
-    }
+
+      return true;
+    });
+
     return userWithPredictions;
   } catch (error) {
     throw new Error(error.message);
