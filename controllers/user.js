@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const axios = require('axios');
 const { sortBy, findIndex } = require('lodash');
 const User = require('../models/user');
 
@@ -204,4 +205,33 @@ module.exports.deleteCartItem = (req, res, next) => {
       next(error);
     });
 
+};
+
+// *========== RECOMMENDATIONS ==========* //
+module.exports.generate_recommendations = (req, res, next) => {
+  const { username } = req.params;
+  const { nrows } = req.query || 50000;
+
+  axios.get(`http://127.0.0.1:8000/reviewers/${username}/generate_recommendations?nrows=${nrows}`)
+    .then((response) => {
+      const { recommendations } = response.data;
+
+      // save recommendations to database
+      User.findOne({ username })
+        .then((currentUser) => {
+          currentUser.recommendation.knn = recommendations;
+          currentUser.save((error) => {
+            if (error) {
+              next(error);
+            }
+          });
+          res.json({ recommendations });
+        })
+        .catch((error) => {
+          next(error);
+        });
+    })
+    .catch((error) => {
+      throw new Error(error.message);
+    });
 };

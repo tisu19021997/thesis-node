@@ -15,4 +15,6 @@ router.get('/:asin',
   controller.getSameCatProducts,
   controller.renderProducts);
 
+router.get('/:asin/generate_recommendations/', controller.getItemRecommendations);
+
 module.exports = router;

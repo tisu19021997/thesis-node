@@ -135,7 +135,7 @@ const knnPredict = async (user, data, k = 5) => {
     const { products } = data;
     const userWithPredictions = user;
 
-    // O(p * n) with `p` is products and `n` is user's neighbors
+    // O(p * k) with `p` is products and `k` is user's neighbors
     products.map((product) => {
       let weightedSum = 0;
       let distSum = 0;

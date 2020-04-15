@@ -1,3 +1,4 @@
+const axios = require('axios');
 const { isEmpty } = require('lodash');
 const { escapeString } = require('../helper/string');
 const Products = require('../models/product');
@@ -309,4 +310,28 @@ module.exports.test = (req, res, next) => {
         .catch((e) => next(e));
     })
     .catch((e) => next(e));
+};
+
+
+// *========== RECOMMENDATIONS ==========* //
+module.exports.getItemRecommendations = async (req, res, next) => {
+  const { asin } = req.params;
+
+  axios.get(`http://127.0.0.1:8000/products/${asin}/generate_recommendations`)
+    .then((response) => {
+      const { recommendations } = response.data;
+
+      Products.findOneAndUpdate(
+        { asin }, { $set: { 'related.also_rated': recommendations } }, { new: true },
+      )
+        .then((product) => {
+          return res.json(product);
+        })
+        .catch((e) => {
+          next(e);
+        });
+    })
+    .catch((error) => {
+      throw new Error(error.message);
+    });
 };
