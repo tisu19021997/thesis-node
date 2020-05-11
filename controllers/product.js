@@ -316,8 +316,9 @@ module.exports.test = (req, res, next) => {
 // *========== RECOMMENDATIONS ==========* //
 module.exports.getItemRecommendations = async (req, res, next) => {
   const { asin } = req.params;
+  const k = req.query.k || 50;
 
-  axios.get(`http://127.0.0.1:8000/products/${asin}/generate_recommendations`)
+  axios.get(`http://127.0.0.1:8000/products/${asin}/get_k_neighbors?k=${k}`)
     .then((response) => {
       const { recommendations } = response.data;
 

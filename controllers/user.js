@@ -210,16 +210,21 @@ module.exports.deleteCartItem = (req, res, next) => {
 // *========== RECOMMENDATIONS ==========* //
 module.exports.generate_recommendations = (req, res, next) => {
   const { username } = req.params;
-  const { nrows } = req.query || 50000;
+  const k = req.query.k || 50;
 
-  axios.get(`http://127.0.0.1:8000/reviewers/${username}/generate_recommendations?nrows=${nrows}`)
+  axios.get(`http://127.0.0.1:8000/reviewers/${username}/get_recommendations?k${k}`)
     .then((response) => {
       const { recommendations } = response.data;
+      const recommendationsAsin = [];
+
+      recommendations.map((rec) => {
+        recommendationsAsin.push(rec[0]);
+      });
 
       // save recommendations to database
       User.findOne({ username })
         .then((currentUser) => {
-          currentUser.recommendation.knn = recommendations;
+          currentUser.recommendation.knn = recommendationsAsin;
           currentUser.save((error) => {
             if (error) {
               next(error);
@@ -232,6 +237,6 @@ module.exports.generate_recommendations = (req, res, next) => {
         });
     })
     .catch((error) => {
-      throw new Error(error.message);
+      res.send(error.message);
     });
 };
