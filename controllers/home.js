@@ -97,6 +97,8 @@ module.exports.getPromotion = async (req, res, next) => {
 };
 
 module.exports.getRecommendation = async (req, res, next) => {
+  const numProductToShow = 25;
+
   const { username } = req.params;
 
   const user = await Users.findOne({ username })
@@ -108,15 +110,11 @@ module.exports.getRecommendation = async (req, res, next) => {
     // aggregate to keep the order
     let recomProducts = await Products.aggregate([
       { $match: { asin: { $in: knn } } },
-      { $addFields: { __order: { $indexOfArray: [knn, '$asin'] } } },
-      { $sort: { __order: 1 } },
-      { $limit: 25 },
+      { $sample: { size: numProductToShow } }, // shuffle the products order
+      // { $addFields: { __order: { $indexOfArray: [knn, '$asin'] } } },
+      // { $sort: { __order: 1 } },
+      { $limit: numProductToShow },
     ]);
-
-    const rated = user.ratings.map((item) => item.asin);
-
-    // exclude the rated products
-    recomProducts = recomProducts.filter((product) => rated.indexOf(product.asin) === -1);
 
     res.locals.knn = recomProducts || [];
     next();
