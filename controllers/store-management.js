@@ -346,6 +346,10 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
+module.exports.importUsers = (req, res, next) => {
+  // TODO: Implement this route
+};
+
 
 // categories
 module.exports.getCats = async (req, res, next) => {

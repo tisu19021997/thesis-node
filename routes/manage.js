@@ -22,6 +22,8 @@ router.post('/users', controller.validateUser, controller.createUser);
 
 router.patch('/users/:id', controller.editUser);
 
+router.get('/users/batch', controller.importUsers);
+
 router.delete('/users/:id', controller.deleteUser);
 
 

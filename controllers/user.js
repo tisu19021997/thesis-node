@@ -212,7 +212,8 @@ module.exports.generate_recommendations = (req, res, next) => {
   const { username } = req.params;
   const k = req.query.k || 50;
 
-  axios.get(`http://127.0.0.1:8000/reviewers/${username}/get_recommendations?k${k}`)
+  // TODO: the URL is in the wrong format, also have to send the user's rating to Django
+  axios.post(`http://127.0.0.1:8000/reviewers/${username}/get_recommendations?k=${k}`)
     .then((response) => {
       const { recommendations } = response.data;
       const recommendationsAsin = [];
