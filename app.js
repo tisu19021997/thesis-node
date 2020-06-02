@@ -98,7 +98,16 @@ app.listen(app.get('port'), () => {
 
 // mongodb connection
 mongoose.set('useFindAndModify', false);
-mongoose.connect('mongodb://localhost/thesis', {
+
+// This database contains messy data. Although, it may be useful in the future, I will keep it.
+// mongoose.connect('mongodb://localhost/thesis', {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+// New database contains only users, products, and ratings which are
+// from the train set of the recommendation system model.
+mongoose.connect('mongodb://localhost/thesis_v2', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

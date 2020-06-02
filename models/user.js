@@ -50,7 +50,11 @@ const Schema = new mongoose.Schema({
   ],
   ratings: [
     {
-      asin: String,
+      asin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Products',
+        autopopulate: true,
+      },
       overall: Number,
     },
   ],

@@ -211,7 +211,6 @@ module.exports.deleteCartItem = (req, res, next) => {
 module.exports.generateRecommendations = (req, res, next) => {
   const { username } = req.params;
 
-  // TODO: the URL is in the wrong format, also have to send the user's rating to Django
   axios.post(`http://127.0.0.1:8000/reviewers/${username}/get_recommendations/`, req.body)
     .then((response) => {
       const { recommendations } = response.data;
@@ -220,7 +219,7 @@ module.exports.generateRecommendations = (req, res, next) => {
       recommendations.map((rec) => {
         recommendationsAsin.push(rec[0]);
       });
-
+      console.log(recommendations.length);
       // save recommendations to database
       User.findOne({ username })
         .then((currentUser) => {

@@ -1,4 +1,5 @@
 const { isEmpty } = require('lodash');
+const mongoose = require('mongoose');
 const Products = require('../models/product');
 const Users = require('../models/user');
 const Cats = require('../models/category');
@@ -159,9 +160,9 @@ module.exports.createProduct = (req, res, next) => {
 module.exports.importProducts = (req, res, next) => {
   const productBatch = req.body;
 
-  productBatch.map((product) => {
-    if (!Users.exists({ asin: product.asin })) {
-      Users.create(product)
+  productBatch.map(async (product) => {
+    if (!await Products.exists({ asin: product.asin })) {
+      Products.create(product)
         .catch((error) => {
           next(error);
         });
@@ -346,19 +347,67 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
+/**
+ * Import users from a JSON file.
+ * The structure of the JSON file is like:
+ * [{
+ *   username: 'user123',
+ *   password: 'hashed_password',
+ *   ratings: [
+ *     {
+ *       asin: 'product123',
+ *       overall: 5
+ *     },
+ *     {
+ *       asin: 'product456',
+ *       overall: 1
+ *     }
+ *   ]
+ * }]
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 module.exports.importUsers = (req, res, next) => {
   const userBatch = req.body;
 
-  userBatch.map((user) => {
-    if (!Users.exists({ username: user.username })) {
-      Users.create(user)
-        .catch((error) => {
-          next(error);
-        });
-    }
+  const processUserBatch = userBatch.map((user) => {
+    const { username, password, ratings } = user;
+
+    // Convert ratings' asin to Mongoose-friendly `_id` field.
+    const ratingsPromise = ratings.map(async (rating) => {
+      const { asin, overall } = rating;
+      const product = await Products.findOne({ asin });
+      const productID = product._id;
+
+      return {
+        asin: productID,
+        overall,
+      };
+    });
+
+    Promise.all(ratingsPromise)
+      .then(async (processedRatings) => {
+        if (!await Users.exists({ username: user.username })) {
+          Users.create({
+            username,
+            password,
+            ratings: processedRatings,
+          })
+            .catch((error) => {
+              next(error);
+            });
+        }
+      });
   });
-  res.status(200)
-    .json({ message: 'Successfully imported users.' });
+
+  Promise.all(processUserBatch)
+    .then(() => {
+      res.status(200)
+        .json({ message: 'Successfully imported users.' });
+    })
+    .catch((e) => next(e));
 };
 
 
