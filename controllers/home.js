@@ -110,9 +110,9 @@ module.exports.getRecommendation = async (req, res, next) => {
     // aggregate to keep the order
     let recomProducts = await Products.aggregate([
       { $match: { asin: { $in: knn } } },
-      { $sample: { size: numProductToShow } }, // shuffle the products order
-      // { $addFields: { __order: { $indexOfArray: [knn, '$asin'] } } },
-      // { $sort: { __order: 1 } },
+      // { $sample: { size: numProductToShow } }, // shuffle the products order
+      { $addFields: { __order: { $indexOfArray: [knn, '$asin'] } } },
+      { $sort: { __order: 1 } },
       { $limit: numProductToShow },
     ]);
 

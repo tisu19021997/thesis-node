@@ -156,19 +156,19 @@ module.exports.createProduct = (req, res, next) => {
     });
 };
 
-module.exports.importProducts = (req, res) => {
+module.exports.importProducts = (req, res, next) => {
   const productBatch = req.body;
 
-  Products.insertMany(productBatch)
-    .then(() => {
-      res.status(200)
-        .json({
-          message: 'Successfully imported products.',
+  productBatch.map((product) => {
+    if (!Users.exists({ asin: product.asin })) {
+      Users.create(product)
+        .catch((error) => {
+          next(error);
         });
-    })
-    .catch((error) => {
-      throw new Error(error);
-    });
+    }
+  });
+  res.status(200)
+    .json({ message: 'Successfully imported products.' });
 };
 
 module.exports.deleteProduct = (req, res) => {
@@ -347,7 +347,18 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.importUsers = (req, res, next) => {
-  // TODO: Implement this route
+  const userBatch = req.body;
+
+  userBatch.map((user) => {
+    if (!Users.exists({ username: user.username })) {
+      Users.create(user)
+        .catch((error) => {
+          next(error);
+        });
+    }
+  });
+  res.status(200)
+    .json({ message: 'Successfully imported users.' });
 };
 
 

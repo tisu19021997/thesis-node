@@ -13,6 +13,6 @@ router.delete('/:username/cart/products/:productId', controller.deleteCartItem);
 
 router.patch('/:username/history', controller.updateHistory);
 
-router.get('/:username/generate_recommendations', controller.generate_recommendations);
+router.patch('/:username/generate_recommendations', controller.generateRecommendations);
 
 module.exports = router;
