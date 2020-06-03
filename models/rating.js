@@ -7,7 +7,7 @@ const Schema = new mongoose.Schema({
     ref: 'Users',
     autopopulate: true,
   },
-  asin: {
+  product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Products',
     autopopulate: true,

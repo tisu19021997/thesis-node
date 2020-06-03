@@ -100,39 +100,52 @@ module.exports.updateUserRating = (req, res, next) => {
 };
 
 module.exports.createBatch = (req, res, next) => {
-  // TODO: implement this route
-  fs.readFile('./data-dev/reviews.json', 'utf8', async (err, batch) => {
+  // TODO: implement this route as a ImportRating section.
+  fs.readFile('./data-dev/ratings_xah.json', 'utf8', async (err, file) => {
     if (err) {
       next(err);
     }
 
-    let status = 409;
+    console.log('Parsing JSON file...');
+    const ratingBatch = await JSON.parse(file);
+    await console.log('Done parsing');
+    let count = 0;
+    await Promise.all(
+      ratingBatch.map(async (rating) => {
+        const {
+          username, asin, reviewText, summary, helpful, overall, unixReviewTime, reviewTime,
+        } = rating;
 
-    const jsonData = await JSON.parse(batch);
+        const [product, user] = await Promise.all([
+          Products.findOne({ asin })
+            .exec(),
+          Users.findOne({ username })
+            .exec(),
+        ]);
 
-    jsonData.map(async (rating) => {
-      let { reviewerID, asin } = rating;
+        // if (await Ratings.exists({reviewer: user._id, product: product._id})) {
+        //   return false;
+        // }
 
-      const product = await Products.findOne({asin});
-      const productID = product._id;
-      const user = await Users.findOne({userID: reviewerID});
-    });
-    // const loop = await jsonData.map((item) => Ratings.create(item)
-    //   .then(() => {
-    //     status = 200;
-    //   })
-    //   .catch((error) => {
-    //     throw new Error(error);
-    //   }));
+        Ratings.create({
+          reviewer: user._id,
+          product: product._id,
+          reviewText,
+          summary,
+          helpful,
+          overall,
+          unixReviewTime,
+        })
+          .catch((error) => {
+            next(error);
+          });
 
+        console.log('Created');
+        count += 1;
+      }),
+    );
 
-    Promise.all(loop)
-      .then(() => {
-        res.status(status)
-          .send('Done');
-      })
-      .catch((error) => {
-        next(error);
-      });
+    res.status(200)
+      .json({ message: `Done importing. Total imported: ${count}` });
   });
 };

@@ -157,18 +157,25 @@ module.exports.createProduct = (req, res, next) => {
     });
 };
 
-module.exports.importProducts = (req, res, next) => {
-  // TODO: fix `async/await` problem, @see function `importUsers`.
+module.exports.importProducts = async (req, res, next) => {
   const productBatch = req.body;
 
-  productBatch.map(async (product) => {
-    if (!await Products.exists({ asin: product.asin })) {
-      Products.create(product)
-        .catch((error) => {
-          next(error);
-        });
-    }
-  });
+  try {
+    await Promise.all(
+      productBatch.map(async (product) => {
+        if (!await Products.exists({ asin: product.asin })) {
+          Products.create(product)
+            .catch((error) => {
+              next(error);
+            });
+        }
+      }),
+    );
+  } catch (error) {
+    res.status(400)
+      .send({ message: error.message });
+  }
+
   res.status(200)
     .json({ message: 'Successfully imported products.' });
 };
