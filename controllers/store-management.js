@@ -158,6 +158,7 @@ module.exports.createProduct = (req, res, next) => {
 };
 
 module.exports.importProducts = (req, res, next) => {
+  // TODO: fix `async/await` problem, @see function `importUsers`.
   const productBatch = req.body;
 
   productBatch.map(async (product) => {
@@ -352,6 +353,7 @@ module.exports.createUser = (req, res, next) => {
  * The structure of the JSON file is like:
  * [{
  *   username: 'user123',
+ *   name: 'Justin Bieber',
  *   password: 'hashed_password',
  *   ratings: [
  *     {
@@ -369,45 +371,54 @@ module.exports.createUser = (req, res, next) => {
  * @param res
  * @param next
  */
-module.exports.importUsers = (req, res, next) => {
+module.exports.importUsers = async (req, res, next) => {
   const userBatch = req.body;
+  let usersCreated = 0;
 
-  const processUserBatch = userBatch.map((user) => {
-    const { username, password, ratings } = user;
+  try {
+    await Promise.all(
+      userBatch.map(async (user) => {
+        const {
+          username, name, password, ratings,
+        } = user;
 
-    // Convert ratings' asin to Mongoose-friendly `_id` field.
-    const ratingsPromise = ratings.map(async (rating) => {
-      const { asin, overall } = rating;
-      const product = await Products.findOne({ asin });
-      const productID = product._id;
-
-      return {
-        asin: productID,
-        overall,
-      };
-    });
-
-    Promise.all(ratingsPromise)
-      .then(async (processedRatings) => {
-        if (!await Users.exists({ username: user.username })) {
-          Users.create({
-            username,
-            password,
-            ratings: processedRatings,
-          })
-            .catch((error) => {
-              next(error);
-            });
+        if (await Users.exists({ username })) {
+          return false;
         }
-      });
-  });
 
-  Promise.all(processUserBatch)
-    .then(() => {
-      res.status(200)
-        .json({ message: 'Successfully imported users.' });
-    })
-    .catch((e) => next(e));
+        usersCreated += 1;
+
+        // Convert ratings' asin to Mongoose-friendly `_id` field.
+        const mappedRatings = await Promise.all(ratings.map(async (rating) => {
+          const { asin, overall } = rating;
+          const product = await Products.findOne({ asin });
+          const productID = product._id;
+
+          return {
+            asin: productID,
+            overall,
+          };
+        }));
+
+        Users.create({
+          username,
+          name,
+          password,
+          ratings: mappedRatings,
+        })
+          .catch((error) => {
+            next(error);
+          });
+
+      }),
+    );
+
+    await res.status(200)
+      .json({ message: `Successfully imported users data. Total users created: ${usersCreated} / ${userBatch.length}.` });
+  } catch (error) {
+    res.status(400)
+      .send({ message: error.message });
+  }
 };
 
 

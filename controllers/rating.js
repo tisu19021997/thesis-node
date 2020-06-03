@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Ratings = require('../models/rating');
 const Users = require('../models/user');
+const Products = require('../models/product');
 
 module.exports.getRatings = (req, res, next) => {
   const { asin } = req.params;
@@ -94,11 +95,13 @@ module.exports.updateUserRating = (req, res, next) => {
           rating,
           user,
         });
-    });
+    })
+    .catch((e) => next(e));
 };
 
 module.exports.createBatch = (req, res, next) => {
-  fs.readFile('./data-dev/ratings-small.json', 'utf8', async (err, batch) => {
+  // TODO: implement this route
+  fs.readFile('./data-dev/reviews.json', 'utf8', async (err, batch) => {
     if (err) {
       next(err);
     }
@@ -106,13 +109,21 @@ module.exports.createBatch = (req, res, next) => {
     let status = 409;
 
     const jsonData = await JSON.parse(batch);
-    const loop = await jsonData.map((item) => Ratings.create(item)
-      .then(() => {
-        status = 200;
-      })
-      .catch((error) => {
-        throw new Error(error);
-      }));
+
+    jsonData.map(async (rating) => {
+      let { reviewerID, asin } = rating;
+
+      const product = await Products.findOne({asin});
+      const productID = product._id;
+      const user = await Users.findOne({userID: reviewerID});
+    });
+    // const loop = await jsonData.map((item) => Ratings.create(item)
+    //   .then(() => {
+    //     status = 200;
+    //   })
+    //   .catch((error) => {
+    //     throw new Error(error);
+    //   }));
 
 
     Promise.all(loop)

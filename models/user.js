@@ -6,6 +6,11 @@ const Schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  name: {
+    type: String,
+    required: false,
+    default: '',
+  },
   password: {
     type: String,
     required: true,
@@ -15,10 +20,6 @@ const Schema = new mongoose.Schema({
     default: 'user',
   },
   email: String,
-  name: {
-    first: String,
-    last: String,
-  },
   history: [
     {
       product: {
