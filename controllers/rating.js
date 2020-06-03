@@ -1,20 +1,25 @@
 const fs = require('fs');
+const mongoose = require('mongoose');
 const Ratings = require('../models/rating');
 const Users = require('../models/user');
 const Products = require('../models/product');
 
-module.exports.getRatings = (req, res, next) => {
+module.exports.getRatings = async (req, res, next) => {
   const { asin } = req.params;
   const { page } = req.query;
+  const product = await Products.findOne({ asin });
+  const productId = product._id;
 
   Ratings.paginate({
-    asin,
+    product: productId,
   }, {
     limit: 10,
     page,
     sort: {
       unixReviewTime: -1,
     },
+    populate: 'reviewer',
+    lean: true,
   })
     .then((data) => {
       const {
@@ -55,19 +60,24 @@ module.exports.getRaters = async (req, res) => {
     });
 };
 
-module.exports.createRating = (req, res, next) => {
+module.exports.createRating = async (req, res, next) => {
   const data = req.body;
   const { rating, user } = data;
 
   // parse rating score to integer
   rating.overall = parseInt(rating.overall, 10);
+  // convert product `_id` to `ObjectId`
+  rating.product = mongoose.Types.ObjectId(rating.product);
 
-  return Ratings.create(rating)
+  const userDoc = await Users.findOne({ username: user });
+  rating.reviewer = userDoc._id;
+
+  Ratings.create(rating)
     .then((newRating) => {
       res.locals.rating = newRating;
       res.locals.username = user;
 
-      next();
+      return next();
     })
     .catch((err) => {
       next(err);
@@ -82,7 +92,7 @@ module.exports.updateUserRating = (req, res, next) => {
     {
       $push: {
         ratings: {
-          asin: rating.asin,
+          asin: rating.product,
           overall: rating.overall,
         },
       },

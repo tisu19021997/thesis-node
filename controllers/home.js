@@ -105,18 +105,18 @@ module.exports.getRecommendation = async (req, res, next) => {
     .exec();
 
   try {
-    const { knn } = user.recommendation;
+    const { svd } = user.recommendation;
 
     // aggregate to keep the order
     let recomProducts = await Products.aggregate([
-      { $match: { asin: { $in: knn } } },
+      { $match: { asin: { $in: svd } } },
       // { $sample: { size: numProductToShow } }, // shuffle the products order
-      { $addFields: { __order: { $indexOfArray: [knn, '$asin'] } } },
+      { $addFields: { __order: { $indexOfArray: [svd, '$asin'] } } },
       { $sort: { __order: 1 } },
       { $limit: numProductToShow },
     ]);
 
-    res.locals.knn = recomProducts || [];
+    res.locals.svd = recomProducts || [];
     next();
   } catch (error) {
     next(error);
@@ -148,11 +148,11 @@ module.exports.getDeal = (req, res, next) => {
 };
 
 module.exports.getRelatedItems = (req, res) => {
-  const { history, knn, promotion } = res.locals;
+  const { history, svd, promotion } = res.locals;
 
   res.json({
     history,
-    knn,
+    svd,
     promotion,
   });
 };

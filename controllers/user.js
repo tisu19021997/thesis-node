@@ -219,20 +219,20 @@ module.exports.generateRecommendations = (req, res, next) => {
       recommendations.map((rec) => {
         recommendationsAsin.push(rec[0]);
       });
-      console.log(recommendations.length);
+
       // save recommendations to database
       User.findOne({ username })
         .then((currentUser) => {
-          currentUser.recommendation.knn = recommendationsAsin;
+          currentUser.recommendation.svd = recommendationsAsin;
           currentUser.save((error) => {
             if (error) {
-              next(error);
+              return res.send(error.message);
             }
           });
           res.json({ recommendations });
         })
         .catch((error) => {
-          next(error);
+          res.send(error.message);
         });
     })
     .catch((error) => {

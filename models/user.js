@@ -35,6 +35,7 @@ const Schema = new mongoose.Schema({
   ],
   recommendation: {
     knn: [String],
+    svd: [String],
   },
   products: [
     {
@@ -68,6 +69,6 @@ const Schema = new mongoose.Schema({
 Schema.plugin(mongoosePaginate);
 Schema.plugin(require('mongoose-autopopulate'));
 
-const User = mongoose.model('User', Schema);
+const Users = mongoose.model('Users', Schema);
 
-module.exports = User;
+module.exports = Users;

@@ -28,6 +28,6 @@ const Schema = new mongoose.Schema({
 
 Schema.plugin(mongoosePaginate);
 
-const Rating = mongoose.model('Rating', Schema);
+const Ratings = mongoose.model('Ratings', Schema);
 
-module.exports = Rating;
+module.exports = Ratings;
