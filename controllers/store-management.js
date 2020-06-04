@@ -1,5 +1,4 @@
 const { isEmpty } = require('lodash');
-const mongoose = require('mongoose');
 const Products = require('../models/product');
 const Users = require('../models/user');
 const Cats = require('../models/category');

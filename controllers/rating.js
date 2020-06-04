@@ -120,6 +120,7 @@ module.exports.createBatch = (req, res, next) => {
     const ratingBatch = await JSON.parse(file);
     await console.log('Done parsing');
     let count = 0;
+
     await Promise.all(
       ratingBatch.map(async (rating) => {
         const {
@@ -150,7 +151,6 @@ module.exports.createBatch = (req, res, next) => {
             next(error);
           });
 
-        console.log('Created');
         count += 1;
       }),
     );
