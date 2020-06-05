@@ -75,8 +75,6 @@ app.use('/store-management', passport.authenticate('jwt-admin', { session: false
   manageRouter);
 // app.use('/recommendation', trainRouter);
 
-app.use('/test', testRouter);
-
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));

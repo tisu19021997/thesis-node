@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const axios = require('axios');
+const mailer = require('nodemailer');
 const { sortBy, findIndex } = require('lodash');
 const User = require('../models/user');
 
@@ -207,7 +208,6 @@ module.exports.deleteCartItem = (req, res, next) => {
 
 };
 
-// *========== RECOMMENDATIONS ==========* //
 module.exports.generateRecommendations = (req, res, next) => {
   const { username } = req.params;
 
@@ -238,4 +238,65 @@ module.exports.generateRecommendations = (req, res, next) => {
     .catch((error) => {
       res.send(error.message);
     });
+};
+
+module.exports.sendConfirmationMail = async (req, res, next) => {
+  const { username } = req.params;
+  const {
+    cart, name, address, email, shippingMessage,
+  } = req.body;
+  let productsDOM = '';
+
+  cart.map((item) => {
+    productsDOM += `<li>${item.product.title} (Qty: ${item.quantity})</li>`;
+    return true;
+  });
+
+  if (!name || !email || !address) {
+    return res.status(400)
+      .send('Please make sure you have correctly filled all the required information.');
+  }
+
+  // TODO: Empty cart
+  res.locals.user = await User.findOne({ username });
+
+  const transporter = mailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: `${process.env.GMAIL_USERNAME}@gmail.com`,
+      pass: process.env.GMAIL_PASSWORD,
+    },
+  });
+
+  const mainOptions = {
+    from: 'EComExpress',
+    to: email,
+    subject: 'Your order has been confirmed.',
+    text: `Thanks for choosing us. + ${req.body.email}`,
+    html: `<p>Hi <b>${name},</b></p>
+    <p>Your order is confirmed! Thanks for shopping! The order will be delivered to your address at <b>${address}</b> with the message "${shippingMessage}"</p>
+    <h1>Order Summary</h1>
+    <ul>${productsDOM}</ul>`,
+  };
+
+  await transporter.sendMail(mainOptions, (err, _) => {
+    if (err) {
+      return next(err);
+    }
+    next();
+  });
+};
+
+module.exports.cleanCart = (req, res) => {
+  const { user } = res.locals;
+
+  // Clear user's cart.
+  user.products = [];
+  user.save((error) => {
+    if (error) {
+      return res.send(error.message);
+    }
+  });
+  return res.status(200)
+    .json({ cart: user.products });
 };

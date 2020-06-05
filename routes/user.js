@@ -15,4 +15,6 @@ router.patch('/:username/history', controller.updateHistory);
 
 router.patch('/:username/generate_recommendations', controller.generateRecommendations);
 
+router.post('/:username/checkout', controller.sendConfirmationMail, controller.cleanCart);
+
 module.exports = router;
