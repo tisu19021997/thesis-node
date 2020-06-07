@@ -240,6 +240,13 @@ module.exports.generateRecommendations = (req, res, next) => {
     });
 };
 
+/**
+ * Shipping cart validation. Send check-out confirmation mail using NodeMailer.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
 module.exports.sendConfirmationMail = async (req, res, next) => {
   const { username } = req.params;
   const {
@@ -247,17 +254,19 @@ module.exports.sendConfirmationMail = async (req, res, next) => {
   } = req.body;
   let productsDOM = '';
 
+  // build the products DOM list
   cart.map((item) => {
     productsDOM += `<li>${item.product.title} (Qty: ${item.quantity})</li>`;
     return true;
   });
 
-  if (!name || !email || !address) {
+  // if any information is missing, return
+  if (!cart.length || !name || !email || !address) {
     return res.status(400)
-      .send('Please make sure you have correctly filled all the required information.');
+      .send({ message: 'Please make sure you have correctly filled all the required information.' });
   }
 
-  // TODO: Empty cart
+  // save User document for the next route
   res.locals.user = await User.findOne({ username });
 
   const transporter = mailer.createTransport({
@@ -279,6 +288,7 @@ module.exports.sendConfirmationMail = async (req, res, next) => {
     <ul>${productsDOM}</ul>`,
   };
 
+  // send mail
   await transporter.sendMail(mainOptions, (err, _) => {
     if (err) {
       return next(err);
@@ -287,6 +297,13 @@ module.exports.sendConfirmationMail = async (req, res, next) => {
   });
 };
 
+/**
+ * Clean the cart object in User document.
+ *
+ * @param req
+ * @param res
+ * @returns {*}
+ */
 module.exports.cleanCart = (req, res) => {
   const { user } = res.locals;
 

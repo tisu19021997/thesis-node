@@ -21,7 +21,7 @@ const userRouter = require('./routes/user');
 const manageRouter = require('./routes/manage');
 const ratingRouter = require('./routes/rating');
 // const trainRouter = require('./routes/train');
-const testRouter = require('./routes/test');
+// const testRouter = require('./routes/test');
 
 const app = express();
 
@@ -36,13 +36,15 @@ app.set('port', process.env.PORT || 8081);
 // use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
 app.use(logger('dev'));
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-}));
+app.use(cors());
+// app.use(cors({
+//   origin: 'http://localhost:3000',
+//   credentials: true,
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   preflightContinue: false,
+//   optionsSuccessStatus: 200,
+// }));
+
 app.use(cookieParser());
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
