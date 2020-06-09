@@ -47,7 +47,7 @@ module.exports.getProductsInCategories = async (req, res) => {
   Products.paginate(catQuery, options)
     .then((products) => {
       const {
-        docs, totalDocs, totalPages,
+        docs, totalDocs, totalPages, hasPrevPage, hasNextPage,
       } = products;
 
       // Send response in JSON format.
@@ -57,6 +57,8 @@ module.exports.getProductsInCategories = async (req, res) => {
         totalDocs,
         totalPages,
         page,
+        hasPrevPage,
+        hasNextPage,
       });
     })
     .catch((error) => {

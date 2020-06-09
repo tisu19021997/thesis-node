@@ -19,6 +19,7 @@ const productRouter = require('./routes/product');
 const categoryRouter = require('./routes/category');
 const userRouter = require('./routes/user');
 const manageRouter = require('./routes/manage');
+const transactionRouter = require('./routes/transaction');
 const ratingRouter = require('./routes/rating');
 // const trainRouter = require('./routes/train');
 // const testRouter = require('./routes/test');
@@ -71,8 +72,12 @@ app.use('/', homeRouter);
 app.use('/products', productRouter);
 app.use('/categories', categoryRouter);
 app.use('/ratings', ratingRouter);
-app.use('/users', passport.authenticate('jwt-user', { session: false }),
+app.use('/users',
+  passport.authenticate('jwt-user', { session: false }),
   userRouter);
+app.use('/transactions',
+  passport.authenticate('jwt-user', { session: false }),
+  transactionRouter);
 app.use('/store-management', passport.authenticate('jwt-admin', { session: false }),
   manageRouter);
 // app.use('/recommendation', trainRouter);

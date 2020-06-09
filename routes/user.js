@@ -13,7 +13,7 @@ router.delete('/:username/cart/products/:productId', controller.deleteCartItem);
 
 router.patch('/:username/history', controller.updateHistory);
 
-router.patch('/:username/generate_recommendations', controller.generateRecommendations);
+router.patch('/:username/recommendations', controller.generateRecommendations);
 
 router.post('/:username/checkout', controller.sendConfirmationMail, controller.cleanCart);
 
