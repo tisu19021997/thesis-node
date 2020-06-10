@@ -20,6 +20,11 @@ const Schema = new mongoose.Schema({
       },
     },
   ],
+  total: Number,
+  name: String,
+  email: String,
+  address: String,
+  message: String,
   unixCreateTime: {
     type: Number,
     default: Date.now(),
