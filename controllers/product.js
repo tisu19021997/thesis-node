@@ -145,9 +145,29 @@ module.exports.getSameCatProducts = (req, res, next) => {
     });
 };
 
+module.exports.getSameBrandProducts = (req, res, next) => {
+  const { product } = res.locals;
+  const { brand } = product;
+
+  if (!product || !brand) {
+    return next();
+  }
+
+  Products.find({
+    brand,
+    _id: { $ne: product._id },
+  })
+    .limit(5)
+    .then((products) => {
+      res.locals.sameBrand = products;
+      return next();
+    })
+    .catch((error) => next(error));
+};
+
 module.exports.renderProducts = (req, res) => {
   const {
-    product, sameCategory, alsoViewed, alsoBought, alsoRated, bundleProducts, categories,
+    product, sameCategory, sameBrand, alsoViewed, alsoBought, alsoRated, bundleProducts, categories,
   } = res.locals;
 
   res.json(
@@ -159,6 +179,7 @@ module.exports.renderProducts = (req, res) => {
       alsoBought,
       alsoRated,
       sameCategory,
+      sameBrand,
     },
   );
 };
@@ -196,13 +217,36 @@ module.exports.searchByName = (req, res, next) => {
   // escape search string
   const searchRegex = escapeString(s);
 
-
+  // TODO: search using categories or brands.
   Products.paginate(
     {
-      title: {
-        $regex: searchRegex,
-        $options: 'i',
-      },
+      $and: [
+        {
+          $or: [
+            // query by name
+            {
+              title: {
+                $regex: searchRegex,
+                $options: 'i',
+              },
+            },
+            // or by asin
+            {
+              asin: {
+                $regex: searchRegex,
+                $options: 'i',
+              },
+            },
+            // or by brand
+            {
+              brand: {
+                $regex: searchRegex,
+                $options: 'i',
+              },
+            },
+          ],
+        },
+      ],
     },
     options,
   )

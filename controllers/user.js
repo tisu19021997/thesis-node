@@ -216,11 +216,12 @@ module.exports.generateRecommendations = (req, res, next) => {
       const { recommendations } = response.data;
       const recommendationsAsin = [];
 
+      // Only take the products' asin, exclude the predicted rating score.
       recommendations.map((rec) => {
         recommendationsAsin.push(rec[0]);
       });
 
-      // save recommendations to database
+      // Save recommendations to database.
       User.findOne({ username })
         .then((currentUser) => {
           currentUser.recommendation.svd = recommendationsAsin;

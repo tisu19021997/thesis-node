@@ -12,9 +12,10 @@ router.get('/:asin',
   controller.getProductInfo,
   controller.getBundleProducts,
   controller.getAlsoProducts,
+  controller.getSameBrandProducts,
   controller.getSameCatProducts,
   controller.renderProducts);
 
-router.get('/:asin/generate_recommendations/', controller.getItemRecommendations);
+router.get('/:asin/related/', controller.getItemRecommendations);
 
 module.exports = router;

@@ -100,6 +100,13 @@ module.exports.getProducts = (req, res, next) => {
               $options: 'i',
             },
           },
+          // or by brand
+          {
+            brand: {
+              $regex: searchRegex,
+              $options: 'i',
+            },
+          },
         ],
       },
     ],
