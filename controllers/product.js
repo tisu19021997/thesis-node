@@ -147,17 +147,25 @@ module.exports.getSameCatProducts = (req, res, next) => {
 
 module.exports.getSameBrandProducts = (req, res, next) => {
   const { product } = res.locals;
+  const { asin } = product;
   const { brand } = product;
 
   if (!product || !brand) {
     return next();
   }
 
-  Products.find({
-    brand,
-    _id: { $ne: product._id },
-  })
-    .limit(5)
+  Products.aggregate([
+    {
+      $match: {
+        $and: [
+          { brand },
+          { asin: { $ne: asin } },
+        ],
+      },
+    },
+    { $sample: { size: 10 } },
+    { $limit: 5 },
+  ])
     .then((products) => {
       res.locals.sameBrand = products;
       return next();
