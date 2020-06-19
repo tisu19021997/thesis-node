@@ -37,7 +37,12 @@ app.set('port', process.env.PORT || 8081);
 // use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
 app.use(logger('dev'));
-app.use(cors());
+
+// allow all origins
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://192.168.0.101:3000'],
+  credentials: true,
+}));
 // app.use(cors({
 //   origin: 'http://localhost:3000',
 //   credentials: true,
@@ -68,17 +73,17 @@ app.use(passport.initialize({}));
 app.use(passport.session({}));
 
 // routes set up
-app.use('/', homeRouter);
-app.use('/products', productRouter);
-app.use('/categories', categoryRouter);
-app.use('/ratings', ratingRouter);
-app.use('/users',
+app.use('/api/v1', homeRouter);
+app.use('/api/v1/products', productRouter);
+app.use('/api/v1/categories', categoryRouter);
+app.use('/api/v1/ratings', ratingRouter);
+app.use('/api/v1/users',
   passport.authenticate('jwt-user', { session: false }),
   userRouter);
-app.use('/transactions',
+app.use('/api/v1/transactions',
   passport.authenticate('jwt-user', { session: false }),
   transactionRouter);
-app.use('/store-management', passport.authenticate('jwt-admin', { session: false }),
+app.use('/api/v1/store-management', passport.authenticate('jwt-admin', { session: false }),
   manageRouter);
 // app.use('/recommendation', trainRouter);
 

@@ -211,33 +211,32 @@ module.exports.deleteCartItem = (req, res, next) => {
 module.exports.generateRecommendations = (req, res, next) => {
   const { username } = req.params;
 
-  axios.post(`http://127.0.0.1:8000/reviewers/${username}/get_recommendations/`, req.body)
+  axios.post(`${process.env.RECSYS_SERVER}/users/${username}`, req.body)
     .then((response) => {
-      const { recommendations } = response.data;
-      const recommendationsAsin = [];
+      const recommendations = [];
 
       // Only take the products' asin, exclude the predicted rating score.
-      recommendations.map((rec) => {
-        recommendationsAsin.push(rec[0]);
+      response.data.map((rec) => {
+        recommendations.push(rec[0]);
       });
 
       // Save recommendations to database.
       User.findOne({ username })
         .then((currentUser) => {
-          currentUser.recommendation.svd = recommendationsAsin;
+          currentUser.recommendation.svd = recommendations;
           currentUser.save((error) => {
             if (error) {
               return res.send(error.message);
             }
           });
-          res.json({ recommendations });
+          return res.json({ recommendations });
         })
         .catch((error) => {
-          res.send(error.message);
+          return res.send(error.message);
         });
     })
     .catch((error) => {
-      res.send(error.message);
+      return res.send(error.message);
     });
 };
 

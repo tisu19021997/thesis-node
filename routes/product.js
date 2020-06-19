@@ -16,6 +16,6 @@ router.get('/:asin',
   controller.getSameCatProducts,
   controller.renderProducts);
 
-router.get('/:asin/related/', controller.getItemRecommendations);
+router.get('/:asin/related/', controller.buildRelatedItems);
 
 module.exports = router;
