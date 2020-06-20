@@ -38,4 +38,9 @@ router.delete('/cats/:id', controller.deleteCat);
 
 router.get('/cats/batch', controller.importCat);
 
+
+// recommender system
+router.post('/recommender/dataset', controller.uploadDataset);
+router.get('/recommender/dataset', controller.backupDataset);
+
 module.exports = router;
