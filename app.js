@@ -19,6 +19,7 @@ const productRouter = require('./routes/product');
 const categoryRouter = require('./routes/category');
 const userRouter = require('./routes/user');
 const manageRouter = require('./routes/manage');
+const recommenderRouter = require('./routes/recommender');
 const transactionRouter = require('./routes/transaction');
 const ratingRouter = require('./routes/rating');
 // const trainRouter = require('./routes/train');
@@ -83,9 +84,12 @@ app.use('/api/v1/users',
 app.use('/api/v1/transactions',
   passport.authenticate('jwt-user', { session: false }),
   transactionRouter);
-app.use('/api/v1/store-management', passport.authenticate('jwt-admin', { session: false }),
+app.use('/api/v1/store-management',
+  passport.authenticate('jwt-admin', { session: false }),
   manageRouter);
-// app.use('/recommendation', trainRouter);
+app.use('/api/v1/recommender',
+  passport.authenticate('jwt-admin', { session: false }),
+  recommenderRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

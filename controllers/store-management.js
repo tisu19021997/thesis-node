@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { isEmpty } = require('lodash');
 const Products = require('../models/product');
 const Users = require('../models/user');
@@ -532,27 +531,4 @@ module.exports.editCat = (req, res, next) => {
     .catch((error) => {
       next(error);
     });
-};
-
-// Recommender System
-module.exports.uploadDataset = async (req, res) => {
-  const { data, header } = req.body;
-  const dataset = await data.map((dataPoint) => dataPoint.data);
-
-  try {
-    await axios.post(`${process.env.RECSYS_SERVER}/dataset`, {
-      data: dataset,
-      header,
-    });
-    return res.status(200)
-      .send({ message: 'Done saving new dataset to server' });
-  } catch (e) {
-    return res.send(e);
-  }
-};
-
-module.exports.backupDataset = async (req, res, next) => {
-  const response = await axios.get(`${process.env.RECSYS_SERVER}/dataset`);
-
-  return res.send(response.data);
 };
