@@ -19,7 +19,6 @@ module.exports.uploadDataset = async (req, res) => {
 
 module.exports.backupDataset = async (req, res, next) => {
   const response = await axios.get(`${process.env.RECSYS_SERVER}/dataset`);
-
   return res.send(response.data);
 };
 
@@ -36,7 +35,7 @@ module.exports.trainModel = async (req, res, next) => {
   }
 
   try {
-    const response = await axios.post(`${process.env.RECSYS_SERVER}/models`,
+    await axios.post(`${process.env.RECSYS_SERVER}/models`,
       {
         dataset,
         dataHeader,
@@ -49,8 +48,14 @@ module.exports.trainModel = async (req, res, next) => {
       {
         maxContentLength: 100000000,
         maxBodyLength: 100000000,
+        responseType: 'blob',
+      })
+      .then((response) => {
+        return res.send(response.data);
+      })
+      .catch((e) => {
+        return next(e);
       });
-    return res.send(response.data);
   } catch (e) {
     return next(e);
   }

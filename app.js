@@ -13,7 +13,7 @@ const mongoose = require('mongoose');
 
 // authentication
 const passport = require('passport');
-
+const authRouter = require('./routes/auth');
 const homeRouter = require('./routes/home');
 const productRouter = require('./routes/product');
 const categoryRouter = require('./routes/category');
@@ -75,6 +75,7 @@ app.use(passport.session({}));
 
 // routes set up
 app.use('/api/v1', homeRouter);
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/categories', categoryRouter);
 app.use('/api/v1/ratings', ratingRouter);
