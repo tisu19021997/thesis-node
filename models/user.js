@@ -25,7 +25,7 @@ const Schema = new mongoose.Schema({
       product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Products',
-        autopopulate: true,
+        // autopopulate: true,
       },
       time: {
         type: Date,
@@ -42,7 +42,7 @@ const Schema = new mongoose.Schema({
       product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Products',
-        autopopulate: true,
+        // autopopulate: true,
       },
       quantity: {
         type: Number,
@@ -55,7 +55,7 @@ const Schema = new mongoose.Schema({
       asin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Products',
-        autopopulate: true,
+        // autopopulate: true,
       },
       overall: Number,
     },
@@ -67,7 +67,6 @@ const Schema = new mongoose.Schema({
 });
 
 Schema.plugin(mongoosePaginate);
-Schema.plugin(require('mongoose-autopopulate'));
 
 const Users = mongoose.model('Users', Schema);
 

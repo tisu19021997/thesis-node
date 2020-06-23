@@ -8,7 +8,7 @@ module.exports.getCart = (req, res, next) => {
   const { username } = req.params;
 
   User.findOne({ username })
-    .populate('product')
+    .populate('products.product')
     .exec((err, user) => {
       if (err) {
         return next(err);

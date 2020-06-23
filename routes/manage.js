@@ -13,6 +13,8 @@ router.patch('/products/:id', controller.editProduct);
 
 router.post('/products/batch', controller.importProducts);
 
+router.get('/products/batch', controller.exportProducts);
+
 router.delete('/products/:id', controller.deleteProduct);
 
 // user management
@@ -23,6 +25,8 @@ router.post('/users', controller.validateUser, controller.createUser);
 router.patch('/users/:id', controller.editUser);
 
 router.post('/users/batch', controller.importUsers);
+
+router.get('/users/batch', controller.exportUsers);
 
 router.delete('/users/:id', controller.deleteUser);
 

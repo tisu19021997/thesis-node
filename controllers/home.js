@@ -131,7 +131,8 @@ module.exports.getHistory = (req, res, next) => {
   }
 
   Users.findOne({ username })
-    .populate('product')
+  Users.findOne({ username })
+    .populate('history.product')
     .sort({ time: 1 })
     .exec()
     .then((user) => {

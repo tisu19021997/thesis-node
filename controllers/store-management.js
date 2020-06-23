@@ -1,4 +1,6 @@
 const { isEmpty } = require('lodash');
+const fastCsv = require('fast-csv');
+const JSONStream = require('JSONStream');
 const Products = require('../models/product');
 const Users = require('../models/user');
 const Cats = require('../models/category');
@@ -184,6 +186,40 @@ module.exports.importProducts = async (req, res, next) => {
 
   res.status(200)
     .json({ message: 'Successfully imported products.' });
+};
+
+module.exports.exportProducts = (req, res) => {
+  const { type } = req.query;
+  const cursor = Products.find();
+
+  const transformer = (doc) => ({
+    id: doc._id,
+    asin: doc.asin,
+    imUrl: doc.imUrl,
+    description: doc.description,
+    price: doc.price,
+    discountPrice: doc.discountPrice,
+    title: doc.title,
+    brand: doc.brand,
+    categories: doc.categories,
+  });
+
+  const dataStream = type === 'json'
+    ? JSONStream.stringify()
+    : fastCsv.format({ headers: true })
+      .transform(transformer);
+
+  if (type === 'json') {
+    res.setHeader('Content-Type', 'application/json');
+  } else {
+    res.setHeader('Content-Disposition', 'attachment; filename=export.csv');
+    res.writeHead(200, { 'Content-Type': 'text/csv' });
+    res.flushHeaders();
+  }
+
+  cursor.stream()
+    .pipe(dataStream)
+    .pipe(res);
 };
 
 module.exports.deleteProduct = (req, res) => {
@@ -432,6 +468,38 @@ module.exports.importUsers = async (req, res, next) => {
     res.status(400)
       .send({ message: error.message });
   }
+};
+
+module.exports.exportUsers = (req, res) => {
+  const { type } = req.query;
+  const cursor = Users.find();
+
+  const transformer = (doc) => ({
+    id: doc._id,
+    username: doc.username,
+    name: doc.name,
+    password: doc.password,
+    role: doc.role,
+    email: doc.email,
+    createdAt: doc.createdAt,
+  });
+
+  const dataStream = type === 'json'
+    ? JSONStream.stringify()
+    : fastCsv.format({ headers: true })
+      .transform(transformer);
+
+  if (type === 'json') {
+    res.setHeader('Content-Type', 'application/json');
+  } else {
+    res.setHeader('Content-Disposition', 'attachment; filename=export.csv');
+    res.writeHead(200, { 'Content-Type': 'text/csv' });
+    res.flushHeaders();
+  }
+
+  cursor.stream()
+    .pipe(dataStream)
+    .pipe(res);
 };
 
 
