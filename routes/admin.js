@@ -1,5 +1,5 @@
 const express = require('express');
-const controller = require('../controllers/store-management');
+const controller = require('../controllers/admin');
 
 const router = express.Router();
 
@@ -25,6 +25,8 @@ router.post('/users', controller.validateUser, controller.createUser);
 router.patch('/users/:id', controller.editUser);
 
 router.post('/users/batch', controller.importUsers);
+
+router.patch('/users/batch/recommendations', controller.bulkUpdateRecommendations)
 
 router.get('/users/batch', controller.exportUsers);
 

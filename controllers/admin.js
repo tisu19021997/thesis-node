@@ -7,6 +7,7 @@ const Cats = require('../models/category');
 const { isNumber } = require('../helper/boolean');
 const { escapeString } = require('../helper/string');
 const { categoryQuery } = require('../helper/query');
+const { createDataStreamResponse } = require('../helper/data');
 
 // products
 module.exports.validateProduct = (req, res, next) => {
@@ -192,7 +193,7 @@ module.exports.exportProducts = (req, res) => {
   const { type } = req.query;
   const cursor = Products.find();
 
-  const transformer = (doc) => ({
+  const dataTransformer = (doc) => ({
     id: doc._id,
     asin: doc.asin,
     imUrl: doc.imUrl,
@@ -204,22 +205,7 @@ module.exports.exportProducts = (req, res) => {
     categories: doc.categories,
   });
 
-  const dataStream = type === 'json'
-    ? JSONStream.stringify()
-    : fastCsv.format({ headers: true })
-      .transform(transformer);
-
-  if (type === 'json') {
-    res.setHeader('Content-Type', 'application/json');
-  } else {
-    res.setHeader('Content-Disposition', 'attachment; filename=export.csv');
-    res.writeHead(200, { 'Content-Type': 'text/csv' });
-    res.flushHeaders();
-  }
-
-  cursor.stream()
-    .pipe(dataStream)
-    .pipe(res);
+  return createDataStreamResponse(cursor, res, dataTransformer, type);
 };
 
 module.exports.deleteProduct = (req, res) => {
@@ -458,7 +444,6 @@ module.exports.importUsers = async (req, res, next) => {
           .catch((error) => {
             next(error);
           });
-
       }),
     );
 
@@ -484,22 +469,40 @@ module.exports.exportUsers = (req, res) => {
     createdAt: doc.createdAt,
   });
 
-  const dataStream = type === 'json'
-    ? JSONStream.stringify()
-    : fastCsv.format({ headers: true })
-      .transform(transformer);
+  return createDataStreamResponse(cursor, res, transformer, type);
+};
 
-  if (type === 'json') {
-    res.setHeader('Content-Type', 'application/json');
-  } else {
-    res.setHeader('Content-Disposition', 'attachment; filename=export.csv');
-    res.writeHead(200, { 'Content-Type': 'text/csv' });
-    res.flushHeaders();
-  }
+module.exports.bulkUpdateRecommendations = async (req, res) => {
+  const { recommendations } = req.body;
 
-  cursor.stream()
-    .pipe(dataStream)
-    .pipe(res);
+  // Bulk-write operations.
+  const bulkOps = [];
+
+  await recommendations.map(async (item) => {
+    const { user } = item;
+    // Only take the first element of the recommendation (which is the product asin).
+    const recommendation = item.recommendation.map((r) => r[0]);
+
+    await bulkOps.push({
+      updateOne: {
+        filter: { username: user },
+        update: {
+          $set: {
+            recommendation: {
+              svd: recommendation,
+            },
+          },
+        },
+      },
+    });
+  });
+
+  await Users.bulkWrite(bulkOps)
+    .then((result) => res.status(200)
+        .send({
+          message: `${result.modifiedCount} users recommendations has been re-newed.`,
+        }))
+    .catch((e) => res.send({ message: e.message }));
 };
 
 

@@ -18,7 +18,7 @@ const homeRouter = require('./routes/home');
 const productRouter = require('./routes/product');
 const categoryRouter = require('./routes/category');
 const userRouter = require('./routes/user');
-const manageRouter = require('./routes/manage');
+const manageRouter = require('./routes/admin');
 const recommenderRouter = require('./routes/recommender');
 const transactionRouter = require('./routes/transaction');
 const ratingRouter = require('./routes/rating');
@@ -85,7 +85,7 @@ app.use('/api/v1/users',
 app.use('/api/v1/transactions',
   passport.authenticate('jwt-user', { session: false }),
   transactionRouter);
-app.use('/api/v1/store-management',
+app.use('/api/v1/management',
   passport.authenticate('jwt-admin', { session: false }),
   manageRouter);
 app.use('/api/v1/recommender',
