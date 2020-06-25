@@ -13,6 +13,8 @@ router.patch('/products/:id', controller.editProduct);
 
 router.post('/products/batch', controller.importProducts);
 
+router.patch('/products/batch/related', controller.bulkUpdateRelatedProducts);
+
 router.get('/products/batch', controller.exportProducts);
 
 router.delete('/products/:id', controller.deleteProduct);

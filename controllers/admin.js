@@ -136,7 +136,7 @@ module.exports.getProducts = (req, res, next) => {
       const { docs } = products;
 
       res.json({
-        products: docs,
+        docs,
         totalDocs,
         hasPrevPage,
         hasNextPage,
@@ -241,6 +241,38 @@ module.exports.editProduct = (req, res, next) => {
     .catch((error) => {
       next(error);
     });
+};
+
+module.exports.bulkUpdateRelatedProducts = async (req, res) => {
+  const { recommendations } = req.body;
+
+  // Bulk-write operations.
+  const bulkOps = [];
+
+  await recommendations.map(async (item) => {
+    const { product, recommendation } = item;
+    // Only take the first element of the recommendation (which is the product asin).
+
+    await bulkOps.push({
+      updateOne: {
+        filter: { asin: product },
+        update: {
+          $set: {
+            related: {
+              also_rated: recommendation,
+            },
+          },
+        },
+      },
+    });
+  });
+
+  await Products.bulkWrite(bulkOps)
+    .then((result) => res.status(200)
+      .send({
+        message: `${result.modifiedCount} products' neighbors has been re-newed.`,
+      }))
+    .catch((e) => res.send({ message: e.message }));
 };
 
 
@@ -499,9 +531,9 @@ module.exports.bulkUpdateRecommendations = async (req, res) => {
 
   await Users.bulkWrite(bulkOps)
     .then((result) => res.status(200)
-        .send({
-          message: `${result.modifiedCount} users recommendations has been re-newed.`,
-        }))
+      .send({
+        message: `${result.modifiedCount} users recommendations has been re-newed.`,
+      }))
     .catch((e) => res.send({ message: e.message }));
 };
 
