@@ -28,7 +28,7 @@ module.exports.updateCart = (req, res, next) => {
   // bundle product purchase
   if (!single) {
     User.findOne({ username })
-      .populate('product')
+      .populate('products.product')
       .exec()
       .then((userToUpdate) => {
         cartProducts.map((product) => {
@@ -67,17 +67,17 @@ module.exports.updateCart = (req, res, next) => {
     };
 
     User.findOne({ username })
-      .populate('product')
+      .populate('products.product')
       .exec()
       .then((userToUpdate) => {
         const { products } = userToUpdate;
 
-        // get the sub-array that doesn't include the current product
-        // if the length of that array equals to the original array
-        // then the product wasn't in the cart (i.e it's a new product)
+        // Get the sub-array that doesn't include the current product.
         const notCurrentProduct = products.filter(
           (item) => item.product._id.toString() !== product._id,
         );
+        // If the length of that array equals to the original array
+        // then the product wasn't in the cart (i.e it's a new product)
         const noDuplicated = notCurrentProduct.length === products.length;
 
         if (noDuplicated) {
@@ -99,6 +99,7 @@ module.exports.updateCart = (req, res, next) => {
             username,
             'products.product': product._id,
           }, { $inc: { 'products.$.quantity': quantity } }, { new: true })
+            .populate('products.product')
             .exec()
             .then((updatedUser) => {
               res.send(updatedUser.products);
@@ -122,7 +123,7 @@ module.exports.updateProductQuantity = (req, res, next) => {
     username,
     'products._id': productId,
   }, { $set: { 'products.$.quantity': quantity } }, { new: true })
-    .populate('product')
+    .populate('products.product')
     .exec()
     .then((updatedUser) => {
       res.send(updatedUser.products);

@@ -370,7 +370,7 @@ module.exports.buildRelatedItems = async (req, res, next) => {
   axios.get(`${process.env.RECSYS_SERVER}/products/${asin}?k=${k}`)
     .then((response) => {
       Products.findOneAndUpdate(
-        { asin }, { $set: { 'related.also_rated': response.data } }, { new: true },
+        { asin }, { 'related.also_rated': response.data }, { new: true },
       )
         .then((product) => {
           return res.json(product);

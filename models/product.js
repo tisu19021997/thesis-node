@@ -15,9 +15,10 @@ const Schema = new mongoose.Schema({
   related: {
     also_viewed: [String],
     also_bought: [String],
+    also_rated: [String], // using item-to-item collaborative filtering
     buy_after_viewing: [String],
     bought_together: [String],
-    also_rated: [String], // using item-to-item collaborative filtering
+
   },
 });
 

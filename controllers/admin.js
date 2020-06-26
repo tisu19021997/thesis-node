@@ -257,11 +257,7 @@ module.exports.bulkUpdateRelatedProducts = async (req, res) => {
       updateOne: {
         filter: { asin: product },
         update: {
-          $set: {
-            related: {
-              also_rated: recommendation,
-            },
-          },
+          'related.also_rated': recommendation,
         },
       },
     });
@@ -519,11 +515,12 @@ module.exports.bulkUpdateRecommendations = async (req, res) => {
       updateOne: {
         filter: { username: user },
         update: {
-          $set: {
-            recommendation: {
-              svd: recommendation,
-            },
-          },
+          'recommendation.svd': recommendation,
+          // $set: {
+          //   recommendation: {
+          //     svd: recommendation,
+          //   },
+          // },
         },
       },
     });
