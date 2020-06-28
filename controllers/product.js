@@ -72,6 +72,8 @@ module.exports.getBundleProducts = (req, res, next) => {
       totalPrice: (totalPrice + parseFloat(res.locals.product.price)).toFixed(2),
     };
 
+    console.log(products);
+
     next();
   });
 };
@@ -151,6 +153,7 @@ module.exports.getSameBrandProducts = (req, res, next) => {
   const { brand } = product;
 
   if (!product || !brand) {
+    res.locals.sameBrand = [];
     return next();
   }
 

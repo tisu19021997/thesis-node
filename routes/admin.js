@@ -24,7 +24,7 @@ router.get('/users', controller.getUsers);
 
 router.post('/users', controller.validateUser, controller.createUser);
 
-router.patch('/users/:id', controller.editUser);
+router.patch('/users/:username', controller.editUser);
 
 router.post('/users/batch', controller.importUsers);
 
@@ -32,7 +32,7 @@ router.patch('/users/batch/recommendations', controller.bulkUpdateRecommendation
 
 router.get('/users/batch', controller.exportUsers);
 
-router.delete('/users/:id', controller.deleteUser);
+router.delete('/users/:username', controller.deleteUser);
 
 
 // categories management

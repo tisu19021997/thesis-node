@@ -365,13 +365,13 @@ module.exports.getUsers = async (req, res, next) => {
 };
 
 module.exports.deleteUser = (req, res) => {
-  const { id } = req.params;
+  const { username } = req.params;
 
-  Users.findByIdAndDelete(id, {})
+  Users.findOneAndDelete({ username })
     .then((user) => {
       res.status(202)
         .json({
-          id,
+          username,
           message: `Deleted ${user.name}`,
         });
     })
@@ -384,27 +384,25 @@ module.exports.deleteUser = (req, res) => {
 };
 
 module.exports.editUser = (req, res, next) => {
-  const { id } = req.params;
+  const { username } = req.params;
 
-  Users.findByIdAndUpdate(id, req.body, { new: true })
+  Users.findOneAndUpdate({ username }, req.body, { new: true })
     .then((updatedUser) => {
       res.status(200)
-        .json({
-          message: 'Successfully updated the product.',
-          product: updatedUser,
-        });
+        .send(updatedUser);
     })
     .catch((error) => {
       next(error);
     });
 };
 
+// fix password not hash
 module.exports.createUser = (req, res, next) => {
   Users.create(req.body)
-    .then((product) => res.status(201)
+    .then((user) => res.status(201)
       .send({
-        product,
-        message: 'Successfully create new product.',
+        user,
+        message: 'Successfully create new user.',
       }))
     .catch((error) => {
       next(error);
