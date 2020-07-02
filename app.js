@@ -33,7 +33,7 @@ const db = mongoose.connection;
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.set('port', process.env.PORT || 8081);
+app.set('port', process.env.PORT || 8000);
 
 // use application-level middleware for common functionality, including
 // logging, parsing, and session handling.

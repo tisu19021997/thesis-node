@@ -86,6 +86,7 @@ module.exports.updateCart = (req, res, next) => {
             { $push: { products: productModel } },
             { new: true },
           )
+            .populate('products.product')
             .exec()
             .then((updatedUser) => {
               res.send(updatedUser.products);
