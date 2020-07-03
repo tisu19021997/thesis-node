@@ -18,6 +18,6 @@ router.get('/home/users/:username',
 
 // authentication
 router.post('/login', controller.loginAuthenticate);
-router.post('/register', controller.registerAuthenticate);
+router.post('/register', passport.authenticate('local-signup', { session: false }), controller.registerAuthenticate);
 
 module.exports = router;

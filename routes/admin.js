@@ -1,4 +1,5 @@
 const express = require('express');
+const passport = require('passport');
 const controller = require('../controllers/admin');
 
 const router = express.Router();
@@ -22,13 +23,14 @@ router.delete('/products/:id', controller.deleteProduct);
 // user management
 router.get('/users', controller.getUsers);
 
-router.post('/users', controller.validateUser, controller.createUser);
+// router.post('/users', controller.validateUser, controller.createUser);
+router.post('/users', passport.authenticate('local-signup', { session: false }), controller.createUser);
 
 router.patch('/users/:username', controller.editUser);
 
 router.post('/users/batch', controller.importUsers);
 
-router.patch('/users/batch/recommendations', controller.bulkUpdateRecommendations)
+router.patch('/users/batch/recommendations', controller.bulkUpdateRecommendations);
 
 router.get('/users/batch', controller.exportUsers);
 

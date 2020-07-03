@@ -228,7 +228,6 @@ module.exports.searchByName = (req, res, next) => {
   // escape search string
   const searchRegex = escapeString(s);
 
-  // TODO: search using categories or brands.
   Products.paginate(
     {
       $and: [

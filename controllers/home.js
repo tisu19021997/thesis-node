@@ -50,37 +50,25 @@ module.exports.loginAuthenticate = (req, res, next) => {
   })(req, res, next);
 };
 
-module.exports.registerAuthenticate = (req, res, next) => {
-  passport.authenticate('local-signup', (err, username, password) => {
-    if (err) {
-      return next(err);
-    }
+module.exports.registerAuthenticate = (req, res) => {
+  const { user } = req;
 
-    if (username && !password) {
-      return res.json({
-        status: 200,
-        message: `The username '${username}' you registered is already taken`,
-        user: username,
-      });
-    }
+  if (user.message) {
+    return res.json({ message: user.message });
+  }
+  const { username, password } = user;
 
-    Users.create({
-      username,
-      password,
-    }, (error, user) => {
-      if (error) {
-        return next(error);
-      }
-
-      return res.status(201)
-        .json({
-          message: 'Your account has been created.',
-          username: user.username,
-        });
-    });
-
-    return true;
-  })(req, res, next);
+  return Users.create({
+    username,
+    password,
+  })
+    .then((u) => res.status(201)
+      .json({
+        message: 'Your account has been created.',
+        user: u.username,
+      }))
+    .catch((error) => res.send(400)
+      .json({ message: error.message }));
 };
 
 module.exports.getPromotion = async (req, res, next) => {
@@ -130,7 +118,7 @@ module.exports.getHistory = (req, res, next) => {
     next();
   }
 
-  Users.findOne({ username })
+  Users.findOne({ username });
   Users.findOne({ username })
     .populate('history.product')
     .sort({ time: 1 })

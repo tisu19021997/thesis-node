@@ -158,7 +158,7 @@ module.exports.createProduct = (req, res, next) => {
         next(error);
       }
 
-      res.status(201)
+      return res.status(201)
         .send({
           product,
           message: 'Successfully create new product.',
@@ -168,25 +168,27 @@ module.exports.createProduct = (req, res, next) => {
 
 module.exports.importProducts = async (req, res, next) => {
   const productBatch = req.body;
+  let createdCounter = 0;
 
   try {
     await Promise.all(
       productBatch.map(async (product) => {
         if (!await Products.exists({ asin: product.asin })) {
-          Products.create(product)
+          createdCounter += 1;
+          return Products.create(product)
             .catch((error) => {
               next(error);
             });
         }
       }),
     );
+
+    await res.status(200)
+      .json({ message: `Successfully imported products. Imported ${createdCounter}/${req.body.length} products.` });
   } catch (error) {
     res.status(400)
       .send({ message: error.message });
   }
-
-  res.status(200)
-    .json({ message: 'Successfully imported products.' });
 };
 
 module.exports.exportProducts = (req, res) => {
@@ -396,46 +398,31 @@ module.exports.editUser = (req, res, next) => {
     });
 };
 
-// fix password not hash
-module.exports.createUser = (req, res, next) => {
-  Users.create(req.body)
-    .then((user) => res.status(201)
-      .send({
-        user,
-        message: 'Successfully create new user.',
+module.exports.createUser = (req, res) => {
+  const { user } = req;
+
+  if (user.message) {
+    return res.json({ message: user.message });
+  }
+  const { username, password } = user;
+
+  return Users.create({
+    ...user.others,
+    username,
+    password,
+  })
+    .then((u) => res.status(201)
+      .json({
+        message: 'Your account has been created.',
+        user: u.username,
       }))
-    .catch((error) => {
-      next(error);
-    });
+    .catch((error) => res.send(400)
+      .json({ message: error.message }));
 };
 
-/**
- * Import users from a JSON file.
- * The structure of the JSON file is like:
- * [{
- *   username: 'user123',
- *   name: 'Justin Bieber',
- *   password: 'hashed_password',
- *   ratings: [
- *     {
- *       asin: 'product123',
- *       overall: 5
- *     },
- *     {
- *       asin: 'product456',
- *       overall: 1
- *     }
- *   ]
- * }]
- *
- * @param req
- * @param res
- * @param next
- */
-module.exports.importUsers = async (req, res, next) => {
+module.exports.importUsers = async (req, res) => {
   const userBatch = req.body;
   let usersCreated = 0;
-
   try {
     await Promise.all(
       userBatch.map(async (user) => {
@@ -447,37 +434,24 @@ module.exports.importUsers = async (req, res, next) => {
           return false;
         }
 
-        usersCreated += 1;
-
-        // Convert ratings' asin to Mongoose-friendly `_id` field.
-        const mappedRatings = await Promise.all(ratings.map(async (rating) => {
-          const { asin, overall } = rating;
-          const product = await Products.findOne({ asin });
-          const productID = product._id;
-
-          return {
-            asin: productID,
-            overall,
-          };
-        }));
-
         Users.create({
           username,
           name,
           password,
-          ratings: mappedRatings,
+          ratings,
         })
           .catch((error) => {
-            next(error);
+            return res.json({ message: error.message });
           });
+
+        usersCreated += 1;
       }),
     );
 
     await res.status(200)
       .json({ message: `Successfully imported users data. Total users created: ${usersCreated} / ${userBatch.length}.` });
   } catch (error) {
-    res.status(400)
-      .send({ message: error.message });
+    return res.json({ message: error.message });
   }
 };
 

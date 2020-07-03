@@ -60,7 +60,7 @@ passport.use('local-login', new Strategy(
     }
 
     if (!user) {
-      return cb(null, false);
+      return cb(null, false, { message: 'Incorrect username.' });
     }
 
     bcrypt.compare(password, user.password, (error, res) => {
@@ -79,15 +79,15 @@ passport.use('local-login', new Strategy(
   })),
 ));
 
-passport.use('local-signup', new Strategy(
-  ((username, password, cb) => {
+passport.use('local-signup', new Strategy({ passReqToCallback: true },
+  ((req, username, password, cb) => {
     User.findOne({ username }, (err, user) => {
       if (err) {
         return cb(err);
       }
 
       if (user) {
-        return cb(null, username);
+        return cb(null, { message: `The username '${username}' you registered is already taken` });
       }
 
       // using bcrypt to hash the password
@@ -96,8 +96,11 @@ passport.use('local-signup', new Strategy(
           return cb(err);
         }
 
-        return cb(null, username, hash);
+        return cb(null, {
+          others: req.body,
+          username,
+          password: hash,
+        });
       });
     });
-  }),
-));
+  })));
