@@ -2,6 +2,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 const Products = require('../models/product');
+const Categories = require('../models/category');
 
 module.exports.loginAuthenticate = (req, res, next) => {
   passport.authenticate('local-login', (err, user) => {
@@ -72,16 +73,11 @@ module.exports.registerAuthenticate = (req, res) => {
 };
 
 module.exports.getPromotion = async (req, res, next) => {
-  // find all the products - for demo only
-  await Products.find({})
-    .limit(20)
-    .then((products) => {
-      res.locals.promotion = products;
-      next();
-    })
-    .catch((e) => {
-      next(e);
-    });
+  res.locals.promotion = await Products.aggregate([
+    { $sample: { size: 20 } }, // shuffle the products order
+  ]);
+
+  return next();
 };
 
 module.exports.getRecommendation = async (req, res, next) => {
@@ -132,8 +128,12 @@ module.exports.getHistory = (req, res, next) => {
     });
 };
 
-module.exports.getDeal = (req, res, next) => {
-  next();
+module.exports.getProductsFromRandomCategory = async (req, res, next) => {
+  res.locals.randomCats = await Categories.aggregate([
+    { $sample: { size: 20 } }, // shuffle the products order
+  ]);
+
+  return next();
 };
 
 module.exports.getRelatedItems = (req, res) => {

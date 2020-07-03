@@ -13,7 +13,7 @@ router.get('/home/users/:username',
   controller.getPromotion,
   controller.getRecommendation,
   controller.getHistory,
-  controller.getDeal,
+  controller.getProductsFromRandomCategory,
   controller.getRelatedItems);
 
 // authentication

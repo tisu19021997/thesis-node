@@ -1,6 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const controller = require('../controllers/admin');
+const Products = require('../models/product');
 
 const router = express.Router();
 
@@ -46,7 +47,8 @@ router.patch('/cats/:id', controller.editCat);
 
 router.delete('/cats/:id', controller.deleteCat);
 
-router.get('/cats/batch', controller.importCat);
+router.post('/cats/batch', controller.importCat);
 
+router.get('/cats/batch', controller.exportCat);
 
 module.exports = router;

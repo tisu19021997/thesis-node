@@ -434,12 +434,7 @@ module.exports.importUsers = async (req, res) => {
           return false;
         }
 
-        Users.create({
-          username,
-          name,
-          password,
-          ratings,
-        })
+        Users.create(user)
           .catch((error) => {
             return res.json({ message: error.message });
           });
@@ -585,8 +580,48 @@ module.exports.deleteCat = (req, res, next) => {
     });
 };
 
-module.exports.importCat = (req, res, next) => {
+module.exports.importCat = async (req, res) => {
+  const catBatch = req.body;
+  let created = 0;
 
+  try {
+    await Promise.all(
+      catBatch.map(async (cat) => {
+        const { name } = cat;
+
+        if (await Cats.exists({ name })) {
+          return false;
+        }
+
+        try {
+          await Cats.create(cat);
+          created += 1;
+        } catch (e) {
+          return console.log(e.message);
+        }
+        return true;
+      }),
+    );
+
+    await res.status(200)
+      .json({ message: `Successfully imported categories data. Total categories created: ${created} / ${catBatch.length}.` });
+  } catch (error) {
+    return res.json({ message: error.message });
+  }
+};
+
+module.exports.exportCat = async (req, res) => {
+  const { type } = req.query;
+  const cursor = Cats.find();
+
+  const transformer = (doc) => ({
+    _id: doc._id,
+    name: doc.name,
+    imUrl: doc.imUrl,
+    iconClass: doc.iconClass,
+  });
+
+  return createDataStreamResponse(cursor, res, transformer, type);
 };
 
 module.exports.editCat = (req, res, next) => {
