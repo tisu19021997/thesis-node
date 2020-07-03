@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 const Products = require('../models/product');
 const Categories = require('../models/category');
+const { categoryQuery } = require('../helper/query');
 
 module.exports.loginAuthenticate = (req, res, next) => {
   passport.authenticate('local-login', (err, user) => {
@@ -86,7 +87,10 @@ module.exports.getRecommendation = async (req, res, next) => {
   const { username } = req.params;
 
   const user = await Users.findOne({ username })
+    .populate('ratings.asin')
     .exec();
+
+  res.locals.user = user;
 
   try {
     const { svd } = user.recommendation;
@@ -108,19 +112,16 @@ module.exports.getRecommendation = async (req, res, next) => {
 };
 
 module.exports.getHistory = (req, res, next) => {
-  const { username } = req.params;
-
-  if (!username) {
-    next();
+  if (!res.locals.user) {
+    return next();
   }
 
-  Users.findOne({ username });
-  Users.findOne({ username })
+  Users.findOne({ username: res.locals.user.username })
     .populate('history.product')
     .sort({ time: 1 })
     .exec()
     .then((user) => {
-      res.locals.history = user.history || [];
+      res.locals.history = user.history.slice(0, 20) || [];
       next();
     })
     .catch((error) => {
@@ -128,28 +129,54 @@ module.exports.getHistory = (req, res, next) => {
     });
 };
 
-module.exports.getProductsFromRandomCategory = async (req, res, next) => {
-  res.locals.randomCats = await Categories.aggregate([
-    { $sample: { size: 20 } }, // shuffle the products order
-  ]);
+module.exports.getProductsByCat = async (req, res, next) => {
+  if (!res.locals.user || res.locals.user.ratings.length === 0) {
+    try {
+      res.locals.cats = await Categories.aggregate([
+        { $sample: { size: 12 } }, // shuffle the products order
+      ]);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      next();
+    }
+  }
 
-  return next();
+  const { ratings } = res.locals.user;
+  const cats = [];
+
+  ratings.map((product) => product.asin.categories.map((cat) => cats.push(cat)));
+
+  try {
+    res.locals.cats = await Categories.aggregate([
+      { $match: { name: { $in: cats } } },
+      { $sample: { size: 12 } },
+    ]);
+  } catch (e) {
+    console.log(e);
+  } finally {
+    next();
+  }
 };
 
 module.exports.getRelatedItems = (req, res) => {
-  const { history, svd, promotion } = res.locals;
+  const {
+    history, svd, promotion, cats,
+  } = res.locals;
 
   res.json({
     history,
     svd,
     promotion,
+    cats,
   });
 };
 
 module.exports.guessRender = (req, res) => {
-  const { promotion } = res.locals;
+  const { promotion, cats } = res.locals;
 
   res.json({
     promotion,
+    cats,
   });
 };

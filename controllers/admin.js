@@ -1,6 +1,5 @@
 const { isEmpty } = require('lodash');
-const fastCsv = require('fast-csv');
-const JSONStream = require('JSONStream');
+const Types = require('mongoose').Types;
 const Products = require('../models/product');
 const Users = require('../models/user');
 const Cats = require('../models/category');
@@ -109,6 +108,10 @@ module.exports.getProducts = (req, res, next) => {
               $regex: searchRegex,
               $options: 'i',
             },
+          },
+          // or by id
+          {
+            _id: Types.ObjectId.isValid(searchRegex) ? Types.ObjectId(searchRegex) : null,
           },
         ],
       },
@@ -327,22 +330,30 @@ module.exports.getUsers = async (req, res, next) => {
 
   try {
     const data = await Users.paginate({
-      $or: [
-        // query by username
+      $and: [
         {
-          username: {
-            $regex: searchRegex,
-            $options: 'i',
-          },
-        },
-        // or by email
-        {
-          email: {
-            $regex: searchRegex,
-            $options: 'i',
-          },
-        },
-      ],
+          $or: [
+            // query by username
+            {
+              username: {
+                $regex: searchRegex,
+                $options: 'i',
+              },
+            },
+            // or by email
+            {
+              email: {
+                $regex: searchRegex,
+                $options: 'i',
+              },
+            },
+            // or by id
+            {
+              _id: Types.ObjectId.isValid(searchRegex) ? Types.ObjectId(searchRegex) : null,
+            },
+          ],
+        }
+      ]
     }, options);
 
     const {
@@ -522,10 +533,21 @@ module.exports.getCats = async (req, res, next) => {
 
   try {
     const data = await Cats.paginate({
-      name: {
-        $regex: searchRegex,
-        $options: 'i',
-      },
+      $and: [
+        {
+          $or: [
+            {
+              _id: Types.ObjectId.isValid(searchRegex) ? Types.ObjectId(searchRegex) : null,
+            },
+            {
+              name: {
+                $regex: searchRegex,
+                $options: 'i',
+              },
+            },
+          ],
+        },
+      ],
     }, options);
 
     const {

@@ -5,7 +5,7 @@ const controller = require('../controllers/home');
 const router = express.Router();
 
 // home page guess
-router.get('/home', controller.getPromotion, controller.guessRender);
+router.get('/home', controller.getPromotion, controller.getProductsByCat, controller.guessRender);
 
 // home page user
 router.get('/home/users/:username',
@@ -13,7 +13,7 @@ router.get('/home/users/:username',
   controller.getPromotion,
   controller.getRecommendation,
   controller.getHistory,
-  controller.getProductsFromRandomCategory,
+  controller.getProductsByCat,
   controller.getRelatedItems);
 
 // authentication
