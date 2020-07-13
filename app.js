@@ -122,7 +122,7 @@ mongoose.set('useFindAndModify', false);
 
 // New database contains only users, products, and ratings which are
 // from the train set of the recommendation system model.
-mongoose.connect('mongodb://<dbuser>:<dbpassword>@ds161517.mlab.com:61517/heroku_3nfjrvtc', {
+mongoose.connect('mongodb://admin:admin123@ds161517.mlab.com:61517/heroku_3nfjrvtc', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
