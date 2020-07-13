@@ -1,5 +1,4 @@
 const axios = require('axios');
-const fs = require('fs');
 const { isEmpty } = require('lodash');
 const { escapeString } = require('../helper/string');
 const Products = require('../models/product');

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --verbose --ignore '*.json' app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "JSONStream": "^1.3.5",
