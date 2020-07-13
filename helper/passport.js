@@ -24,7 +24,7 @@ passport.deserializeUser((username, cb) => {
 // passport strategies
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+  secretOrKey: process.env.ACCESS_TOKEN_SECRET || 'secret',
 };
 
 passport.use('jwt-user', new JwtStrategy(jwtOptions, (jwtPayload, done) => {
