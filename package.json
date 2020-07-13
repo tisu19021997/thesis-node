@@ -26,7 +26,7 @@
     "inuitcss": "^6.0.0",
     "jsdom": "^15.2.0",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mathjs": "^6.6.2",
     "mobile-detect": "^1.4.4",
     "mongoose": "^5.7.1",
