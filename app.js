@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-require('dotenv')
-  .config({ silent: process.env.NODE_ENV === 'production' });
+require('dotenv');
 require('./helper/passport');
 const createError = require('http-errors');
 const cors = require('cors');
