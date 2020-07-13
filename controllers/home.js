@@ -136,7 +136,7 @@ module.exports.getProductsByCat = async (req, res, next) => {
         { $sample: { size: 12 } }, // shuffle the products order
       ]);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     } finally {
       next();
     }
@@ -153,10 +153,10 @@ module.exports.getProductsByCat = async (req, res, next) => {
       { $sample: { size: 12 } },
     ]);
   } catch (e) {
-    console.log(e);
-  } finally {
-    next();
+    // console.log(e);
   }
+
+  return next();
 };
 
 module.exports.getRelatedItems = (req, res) => {
