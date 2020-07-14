@@ -28,10 +28,11 @@ module.exports.loginAuthenticate = (req, res, next) => {
         username, products, history, role, ratings,
       } = user;
 
+      const secret = process.env.ACCESS_TOKEN_SECRET || 'bluedarkgreengray';
       const token = jwt.sign({
         username,
         role,
-      }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
+      }, secret, { expiresIn: '7d' });
 
       return res.status(200)
         .json({
@@ -86,7 +87,9 @@ module.exports.getRecommendation = async (req, res, next) => {
 
   const { username } = req.params;
 
+  // TODO: fix not populating (import mlab products again)
   const user = await Users.findOne({ username })
+    .populate('history.product')
     .populate('ratings.asin')
     .exec();
 
@@ -105,7 +108,7 @@ module.exports.getRecommendation = async (req, res, next) => {
     ]);
 
     res.locals.svd = recomProducts || [];
-    next();
+    return next();
   } catch (error) {
     next(error);
   }
@@ -137,6 +140,7 @@ module.exports.getProductsByCat = async (req, res, next) => {
       ]);
       return next();
     } catch (e) {
+      console.log(e);
       return next();
     }
   }
@@ -153,6 +157,7 @@ module.exports.getProductsByCat = async (req, res, next) => {
     ]);
   } catch (e) {
     console.log(e);
+    return next(e);
   } finally {
     next();
   }

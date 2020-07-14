@@ -42,7 +42,6 @@ const Schema = new mongoose.Schema({
       product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Products',
-        // autopopulate: true,
       },
       quantity: {
         type: Number,
@@ -55,7 +54,6 @@ const Schema = new mongoose.Schema({
       asin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Products',
-        // autopopulate: true,
       },
       overall: Number,
     },
