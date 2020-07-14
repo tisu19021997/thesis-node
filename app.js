@@ -40,10 +40,7 @@ app.set('port', process.env.PORT || 8081);
 app.use(logger('dev'));
 
 // allow all origins
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://192.168.0.101:3000', 'https://vert-madame-34019.herokuapp.com/'],
-  credentials: true,
-}));
+app.use(cors());
 // app.use(cors({
 //   origin: 'http://localhost:3000',
 //   credentials: true,
