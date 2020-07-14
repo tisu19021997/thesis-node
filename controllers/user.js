@@ -145,7 +145,7 @@ module.exports.updateHistory = (req, res, next) => {
   };
 
   User.findOne({ username })
-    .populate('product')
+    .populate('history.product')
     .exec()
     .then((userToUpdate) => {
       const { history } = userToUpdate;
@@ -199,7 +199,7 @@ module.exports.deleteCartItem = (req, res, next) => {
       products: { _id: productId },
     },
   }, { new: true })
-    .populate('product')
+    .populate('products.product')
     .exec()
     .then((updatedUser) => {
       res.send(updatedUser.products);
@@ -207,7 +207,6 @@ module.exports.deleteCartItem = (req, res, next) => {
     .catch((error) => {
       next(error);
     });
-
 };
 
 module.exports.generateRecommendations = (req, res, next) => {

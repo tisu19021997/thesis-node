@@ -18,7 +18,6 @@ module.exports.getRatings = async (req, res, next) => {
     sort: {
       unixReviewTime: -1,
     },
-    populate: 'reviewer',
     lean: true,
   })
     .then((data) => {
