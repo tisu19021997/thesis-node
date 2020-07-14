@@ -8,14 +8,12 @@ module.exports.getCart = (req, res, next) => {
   const { username } = req.params;
 
   User.findOne({ username })
+    .populate('products.product')
     .exec()
-    .then((user) => {
-
-      return res.json({
+    .then((user) => res.json({
         cart: user.products,
         username,
-      });
-    })
+      }))
     .catch((e) => console.log(e));
 };
 

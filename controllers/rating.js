@@ -19,6 +19,7 @@ module.exports.getRatings = async (req, res, next) => {
       unixReviewTime: -1,
     },
     lean: true,
+    populate: ['reviewer', 'product'],
   })
     .then((data) => {
       const {
