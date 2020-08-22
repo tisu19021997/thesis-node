@@ -109,22 +109,26 @@ module.exports.updateUserRating = (req, res, next) => {
     .catch((e) => next(e));
 };
 
-module.exports.createBatch = (req, res, next) => {
+module.exports.createBatch = async (req, res, next) => {
   // TODO: implement this route as a ImportRating section.
-  fs.readFile('./data-dev/ratings_xah.json', 'utf8', async (err, file) => {
+  const reviewsPath = './data-dev/abc/';
+  const dirs = fs.readdirSync(reviewsPath);
+
+  fs.readFile(`${reviewsPath}/reviews12.json`, 'utf8', async (err, file) => {
     if (err) {
       next(err);
     }
 
     console.log('Parsing JSON file...');
     const ratingBatch = await JSON.parse(file);
-    await console.log('Done parsing');
+    console.log('Done parsing');
     let count = 0;
 
+    const bulkOps = [];
     await Promise.all(
       ratingBatch.map(async (rating) => {
         const {
-          username, asin, reviewText, summary, helpful, overall, unixReviewTime, reviewTime,
+          username, asin, reviewText, summary, helpful, overall, unixReviewTime,
         } = rating;
 
         const [product, user] = await Promise.all([
@@ -134,28 +138,51 @@ module.exports.createBatch = (req, res, next) => {
             .exec(),
         ]);
 
-        // if (await Ratings.exists({reviewer: user._id, product: product._id})) {
-        //   return false;
-        // }
-
-        Ratings.create({
+        if (await Ratings.exists({
           reviewer: user._id,
-          product: product._id,
-          reviewText,
-          summary,
-          helpful,
-          overall,
-          unixReviewTime,
-        })
-          .catch((error) => {
-            next(error);
-          });
+          product: product._id
+        })) {
+          return false;
+        }
+
+        await bulkOps.push({
+          insertOne: {
+            document: {
+              reviewer: user._id,
+              product: product._id,
+              reviewText,
+              summary,
+              helpful,
+              overall,
+              unixReviewTime,
+            },
+          },
+        });
+
+        // Ratings.create({
+        //   reviewer: user._id,
+        //   product: product._id,
+        //   reviewText,
+        //   summary,
+        //   helpful,
+        //   overall,
+        //   unixReviewTime,
+        // })
+        //   .catch((error) => {
+        //     next(error);
+        //   });
 
         count += 1;
       }),
     );
+    await Ratings.bulkWrite(bulkOps)
+      .then((result) => res.status(200)
+        .send({
+          message: `Total imported ratings: ${result.insertedCount}.`,
+        }))
+      .catch((e) => res.send({ message: e.message }));
 
-    res.status(200)
-      .json({ message: `Done importing. Total imported: ${count}` });
+    // await res.status(200)
+    //   .json({ message: `Done importing. Total imported: ${count}` });
   });
 };

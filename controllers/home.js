@@ -135,10 +135,10 @@ module.exports.getProductsByCat = async (req, res, next) => {
       res.locals.cats = await Categories.aggregate([
         { $sample: { size: 12 } }, // shuffle the products order
       ]);
+      return next();
     } catch (e) {
-      // console.log(e);
-    } finally {
-      next();
+      console.log(e);
+      return next();
     }
   }
 

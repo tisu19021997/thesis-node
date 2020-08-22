@@ -57,9 +57,9 @@ app.use(cookieParser());
 // app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({
   extended: true,
-  limit: '50mb',
+  limit: '100mb',
 }));
-app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '100mb' }));
 
 app.use(session({
   secret: 'keyboard cat',
@@ -122,7 +122,7 @@ mongoose.set('useFindAndModify', false);
 
 // New database contains only users, products, and ratings which are
 // from the train set of the recommendation system model.
-mongoose.connect('mongodb://localhost/thesis_v2', {
+mongoose.connect('mongodb://localhost/thesis_v3', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

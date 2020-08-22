@@ -72,8 +72,6 @@ module.exports.getBundleProducts = (req, res, next) => {
       totalPrice: (totalPrice + parseFloat(res.locals.product.price)).toFixed(2),
     };
 
-    console.log(products);
-
     next();
   });
 };

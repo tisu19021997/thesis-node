@@ -445,9 +445,26 @@ module.exports.importUsers = async (req, res) => {
           return false;
         }
 
-        Users.create(user)
+        // Convert ratings' asin to Mongoose-friendly `_id` field.
+        const mappedRatings = await Promise.all(ratings.map(async (rating) => {
+          const { asin, overall } = rating;
+          const product = await Products.findOne({ asin });
+          const productID = product._id;
+
+          return {
+            asin: productID,
+            overall,
+          };
+        }));
+
+        Users.create({
+          username,
+          name,
+          password,
+          ratings: mappedRatings,
+        })
           .catch((error) => {
-            return res.json({ message: error.message });
+            console.log(error);
           });
 
         usersCreated += 1;
